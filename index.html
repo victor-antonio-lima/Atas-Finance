@@ -1827,6 +1827,9 @@
           }
 
           saveMasterUsers();
+          if (window.cadastrarCliente) {
+            window.cadastrarCliente(email, pass, 'CLIENTE');
+          }
           masterAddForm.reset();
           closeMasterAddUserModal();
           renderMasterPanel();
@@ -3233,6 +3236,59 @@
     function escapeHtml(str) {
       return str ? str.replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[m]) : '';
     }
+  </script>
+
+  <!-- Biblioteca do Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+    // Conexão com o Supabase
+    const SUPABASE_URL = "https://cdevrbqiupwaczgauszd.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_evKYmLK_8Rn5pM1nrF8u3w_GKnCf";
+
+    const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+
+    // Função para Autenticar (Login) consultando o banco
+    async function fazerLogin(email, senha) {
+      if (!supabaseClient) return null;
+      try {
+        const { data, error } = await supabaseClient
+          .from('Atlas Finance')
+          .select('*')
+          .eq('email', email)
+          .eq('senha', senha)
+          .single();
+
+        if (error || !data) {
+          console.warn('Erro ao consultar Supabase:', error);
+          return null;
+        }
+        return data;
+      } catch (err) {
+        console.error('Falha na requisição Supabase:', err);
+        return null;
+      }
+    }
+    window.fazerLogin = fazerLogin;
+
+    // Função para Cadastrar novos clientes no banco
+    async function cadastrarCliente(email, senha, tipoAcesso = 'CLIENTE') {
+      if (!supabaseClient) return;
+      try {
+        const { data, error } = await supabaseClient
+          .from('Atlas Finance')
+          .insert([{ email: email, senha: senha, tipo_acesso: tipoAcesso }]);
+
+        if (error) {
+          console.error("Erro ao salvar no banco de dados Supabase:", error);
+        } else {
+          console.log("Usuário salvo na nuvem Supabase com sucesso!", data);
+        }
+      } catch (err) {
+        console.error("Exceção ao cadastrar cliente no Supabase:", err);
+      }
+    }
+    window.cadastrarCliente = cadastrarCliente;
   </script>
 </body>
 </html>
