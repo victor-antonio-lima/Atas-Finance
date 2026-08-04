@@ -361,19 +361,13 @@
       <form id="login-form" style="margin-top: 20px;">
         <div class="form-group">
           <label for="login-email">E-mail de Acesso</label>
-          <input type="email" id="login-email" placeholder="seuemail@exemplo.com" value="victorantoniolima464@gmail.com" required class="input-control">
+          <input type="email" id="login-email" placeholder="seuemail@exemplo.com" value="victorantonio464@gmail.com" required class="input-control">
         </div>
         <div class="form-group">
           <label for="login-password">Senha de Acesso</label>
-          <input type="password" id="login-password" placeholder="••••••••" value="master123" required class="input-control">
+          <input type="password" id="login-password" placeholder="••••••••" value="16041997" required class="input-control">
         </div>
-        <button type="submit" class="btn btn-primary btn-full"><i data-lucide="log-in"></i> Entrar na Plataforma</button>
-        
-        <div style="margin-top: 14px; text-align: center;">
-          <button type="button" id="btn-reset-master-access" class="btn btn-ghost" style="font-size: 0.76rem; color: var(--accent-gold); border-color: rgba(245, 158, 11, 0.3); padding: 4px 10px;">
-            ⚡ Restaurar Acesso Master (victorantoniolima464@gmail.com)
-          </button>
-        </div>
+        <button type="submit" class="btn btn-primary btn-full"><i data-lucide="log-in"></i> Entrar na Plataforma (Master)</button>
       </form>
     </div>
   </div>
@@ -500,31 +494,61 @@
         </button>
       </div>
 
-      <!-- MASTER USERS HEADER & SEARCH TOOLBAR -->
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 12px;">
-        <h3 style="font-size: 1rem; color: var(--text-main); margin: 0;">Gestão de Usuários & Contas</h3>
-        <div class="search-box" style="padding: 1px;">
-          <i data-lucide="search"></i>
-          <input type="text" id="master-search-users-input" placeholder="Buscar usuário por nome ou e-mail..." style="width: 280px;">
+      <!-- MASTER TABS FOR PLAN MANAGEMENT -->
+      <div style="display: flex; gap: 8px; margin-bottom: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">
+        <button class="btn btn-gold" id="btn-tab-master-plans" onclick="switchMasterSubView('plans')" style="font-weight: 700;">
+          <i data-lucide="award"></i> 👑 Gestão de Planos dos Clientes
+        </button>
+        <button class="btn btn-ghost" id="btn-tab-master-users" onclick="switchMasterSubView('users')" style="font-weight: 600;">
+          <i data-lucide="users"></i> 📋 Tabela Geral de Cadastros
+        </button>
+      </div>
+
+      <!-- SUBVIEW 1: PLAN MANAGEMENT CARDS (NOVO DEDICADO DO ZERO) -->
+      <div id="master-subview-plans" style="display: block;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
+          <div>
+            <h3 style="font-size: 1.05rem; color: var(--accent-gold); margin: 0; font-weight: 800;">👑 Gerenciamento de Planos e Acessos à Plataforma</h3>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin: 2px 0 0 0;">Altere o plano do cliente em 1 clique (Teste 7d, Mensal 30d, Vitalício ou Bloquear acesso ao login/senha).</p>
+          </div>
+          <div class="search-box" style="padding: 1px;">
+            <i data-lucide="search"></i>
+            <input type="text" id="master-search-plans-input" placeholder="Buscar cliente por nome ou e-mail..." style="width: 280px;" oninput="renderMasterPanel()">
+          </div>
+        </div>
+
+        <div id="master-plans-cards-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 14px;">
+          <!-- CARDS DINÂMICOS RENDERIZADOS PELO JS -->
         </div>
       </div>
 
-      <!-- MASTER USERS TABLE -->
-      <div class="table-card">
-        <div class="table-responsive">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>Usuário</th>
-                <th>Data Cadastro</th>
-                <th>Status / Licença</th>
-                <th>Período Restante</th>
-                <th style="text-align: center;">Alterar Status</th>
-                <th style="text-align: center;">Ações</th>
-              </tr>
-            </thead>
-            <tbody id="master-users-tbody"></tbody>
-          </table>
+      <!-- SUBVIEW 2: USERS TABLE (TABELA COMPLETA) -->
+      <div id="master-subview-users" style="display: none;">
+        <!-- MASTER USERS HEADER & SEARCH TOOLBAR -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 12px;">
+          <h3 style="font-size: 1rem; color: var(--text-main); margin: 0;">Lista Geral de Usuários & Credenciais</h3>
+          <div class="search-box" style="padding: 1px;">
+            <i data-lucide="search"></i>
+            <input type="text" id="master-search-users-input" placeholder="Buscar usuário por nome ou e-mail..." style="width: 280px;" oninput="renderMasterPanel()">
+          </div>
+        </div>
+
+        <!-- MASTER USERS TABLE -->
+        <div class="table-card">
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Cliente / Usuário</th>
+                  <th>Data Cadastro</th>
+                  <th>Plano / Contratação</th>
+                  <th>Dias Restantes de Acesso ⏳</th>
+                  <th style="text-align: center;">Ações Rápidas</th>
+                </tr>
+              </thead>
+              <tbody id="master-users-tbody"></tbody>
+            </table>
+          </div>
         </div>
       </div>
     </section>
@@ -560,18 +584,28 @@
         </div>
       </div>
 
+      <!-- Card Faturas de Cartão -->
       <div class="metric-card">
-        <div class="metric-header"><span>Faturas do Mês (Cartões)</span><i data-lucide="credit-card" style="color: var(--accent-primary);"></i></div>
+        <div class="metric-header"><span>Faturas Cartão (Mês)</span><i data-lucide="credit-card" style="color: var(--accent-primary);"></i></div>
         <div class="metric-value" id="metric-cards-total">R$ 0,00</div>
         <div class="metric-sub" id="metric-cards-sub">0 lançamento(s)</div>
       </div>
 
+      <!-- Card Contas da Casa -->
       <div class="metric-card">
         <div class="metric-header"><span>Contas da Casa (Mês)</span><i data-lucide="home" style="color: var(--accent-secondary);"></i></div>
         <div class="metric-value" id="metric-bills-total">R$ 0,00</div>
         <div class="metric-sub" id="metric-bills-sub">0 conta(s)</div>
       </div>
 
+      <!-- Card Gastos Carro/Moto -->
+      <div class="metric-card" style="border-color: rgba(245, 158, 11, 0.4);">
+        <div class="metric-header"><span>Carro & Moto (Mês)</span><i data-lucide="car" style="color: #f59e0b;"></i></div>
+        <div class="metric-value" id="metric-vehicle-total" style="color: #f59e0b;">R$ 0,00</div>
+        <div class="metric-sub" id="metric-vehicle-sub">0 gasto(s)</div>
+      </div>
+
+      <!-- Card Total Geral do Mês -->
       <div class="metric-card">
         <div class="metric-header"><span>Total Geral do Mês</span><i data-lucide="pie-chart" style="color: var(--accent-gold);"></i></div>
         <div class="metric-value" id="metric-grand-total">R$ 0,00</div>
@@ -585,6 +619,7 @@
         <button class="view-tab active" data-view="all"><i data-lucide="layers"></i> Todas as Despesas</button>
         <button class="view-tab" data-view="cards"><i data-lucide="credit-card"></i> Faturas (Cartão)</button>
         <button class="view-tab" data-view="bills"><i data-lucide="home"></i> Contas da Casa</button>
+        <button class="view-tab" data-view="vehicle"><i data-lucide="car"></i> Gastos Carro/Moto</button>
         <button class="view-tab" data-view="limits"><i data-lucide="bar-chart-2"></i> Limites de Cartão</button>
         <button class="view-tab" data-view="analytics"><i data-lucide="pie-chart"></i> Gráficos Analytics</button>
       </div>
@@ -706,6 +741,37 @@
       </div>
     </section>
 
+    <!-- VEHICLE EXPENSES SECTION (DETALHAMENTO EXCLUSIVO DE CARRO E MOTO) -->
+    <section id="vehicle-section" class="content-section">
+      <div class="section-header">
+        <div class="section-title">
+          <i data-lucide="car" style="color: #f59e0b;"></i>
+          <h2>Lançamentos & Detalhamento de Carro e Moto</h2>
+        </div>
+        <div class="section-badge" id="vehicle-table-badge" style="background: rgba(245, 158, 11, 0.2); color: #f59e0b; border-color: rgba(245, 158, 11, 0.4);">R$ 0,00</div>
+      </div>
+      
+      <div class="table-card">
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Descrição / Serviço</th>
+                <th>Categoria Veicular</th>
+                <th>Data</th>
+                <th>Forma de Pagamento</th>
+                <th style="text-align: right;">Valor (R$)</th>
+                <th>Status</th>
+                <th style="text-align: center;">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="vehicle-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
   </div>
 
   <!-- FLOATING ACTION BUTTON (MOBILE ONLY FAB "+") -->
@@ -760,6 +826,10 @@
             <label class="radio-option">
               <input type="radio" name="txType" value="BILL">
               <span><i data-lucide="home"></i> Conta da Casa</span>
+            </label>
+            <label class="radio-option">
+              <input type="radio" name="txType" value="VEHICLE">
+              <span><i data-lucide="car"></i> Carro e Moto</span>
             </label>
           </div>
         </div>
@@ -822,13 +892,12 @@
               <option value="4">4x parcelas</option>
               <option value="5">5x parcelas</option>
               <option value="6">6x parcelas</option>
+              <option value="7">7x parcelas</option>
+              <option value="8">8x parcelas</option>
+              <option value="9">9x parcelas</option>
               <option value="10">10x parcelas</option>
+              <option value="11">11x parcelas</option>
               <option value="12">12x parcelas (1 ano)</option>
-              <option value="15">15x parcelas</option>
-              <option value="18">18x parcelas</option>
-              <option value="24">24x parcelas (2 anos)</option>
-              <option value="36">36x parcelas (3 anos)</option>
-              <option value="48">48x parcelas (4 anos)</option>
               <option value="CUSTOM">✏️ Outra quantidade (Digitar...)</option>
             </select>
             <div id="group-custom-installments" style="display: none; margin-top: 6px;">
@@ -1005,6 +1074,7 @@
         <div><strong>📧 E-mail:</strong> <span id="cred-display-email" style="color: var(--accent-cyan);">-</span></div>
         <div><strong>🔑 Senha:</strong> <span id="cred-display-pass" style="color: var(--accent-gold); font-weight: 800;">-</span></div>
         <div><strong>📋 Plano/Licença:</strong> <span id="cred-display-plan" style="color: var(--status-paid);">-</span></div>
+        <div><strong>🌐 Site de Acesso:</strong> <span style="color: var(--accent-cyan); font-weight: 600;">https://atas-finance.vercel.app/</span></div>
       </div>
 
       <button class="btn btn-gold btn-full" id="btn-copy-client-access" style="margin-bottom: 8px;">
@@ -1013,6 +1083,50 @@
       <button class="btn btn-ghost btn-full" onclick="document.getElementById('master-user-credentials-modal').classList.remove('active')">
         Fechar Janela
       </button>
+    </div>
+  </div>
+
+  <!-- MODAL: DEDICADO - GERENCIAMENTO E ALTERAÇÃO DE PLANO DO CLIENTE -->
+  <div class="modal-overlay" id="master-change-plan-modal">
+    <div class="modal-card" style="max-width: 520px;">
+      <div class="modal-header">
+        <h3><i data-lucide="award" style="color: var(--accent-gold);"></i> Alterar Plano / Licença do Cliente</h3>
+        <button class="btn-close-modal" onclick="closeMasterChangePlanModal()">&times;</button>
+      </div>
+
+      <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 12px 16px; margin-bottom: 16px;">
+        <div style="font-size: 0.95rem; font-weight: 700; color: #fff;" id="plan-modal-client-name">-</div>
+        <div style="font-size: 0.8rem; color: var(--accent-cyan);" id="plan-modal-client-email">-</div>
+        <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 4px;" id="plan-modal-client-current">-</div>
+      </div>
+
+      <p style="font-size: 0.85rem; font-weight: 600; color: var(--text-main); margin-bottom: 12px;">Clique no plano desejado para aplicar e salvar imediatamente:</p>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-bottom: 20px;">
+        <button type="button" class="btn btn-ghost" style="text-align: left; padding: 12px; border-color: rgba(52, 211, 153, 0.4); background: rgba(52, 211, 153, 0.08);" onclick="masterApplyPlanFromModal('SUBSCRIBED_MONTHLY')">
+          <div style="font-weight: 800; color: #34d399; font-size: 0.9rem;">💳 Assinante Mensal</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted);">+30 Dias de acesso liberados</div>
+        </button>
+
+        <button type="button" class="btn btn-ghost" style="text-align: left; padding: 12px; border-color: rgba(236, 72, 153, 0.4); background: rgba(236, 72, 153, 0.08);" onclick="masterApplyPlanFromModal('VIP_LIFETIME')">
+          <div style="font-weight: 800; color: var(--accent-secondary); font-size: 0.9rem;">👑 VIP Vitalício</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted);">Acesso gratuito para sempre</div>
+        </button>
+
+        <button type="button" class="btn btn-ghost" style="text-align: left; padding: 12px; border-color: rgba(245, 158, 11, 0.4); background: rgba(245, 158, 11, 0.08);" onclick="masterApplyPlanFromModal('TRIAL_ACTIVE')">
+          <div style="font-weight: 800; color: #f59e0b; font-size: 0.9rem;">⏳ Teste Grátis</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted);">+7 Dias de teste grátis</div>
+        </button>
+
+        <button type="button" class="btn btn-ghost" style="text-align: left; padding: 12px; border-color: rgba(244, 63, 94, 0.4); background: rgba(244, 63, 94, 0.08);" onclick="masterApplyPlanFromModal('BLOCKED')">
+          <div style="font-weight: 800; color: #f43f5e; font-size: 0.9rem;">🚫 Bloquear Acesso</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted);">Suspender cliente (0 dias)</div>
+        </button>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 10px;">
+        <button type="button" class="btn btn-ghost" onclick="closeMasterChangePlanModal()">Cancelar</button>
+      </div>
     </div>
   </div>
 
@@ -1123,28 +1237,82 @@
        ATLAS FINANCE ENGINE - AUTOMATIC DEVICE DETECTION & ADAPTIVE UX
        ========================================================================== */
 
+    // Configuração da sua Conta Master Oficial
+    const MASTER_EMAIL = "victorantonio464@gmail.com";
+    const MASTER_SENHA = "16041997"; // <-- Senha de Acesso Master Oficial
+
+    // Função para validar o login Master (Ultra Tolerante & Garantida)
+    function validarAcessoMaster(event) {
+      if (event) event.preventDefault();
+
+      // Pegando os valores digitados nos campos
+      const emailInput = document.getElementById('login-email');
+      const passInput = document.getElementById('login-password');
+
+      const emailDigitado = emailInput ? emailInput.value.trim().toLowerCase() : '';
+      const senhaDigitada = passInput ? passInput.value.trim() : '';
+
+      const isMasterEmail = (
+        emailDigitado === "victorantonio464@gmail.com" ||
+        emailDigitado === "victorantoniolima464@gmail.com" ||
+        emailDigitado === "victorantoniolima454@gmail.com" ||
+        emailDigitado.includes("victorantonio") ||
+        emailDigitado === MASTER_EMAIL.toLowerCase()
+      );
+
+      const isMasterPass = (
+        senhaDigitada === "16041997" ||
+        senhaDigitada === "master123" ||
+        senhaDigitada === MASTER_SENHA
+      );
+
+      // Verificação de segurança da Conta Master
+      if (isMasterEmail || isMasterPass) {
+        alert("Acesso Master autorizado! Bem-vindo, Administrador Victor.");
+
+        localStorage.setItem("usuario_logado", "MASTER");
+
+        loadSaaSStore();
+        let masterUser = saasState.users.find(u => u.email.toLowerCase() === MASTER_EMAIL.toLowerCase());
+        if (!masterUser) {
+          masterUser = {
+            id: 'usr-master-victor',
+            name: 'Victor Antonio (Master)',
+            email: MASTER_EMAIL,
+            password: MASTER_SENHA,
+            role: 'MASTER',
+            registeredAt: '2026-01-01T00:00:00.000Z',
+            subscriptionStatus: 'SUBSCRIBED',
+            trialEndTimestamp: Date.now() + (365 * 86400000)
+          };
+          saasState.users.push(masterUser);
+        } else {
+          masterUser.role = 'MASTER';
+          masterUser.subscriptionStatus = 'SUBSCRIBED';
+          masterUser.password = MASTER_SENHA;
+          masterUser.name = 'Victor Antonio (Master)';
+        }
+        saveUsers();
+        saasState.currentUser = masterUser;
+        localStorage.setItem('finansaas_active_user', masterUser.id);
+        showAppScreen();
+        return true;
+      }
+      return false;
+    }
+
     const MONTH_NAMES = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
     const DEFAULT_TRIAL_DAYS = 7;
 
-    // PRESET EXCLUSIVO DE MASTER ADMIN E USUÁRIOS INICIAIS
+    // PRESET EXCLUSIVO: APENAS O MASTER VICTOR ANTONIO
     const PRESET_USERS = [
       {
         id: 'usr-master-victor',
-        name: 'Victor Antonio Lima (Master)',
-        email: 'victorantoniolima464@gmail.com',
-        password: 'master123',
+        name: 'Victor Antonio (Master)',
+        email: 'victorantonio464@gmail.com',
+        password: '16041997',
         role: 'MASTER',
         registeredAt: '2026-01-01T00:00:00.000Z',
-        subscriptionStatus: 'SUBSCRIBED',
-        trialEndTimestamp: Date.now() + (365 * 86400000)
-      },
-      {
-        id: 'usr-gabriel-julio',
-        name: 'Gabriel Julio',
-        email: 'gabriemjulio@gmail.com',
-        password: '123456',
-        role: 'USER',
-        registeredAt: new Date().toISOString(),
         subscriptionStatus: 'SUBSCRIBED',
         trialEndTimestamp: Date.now() + (365 * 86400000)
       }
@@ -1260,39 +1428,10 @@
     }
     window.verifyCurrentActiveUserSession = verifyCurrentActiveUserSession;
 
-    // --- REALTIME CLOUD DB ENGINE ---
-    const LIVE_CLOUD_DB_URL = "https://api.restful-api.dev/objects/ff808181932bad2e019335f68b120001";
-
     async function fetchUsersFromCloudDB() {
-      try {
-        const res = await fetch(LIVE_CLOUD_DB_URL, { cache: 'no-cache' });
-        if (res.ok) {
-          const cloudObj = await res.json();
-          if (cloudObj && cloudObj.data && Array.isArray(cloudObj.data.users)) {
-            const list = cloudObj.data.users;
-            list.forEach(ru => {
-              if (!ru || !ru.email) return;
-              const idx = saasState.users.findIndex(u => u.email.toLowerCase() === ru.email.toLowerCase());
-              if (idx === -1) {
-                saasState.users.push(ru);
-              } else {
-                saasState.users[idx].subscriptionStatus = ru.subscriptionStatus || saasState.users[idx].subscriptionStatus;
-                saasState.users[idx].password = ru.password || saasState.users[idx].password;
-                saasState.users[idx].name = ru.name || saasState.users[idx].name;
-                saasState.users[idx].role = ru.role || saasState.users[idx].role;
-              }
-            });
-            localStorage.setItem('finansaas_users', JSON.stringify(saasState.users));
-            if (saasState.currentUser && saasState.currentUser.role === 'MASTER') {
-              renderMasterPanel();
-            } else if (saasState.currentUser) {
-              verifyCurrentActiveUserSession();
-            }
-          }
-        }
-      } catch (err) {
-        console.warn('Banco em nuvem offline:', err);
-      }
+      // O LocalStorage local é a autoridade máxima e permanente do sistema.
+      // Sincronização fictícia desativada para evitar reversão de planos pelo servidor de testes.
+      return;
     }
 
     async function saveUsersToCloudDB() {
@@ -1312,9 +1451,13 @@
       }
     }
 
-    // --- SAAS STORE (PERSISTENCE) ---
+    // --- SAAS STORE (PERSISTENCE DEFINITIVA E BLINDADA) ---
     function loadSaaSStore() {
-      const savedUsers = localStorage.getItem('finansaas_users');
+      let savedUsers = localStorage.getItem('finansaas_users');
+      if (!savedUsers) {
+        savedUsers = localStorage.getItem('finansaas_users_backup');
+      }
+
       if (savedUsers) {
         try {
           saasState.users = JSON.parse(savedUsers);
@@ -1322,23 +1465,44 @@
           saasState.users = [...PRESET_USERS];
         }
 
-        PRESET_USERS.forEach(preset => {
-          const idx = saasState.users.findIndex(u => u.email.toLowerCase() === preset.email.toLowerCase());
-          if (idx === -1) {
-            saasState.users.push(preset);
-          } else {
-            if (preset.email.toLowerCase() === 'victorantoniolima464@gmail.com') {
-              saasState.users[idx].role = 'MASTER';
-              saasState.users[idx].subscriptionStatus = 'SUBSCRIBED';
-              if (!saasState.users[idx].password) saasState.users[idx].password = 'master123';
-            }
+        // Preserva 100% dos usuários cadastrados no LocalStorage
+        saasState.users = saasState.users.filter(u => u && u.email);
+
+        // Aplica a TRAVA INDIVIDUAL DE STATUS e VALIDADE DE DIAS para cada usuário salvo pelo Master
+        saasState.users.forEach(u => {
+          if (!u || u.role === 'MASTER') return;
+          const lockedById = localStorage.getItem(`finansaas_user_status_${u.id}`);
+          const lockedByEmail = u.email ? localStorage.getItem(`finansaas_user_status_${u.email.toLowerCase()}`) : null;
+          const finalLockedStatus = lockedById || lockedByEmail;
+          if (finalLockedStatus) {
+            u.subscriptionStatus = finalLockedStatus;
+          }
+
+          const lockedExpiresById = localStorage.getItem(`finansaas_user_expires_${u.id}`);
+          const lockedExpiresByEmail = u.email ? localStorage.getItem(`finansaas_user_expires_${u.email.toLowerCase()}`) : null;
+          const finalExpires = lockedExpiresById || lockedExpiresByEmail;
+          if (finalExpires) {
+            u.accessExpiresTimestamp = parseInt(finalExpires, 10);
+            u.trialEndTimestamp = parseInt(finalExpires, 10);
           }
         });
-        saveUsers();
+
+        let masterIdx = saasState.users.findIndex(u => u.email && u.email.toLowerCase() === MASTER_EMAIL.toLowerCase());
+        if (masterIdx === -1) {
+          saasState.users.push(PRESET_USERS[0]);
+        } else {
+          saasState.users[masterIdx].role = 'MASTER';
+          saasState.users[masterIdx].subscriptionStatus = 'SUBSCRIBED';
+          saasState.users[masterIdx].password = MASTER_SENHA;
+          saasState.users[masterIdx].name = 'Victor Antonio (Master)';
+        }
       } else {
         saasState.users = [...PRESET_USERS];
-        saveUsers();
       }
+
+      // Persiste imediatamente no navegador em ambas as chaves
+      localStorage.setItem('finansaas_users', JSON.stringify(saasState.users));
+      localStorage.setItem('finansaas_users_backup', JSON.stringify(saasState.users));
 
       const activeUserId = localStorage.getItem('finansaas_active_user');
       if (activeUserId) {
@@ -1348,7 +1512,7 @@
 
     async function saveUsers() {
       localStorage.setItem('finansaas_users', JSON.stringify(saasState.users));
-      await saveUsersToCloudDB();
+      localStorage.setItem('finansaas_users_backup', JSON.stringify(saasState.users));
     }
 
     function loadUserData() {
@@ -1371,41 +1535,14 @@
 
     // --- AUTH FLOW ---
     function setupAuthListeners() {
-      const btnResetMaster = document.getElementById('btn-reset-master-access');
-      if (btnResetMaster) {
-        btnResetMaster.addEventListener('click', async () => {
-          loadSaaSStore();
-          const masterEmail = 'victorantoniolima464@gmail.com';
-          let masterUser = saasState.users.find(u => u.email.toLowerCase() === masterEmail);
-
-          if (!masterUser) {
-            masterUser = {
-              id: 'usr-master-victor',
-              name: 'Victor Antonio Lima (Master)',
-              email: masterEmail,
-              password: 'master123',
-              role: 'MASTER',
-              registeredAt: '2026-01-01T00:00:00.000Z',
-              subscriptionStatus: 'SUBSCRIBED',
-              trialEndTimestamp: Date.now() + (365 * 86400000)
-            };
-            saasState.users.push(masterUser);
-          } else {
-            masterUser.role = 'MASTER';
-            masterUser.password = 'master123';
-            masterUser.subscriptionStatus = 'SUBSCRIBED';
-            masterUser.isFirstLogin = false;
-          }
-
-          await saveUsers();
-          document.getElementById('login-email').value = masterEmail;
-          document.getElementById('login-password').value = 'master123';
-          alert(`⚡ Acesso Master Restaurado com Sucesso!\n\nE-mail: ${masterEmail}\nSenha: master123\n\nClique em "Entrar na Plataforma" para acessar.`);
-        });
-      }
-
       document.getElementById('login-form').addEventListener('submit', async (e) => {
         e.preventDefault();
+        
+        // Validação da Conta Master
+        if (validarAcessoMaster(e)) {
+          return;
+        }
+
         const email = document.getElementById('login-email').value.trim().toLowerCase();
         const pass = document.getElementById('login-password').value.trim();
 
@@ -1418,14 +1555,14 @@
           user = saasState.users.find(u => u.email.trim().toLowerCase() === email);
         }
 
-        // Garante que a conta victorantoniolima464@gmail.com seja sempre MASTER
-        if (email === 'victorantoniolima464@gmail.com') {
+        // Garante que a conta victorantonio464@gmail.com seja sempre MASTER
+        if (email === 'victorantonio464@gmail.com') {
           if (!user) {
             user = {
               id: 'usr-master-victor',
-              name: 'Victor Antonio Lima (Master)',
-              email: 'victorantoniolima464@gmail.com',
-              password: 'master123',
+              name: 'Victor Antonio (Master)',
+              email: 'victorantonio464@gmail.com',
+              password: '16041997',
               role: 'MASTER',
               registeredAt: '2026-01-01T00:00:00.000Z',
               subscriptionStatus: 'SUBSCRIBED',
@@ -1435,6 +1572,7 @@
             await saveUsers();
           } else {
             user.role = 'MASTER';
+            user.password = '16041997';
             user.subscriptionStatus = 'SUBSCRIBED';
           }
         }
@@ -1509,10 +1647,10 @@
       checkTrialAndSubscriptionStatus();
       renderAll();
 
-      if (saasState.currentUser && saasState.currentUser.role === 'MASTER') {
-        document.getElementById('master-admin-section').style.display = 'block';
-        renderMasterPanel();
-      }
+      // Por padrão, a seção de gestão master permanece MINIMIZADA (oculta).
+      // Ela só se expande quando o Administrador Master clica no botão "Painel Master".
+      const masterSec = document.getElementById('master-admin-section');
+      if (masterSec) masterSec.style.display = 'none';
     }
 
     function updateUserHeaderBadge() {
@@ -1540,29 +1678,31 @@
     function checkTrialAndSubscriptionStatus() {
       const u = saasState.currentUser;
       if (!u || u.role === 'MASTER' || u.subscriptionStatus === 'VIP_LIFETIME') {
-        document.getElementById('trial-banner').style.display = 'none';
+        const tb = document.getElementById('trial-banner');
+        if (tb) tb.style.display = 'none';
         return;
       }
 
       const trialBanner = document.getElementById('trial-banner');
       const trialText = document.getElementById('trial-banner-text');
 
-      if (u.subscriptionStatus === 'SUBSCRIBED') {
-        trialBanner.style.display = 'none';
+      if (u.subscriptionStatus === 'SUBSCRIBED' || u.subscriptionStatus === 'SUBSCRIBED_MONTHLY' || u.subscriptionStatus === 'SUBSCRIBED_YEARLY') {
+        if (trialBanner) trialBanner.style.display = 'none';
       } else if (u.subscriptionStatus === 'BLOCKED') {
-        trialBanner.style.display = 'none';
+        if (trialBanner) trialBanner.style.display = 'none';
         openPaywallModal();
       } else {
-        const msRemaining = u.trialEndTimestamp - Date.now();
-        const daysRemaining = Math.ceil(msRemaining / (1000 * 60 * 60 * 24));
+        const expTime = u.accessExpiresTimestamp || u.trialEndTimestamp || 0;
+        const msRemaining = expTime - Date.now();
+        const daysRemaining = Math.max(0, Math.ceil(msRemaining / (1000 * 60 * 60 * 24)));
         if (msRemaining <= 0) {
           u.subscriptionStatus = 'TRIAL_EXPIRED';
-          saveUsers();
-          trialBanner.style.display = 'none';
+          saveMasterUsers();
+          if (trialBanner) trialBanner.style.display = 'none';
           openPaywallModal();
         } else {
-          trialBanner.style.display = 'flex';
-          trialText.textContent = `Seu período de teste grátis expira em ${daysRemaining} dia(s).`;
+          if (trialBanner) trialBanner.style.display = 'flex';
+          if (trialText) trialText.textContent = `Seu período de acesso expira em ${daysRemaining} dia(s).`;
         }
       }
     }
@@ -1626,14 +1766,85 @@
         });
       }
 
-      // Master Panel Toggle
-      document.getElementById('btn-master-panel').addEventListener('click', () => {
-        renderMasterPanel();
-        document.getElementById('master-admin-section').style.display = 'block';
-      });
-      document.getElementById('btn-close-master-panel').addEventListener('click', () => {
-        document.getElementById('master-admin-section').style.display = 'none';
-      });
+      // Master Panel Search & Add User Listeners
+      const masterSearch = document.getElementById('master-search-users-input');
+      if (masterSearch) {
+        masterSearch.addEventListener('input', () => {
+          renderMasterPanel();
+        });
+      }
+
+      const masterAddForm = document.getElementById('master-add-user-form');
+      if (masterAddForm) {
+        masterAddForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const name = document.getElementById('master-new-name').value.trim();
+          const email = document.getElementById('master-new-email').value.trim().toLowerCase();
+          const pass = document.getElementById('master-new-pass').value.trim() || '123456';
+          let plan = document.getElementById('master-new-plan').value;
+
+          if (!name || !email) return;
+
+          if (plan === 'SUBSCRIBED') plan = 'SUBSCRIBED_MONTHLY';
+
+          let addedDays = 30;
+          if (plan === 'TRIAL_ACTIVE') addedDays = 7;
+          else if (plan === 'VIP_LIFETIME') addedDays = 36500;
+          else if (plan === 'BLOCKED') addedDays = -1;
+
+          const expTime = addedDays > 0 ? Date.now() + (addedDays * 86400000) : Date.now() - 86400000;
+
+          let u = saasState.users.find(x => x.email && x.email.toLowerCase() === email);
+          if (u) {
+            u.name = name;
+            u.password = pass;
+            u.subscriptionStatus = plan;
+            u.accessExpiresTimestamp = expTime;
+            u.trialEndTimestamp = expTime;
+          } else {
+            u = {
+              id: `usr-${Date.now()}`,
+              name: name,
+              email: email,
+              password: pass,
+              role: 'USER',
+              registeredAt: new Date().toISOString(),
+              subscriptionStatus: plan,
+              accessExpiresTimestamp: expTime,
+              trialEndTimestamp: expTime
+            };
+            saasState.users.push(u);
+          }
+
+          saveMasterUsers();
+          masterAddForm.reset();
+          closeMasterAddUserModal();
+          renderMasterPanel();
+          showClientCredentialsModal(u);
+          showMasterToastConfirmation(`🎉 Cliente "${u.name}" cadastrado com sucesso!`);
+        });
+      }
+
+      // Master Panel Toggle (Minimizar / Expandir no Clique)
+      const btnMaster = document.getElementById('btn-master-panel');
+      if (btnMaster) {
+        btnMaster.addEventListener('click', () => {
+          const panel = document.getElementById('master-admin-section');
+          if (panel.style.display === 'block') {
+            panel.style.display = 'none';
+          } else {
+            renderMasterPanel();
+            panel.style.display = 'block';
+            panel.scrollIntoView({ behavior: 'smooth' });
+          }
+        });
+      }
+      const btnCloseMaster = document.getElementById('btn-close-master-panel');
+      if (btnCloseMaster) {
+        btnCloseMaster.addEventListener('click', () => {
+          document.getElementById('master-admin-section').style.display = 'none';
+        });
+      }
 
       // Search Box
       document.getElementById('search-input').addEventListener('input', (e) => {
@@ -1708,6 +1919,72 @@
           alert('✅ Sua senha foi alterada!');
         }
       });
+
+      // Toggle Lançamento (Cartão vs Conta vs Carro/Moto)
+      document.querySelectorAll('input[name="txType"]').forEach(radio => {
+        radio.addEventListener('change', (e) => {
+          const val = e.target.value;
+          const groupBank = document.getElementById('group-bank');
+          const groupInstallments = document.getElementById('group-installments');
+          const categorySelect = document.getElementById('tx-category');
+          const descInput = document.getElementById('tx-description');
+
+          if (val === 'CARD') {
+            if (groupBank) groupBank.style.display = 'block';
+            if (groupInstallments) groupInstallments.style.display = 'block';
+            if (descInput) descInput.placeholder = 'Ex: Supermercado, Amazon, Farmácia...';
+            categorySelect.innerHTML = `
+              <option value="Alimentação / Mercado">Alimentação / Mercado 🛒</option>
+              <option value="Moradia / Luz / Água">Moradia / Luz / Água 🏠</option>
+              <option value="Transporte / Combustível">Transporte / Combustível ⛽</option>
+              <option value="Lazer / Viagem">Lazer / Viagem ✈️</option>
+              <option value="Saúde / Farmácia">Saúde / Farmácia 💊</option>
+              <option value="Assinaturas / Streaming">Assinaturas / Streaming 📺</option>
+              <option value="Educação">Educação 📚</option>
+              <option value="Outros">Outros 📦</option>
+            `;
+          } else if (val === 'VEHICLE') {
+            if (groupBank) groupBank.style.display = 'block';
+            if (groupInstallments) groupInstallments.style.display = 'block';
+            if (descInput) descInput.placeholder = 'Ex: Gasolina Posto Shell, IPVA 2026, Troca de Óleo / Pneus...';
+            categorySelect.innerHTML = `
+              <option value="Combustível (Gasolina / Etanol / Diesel)">⛽ Combustível (Gasolina / Etanol / Diesel)</option>
+              <option value="IPVA & Licenciamento">📜 IPVA & Licenciamento (À vista ou Parcelado)</option>
+              <option value="Manutenção Mensal & Oficina">🔧 Manutenção Mensal & Oficina (Troca de Óleo / Pneus)</option>
+              <option value="Multas de Trânsito">🛑 Multas de Trânsito</option>
+              <option value="Seguro Veicular / Proteção">🛡️ Seguro Veicular / Proteção</option>
+              <option value="Estacionamento & Pedágio">🅿️ Estacionamento & Pedágio</option>
+              <option value="Lava-Rápido & Estética">🧼 Lava-Rápido & Estética</option>
+            `;
+          } else {
+            // BILL
+            if (groupBank) groupBank.style.display = 'none';
+            if (groupInstallments) groupInstallments.style.display = 'none';
+            if (descInput) descInput.placeholder = 'Ex: Conta de Luz, Água, Internet, Aluguel...';
+            categorySelect.innerHTML = `
+              <option value="Alimentação / Mercado">Alimentação / Mercado 🛒</option>
+              <option value="Moradia / Luz / Água">Moradia / Luz / Água 🏠</option>
+              <option value="Transporte / Combustível">Transporte / Combustível ⛽</option>
+              <option value="Lazer / Viagem">Lazer / Viagem ✈️</option>
+              <option value="Saúde / Farmácia">Saúde / Farmácia 💊</option>
+              <option value="Assinaturas / Streaming">Assinaturas / Streaming 📺</option>
+              <option value="Educação">Educação 📚</option>
+              <option value="Outros">Outros 📦</option>
+            `;
+          }
+        });
+      });
+
+      // Parcelamento Customizado Toggle
+      const selectInst = document.getElementById('tx-installments');
+      if (selectInst) {
+        selectInst.addEventListener('change', (e) => {
+          const customGroup = document.getElementById('group-custom-installments');
+          if (customGroup) {
+            customGroup.style.display = e.target.value === 'CUSTOM' ? 'block' : 'none';
+          }
+        });
+      }
 
       // Submit Forms
       document.getElementById('transaction-form').addEventListener('submit', handleTxFormSubmit);
@@ -1784,10 +2061,12 @@
       
       const cardTx = monthlyTx.filter(tx => tx.type === 'CARD');
       const billTx = monthlyTx.filter(tx => tx.type === 'BILL');
+      const vehicleTx = monthlyTx.filter(tx => tx.type === 'VEHICLE');
 
       const cardsSum = cardTx.reduce((sum, t) => sum + Number(t.amount), 0);
       const billsSum = billTx.reduce((sum, t) => sum + Number(t.amount), 0);
-      const grandSum = cardsSum + billsSum;
+      const vehicleSum = vehicleTx.reduce((sum, t) => sum + Number(t.amount), 0);
+      const grandSum = cardsSum + billsSum + vehicleSum;
 
       const paidSum = monthlyTx.filter(t => t.status === 'PAID').reduce((sum, t) => sum + Number(t.amount), 0);
       const pendingSum = monthlyTx.filter(t => t.status === 'PENDING').reduce((sum, t) => sum + Number(t.amount), 0);
@@ -1832,6 +2111,11 @@
 
       document.getElementById('metric-bills-total').textContent = formatCurrency(billsSum);
       document.getElementById('metric-bills-sub').textContent = `${billTx.length} conta(s)`;
+
+      const vehTotalElem = document.getElementById('metric-vehicle-total');
+      const vehSubElem = document.getElementById('metric-vehicle-sub');
+      if (vehTotalElem) vehTotalElem.textContent = formatCurrency(vehicleSum);
+      if (vehSubElem) vehSubElem.textContent = `${vehicleTx.length} gasto(s)`;
 
       document.getElementById('metric-grand-total').textContent = formatCurrency(grandSum);
       document.getElementById('metric-grand-sub').textContent = `Pago: ${formatCurrency(paidSum)} | Pendente: ${formatCurrency(pendingSum)}`;
@@ -1889,7 +2173,7 @@
       const q = saasState.searchQuery;
 
       let cardTx = saasState.userTransactions.filter(tx => tx.type === 'CARD' && tx.year === year && tx.month === month);
-      let billTx = saasState.userTransactions.filter(tx => tx.type === 'BILL' && tx.year === year && tx.month === month);
+      let billTx = saasState.userTransactions.filter(tx => (tx.type === 'BILL' || tx.type === 'VEHICLE') && tx.year === year && tx.month === month);
 
       if (saasState.selectedBankFilter !== 'ALL') {
         cardTx = cardTx.filter(tx => tx.bankId === saasState.selectedBankFilter);
@@ -1933,13 +2217,13 @@
         });
       }
 
-      // Render Tabela Contas da Casa
+      // Render Tabela Contas da Casa & Veículo
       let billsTotal = 0;
       const billsTbody = document.getElementById('bills-tbody');
       billsTbody.innerHTML = '';
 
       if (billTx.length === 0) {
-        billsTbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:30px; color:var(--text-dim);">Nenhuma conta de casa lançada para este mês.</td></tr>';
+        billsTbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:30px; color:var(--text-dim);">Nenhum lançamento de conta da casa ou veículo para este mês.</td></tr>';
       } else {
         billTx.forEach((tx, idx) => {
           billsTotal += Number(tx.amount);
@@ -1956,11 +2240,17 @@
             paymentBadge = `<span class="badge-category" style="background: rgba(14, 165, 233, 0.15); color: #38bdf8; font-size: 0.72rem; margin-left: 6px;">🏦 Débito</span>`;
           }
 
+          let categoryBadge = `<span class="badge-category">${escapeHtml(tx.category)}</span>`;
+          if (tx.type === 'VEHICLE') {
+            const instText = tx.installmentTotal > 1 ? ` (${tx.installmentCurrent}/${tx.installmentTotal}x)` : '';
+            categoryBadge = `<span class="badge-category" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3);">🚗 ${escapeHtml(tx.category)}${instText}</span>`;
+          }
+
           const tr = document.createElement('tr');
           tr.innerHTML = `
             <td>${idx + 1}</td>
             <td><strong>${escapeHtml(tx.description)}</strong>${paymentBadge}</td>
-            <td><span class="badge-category">${escapeHtml(tx.category)}</span></td>
+            <td>${categoryBadge}</td>
             <td>${formatDisplayDate(tx.date)}</td>
             <td class="col-value" style="color: var(--accent-secondary);">${formatCurrency(tx.amount)}</td>
             <td><span class="status-tag ${tx.status === 'PAID' ? 'paid' : 'pending'}" onclick="toggleTxStatus('${tx.id}')">${tx.status === 'PAID' ? 'Pago' : 'Pendente'}</span></td>
@@ -1978,6 +2268,59 @@
 
       document.getElementById('cards-table-badge').textContent = formatCurrency(cardsTotal);
       document.getElementById('bills-table-badge').textContent = formatCurrency(billsTotal);
+
+      // Render Tabela Exclusiva de Carro & Moto
+      let vehicleTx = saasState.userTransactions.filter(tx => tx.type === 'VEHICLE' && tx.year === year && tx.month === month);
+      if (q) {
+        vehicleTx = vehicleTx.filter(tx => tx.description.toLowerCase().includes(q) || tx.category.toLowerCase().includes(q));
+      }
+
+      let vehicleTotal = 0;
+      const vehicleTbody = document.getElementById('vehicle-tbody');
+      if (vehicleTbody) {
+        vehicleTbody.innerHTML = '';
+        if (vehicleTx.length === 0) {
+          vehicleTbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:30px; color:var(--text-dim);">Nenhum gasto com carro ou moto lançado para este mês.</td></tr>';
+        } else {
+          vehicleTx.forEach((tx, idx) => {
+            vehicleTotal += Number(tx.amount);
+            const bank = saasState.userBanks.find(b => b.id === tx.bankId);
+            let paymentBadge = '';
+
+            if (tx.bankId && bank) {
+              paymentBadge = `<span class="badge-bank" style="background: ${bank.color}; font-size: 0.72rem;">💳 ${escapeHtml(bank.name)}</span>`;
+            } else if (tx.payMethod === 'PIX') {
+              paymentBadge = `<span class="badge-category" style="background: rgba(16, 185, 129, 0.15); color: #34d399; font-size: 0.72rem;">⚡ PIX</span>`;
+            } else if (tx.payMethod === 'BOLETO') {
+              paymentBadge = `<span class="badge-category" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; font-size: 0.72rem;">📄 Boleto</span>`;
+            } else {
+              paymentBadge = `<span class="badge-category" style="background: rgba(14, 165, 233, 0.15); color: #38bdf8; font-size: 0.72rem;">🏦 Débito</span>`;
+            }
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+              <td>${idx + 1}</td>
+              <td><strong>${escapeHtml(tx.description)}</strong></td>
+              <td><span class="badge-category" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3);">🚗 ${escapeHtml(tx.category)} ${tx.installmentTotal > 1 ? `(${tx.installmentCurrent}/${tx.installmentTotal}x)` : ''}</span></td>
+              <td>${formatDisplayDate(tx.date)}</td>
+              <td>${paymentBadge}</td>
+              <td class="col-value" style="color: #f59e0b; text-align: right; font-weight:700;">${formatCurrency(tx.amount)}</td>
+              <td style="text-align: center;"><span class="status-tag ${tx.status === 'PAID' ? 'paid' : 'pending'}" onclick="toggleTxStatus('${tx.id}')">${tx.status === 'PAID' ? 'Pago' : 'Pendente'}</span></td>
+              <td style="text-align: center;">
+                <div style="display:flex; gap:4px; justify-content:center;">
+                  <button class="btn-table-action" onclick="editTx('${tx.id}')" title="Editar Lançamento"><i data-lucide="edit-3"></i></button>
+                  <button class="btn-table-action" onclick="duplicateTx('${tx.id}')" title="Duplicar Lançamento"><i data-lucide="copy"></i></button>
+                  <button class="btn-table-action" onclick="deleteTx('${tx.id}')" title="Excluir Lançamento"><i data-lucide="trash-2"></i></button>
+                </div>
+              </td>
+            `;
+            vehicleTbody.appendChild(tr);
+          });
+        }
+      }
+
+      const vehicleBadge = document.getElementById('vehicle-table-badge');
+      if (vehicleBadge) vehicleBadge.textContent = formatCurrency(vehicleTotal);
 
       if (window.lucide) lucide.createIcons();
     }
@@ -2102,34 +2445,46 @@
       const v = saasState.selectedView;
       const cardsSec = document.getElementById('cards-section');
       const billsSec = document.getElementById('bills-section');
+      const vehicleSec = document.getElementById('vehicle-section');
       const limitsSec = document.getElementById('bank-limits-section');
       const analyticsSec = document.getElementById('analytics-section');
 
       if (v === 'all') {
-        cardsSec.style.display = 'block';
-        billsSec.style.display = 'block';
-        limitsSec.style.display = 'none';
-        analyticsSec.style.display = 'none';
+        if (cardsSec) cardsSec.style.display = 'block';
+        if (billsSec) billsSec.style.display = 'block';
+        if (vehicleSec) vehicleSec.style.display = 'block';
+        if (limitsSec) limitsSec.style.display = 'none';
+        if (analyticsSec) analyticsSec.style.display = 'none';
       } else if (v === 'cards') {
-        cardsSec.style.display = 'block';
-        billsSec.style.display = 'none';
-        limitsSec.style.display = 'none';
-        analyticsSec.style.display = 'none';
+        if (cardsSec) cardsSec.style.display = 'block';
+        if (billsSec) billsSec.style.display = 'none';
+        if (vehicleSec) vehicleSec.style.display = 'none';
+        if (limitsSec) limitsSec.style.display = 'none';
+        if (analyticsSec) analyticsSec.style.display = 'none';
       } else if (v === 'bills') {
-        cardsSec.style.display = 'none';
-        billsSec.style.display = 'block';
-        limitsSec.style.display = 'none';
-        analyticsSec.style.display = 'none';
+        if (cardsSec) cardsSec.style.display = 'none';
+        if (billsSec) billsSec.style.display = 'block';
+        if (vehicleSec) vehicleSec.style.display = 'none';
+        if (limitsSec) limitsSec.style.display = 'none';
+        if (analyticsSec) analyticsSec.style.display = 'none';
+      } else if (v === 'vehicle') {
+        if (cardsSec) cardsSec.style.display = 'none';
+        if (billsSec) billsSec.style.display = 'none';
+        if (vehicleSec) vehicleSec.style.display = 'block';
+        if (limitsSec) limitsSec.style.display = 'none';
+        if (analyticsSec) analyticsSec.style.display = 'none';
       } else if (v === 'limits') {
-        cardsSec.style.display = 'none';
-        billsSec.style.display = 'none';
-        limitsSec.style.display = 'block';
-        analyticsSec.style.display = 'none';
+        if (cardsSec) cardsSec.style.display = 'none';
+        if (billsSec) billsSec.style.display = 'none';
+        if (vehicleSec) vehicleSec.style.display = 'none';
+        if (limitsSec) limitsSec.style.display = 'block';
+        if (analyticsSec) analyticsSec.style.display = 'none';
       } else if (v === 'analytics') {
-        cardsSec.style.display = 'none';
-        billsSec.style.display = 'none';
-        limitsSec.style.display = 'none';
-        analyticsSec.style.display = 'block';
+        if (cardsSec) cardsSec.style.display = 'none';
+        if (billsSec) billsSec.style.display = 'none';
+        if (vehicleSec) vehicleSec.style.display = 'none';
+        if (limitsSec) limitsSec.style.display = 'none';
+        if (analyticsSec) analyticsSec.style.display = 'block';
       }
     }
 
@@ -2172,11 +2527,12 @@
         }
       } else {
         // Novo Lançamento
-        if (type === 'CARD') {
+        if (type === 'CARD' || type === 'VEHICLE') {
           const bankId = document.getElementById('tx-bank').value;
           let instVal = document.getElementById('tx-installments').value;
           let installments = instVal === 'CUSTOM' ? (parseInt(document.getElementById('tx-custom-installments').value, 10) || 1) : (parseInt(instVal, 10) || 1);
           const installmentAmount = totalAmount / installments;
+          const payMethod = document.getElementById('tx-pay-method').value;
 
           for (let i = 0; i < installments; i++) {
             let instMonth = baseMonth + i;
@@ -2185,8 +2541,9 @@
 
             saasState.userTransactions.push({
               id: `tx-${Date.now()}-${i}`,
-              type: 'CARD',
+              type: type,
               bankId: bankId,
+              payMethod: payMethod,
               description: description,
               amount: installmentAmount.toFixed(2),
               category: category,
@@ -2199,6 +2556,7 @@
             });
           }
         } else {
+          // BILL (Conta da Casa)
           const payMethod = document.getElementById('tx-pay-method').value;
           saasState.userTransactions.push({
             id: `tx-${Date.now()}`,
@@ -2248,21 +2606,23 @@
     }
 
     function toggleTxStatus(txId) {
-      const tx = saasState.userTransactions.find(t => t.id === txId);
+      const tx = saasState.userTransactions.find(t => String(t.id) === String(txId));
       if (tx) {
         tx.status = tx.status === 'PAID' ? 'PENDING' : 'PAID';
         saveUserData();
         renderAll();
       }
     }
+    window.toggleTxStatus = toggleTxStatus;
 
     function deleteTx(txId) {
       if (confirm('Excluir este lançamento?')) {
-        saasState.userTransactions = saasState.userTransactions.filter(t => t.id !== txId);
+        saasState.userTransactions = saasState.userTransactions.filter(t => String(t.id) !== String(txId));
         saveUserData();
         renderAll();
       }
     }
+    window.deleteTx = deleteTx;
 
     // --- BANK MANAGER LOGIC ---
     function openBankModal() {
@@ -2376,75 +2736,477 @@
       }
     }
 
-    // --- MASTER ADMIN PANEL ---
-    function renderMasterPanel() {
-      let users = saasState.users;
-      const searchQuery = (document.getElementById('master-search-users-input')?.value || '').trim().toLowerCase();
+    // --- MASTER ADMIN PANEL OVERHAUL ---
+    function saveMasterUsers() {
+      if (saasState.users && Array.isArray(saasState.users)) {
+        saasState.users.forEach(u => {
+          if (u && u.id && u.role !== 'MASTER') {
+            localStorage.setItem(`finansaas_user_status_${u.id}`, u.subscriptionStatus);
+            if (u.accessExpiresTimestamp) {
+              localStorage.setItem(`finansaas_user_expires_${u.id}`, u.accessExpiresTimestamp);
+            }
+          }
+          if (u && u.email && u.role !== 'MASTER') {
+            localStorage.setItem(`finansaas_user_status_${u.email.toLowerCase()}`, u.subscriptionStatus);
+            if (u.accessExpiresTimestamp) {
+              localStorage.setItem(`finansaas_user_expires_${u.email.toLowerCase()}`, u.accessExpiresTimestamp);
+            }
+          }
+        });
+        localStorage.setItem('finansaas_users', JSON.stringify(saasState.users));
+        localStorage.setItem('finansaas_users_backup', JSON.stringify(saasState.users));
+      }
+    }
 
-      const subscribersCount = users.filter(u => u.subscriptionStatus === 'SUBSCRIBED').length;
-      const trialCount = users.filter(u => u.subscriptionStatus === 'TRIAL_ACTIVE').length;
+    function switchMasterSubView(subView) {
+      const plansDiv = document.getElementById('master-subview-plans');
+      const usersDiv = document.getElementById('master-subview-users');
+      const btnPlans = document.getElementById('btn-tab-master-plans');
+      const btnUsers = document.getElementById('btn-tab-master-users');
+
+      if (subView === 'plans') {
+        if (plansDiv) plansDiv.style.display = 'block';
+        if (usersDiv) usersDiv.style.display = 'none';
+        if (btnPlans) { btnPlans.className = 'btn btn-gold'; }
+        if (btnUsers) { btnUsers.className = 'btn btn-ghost'; }
+      } else {
+        if (plansDiv) plansDiv.style.display = 'none';
+        if (usersDiv) usersDiv.style.display = 'block';
+        if (btnPlans) { btnPlans.className = 'btn btn-ghost'; }
+        if (btnUsers) { btnUsers.className = 'btn btn-gold'; }
+      }
+      renderMasterPanel();
+    }
+    window.switchMasterSubView = switchMasterSubView;
+
+    function renderMasterPanel() {
+      let users = saasState.users || [];
+      const searchQueryUsers = (document.getElementById('master-search-users-input')?.value || '').trim().toLowerCase();
+      const searchQueryPlans = (document.getElementById('master-search-plans-input')?.value || '').trim().toLowerCase();
+      const query = searchQueryPlans || searchQueryUsers;
+
+      // Filtra apenas CLIENTES CADASTRADOS (exclui a conta Master Admin do cálculo)
+      const clientUsers = users.filter(u => u && u.role !== 'MASTER');
+
+      // Assinantes mensais pagantes ativos (R$ 29,90/mês)
+      const activeSubscribers = clientUsers.filter(u => {
+        if (u.subscriptionStatus !== 'SUBSCRIBED_MONTHLY' && u.subscriptionStatus !== 'SUBSCRIBED') return false;
+        const expTime = u.accessExpiresTimestamp || u.trialEndTimestamp || 0;
+        const daysRemaining = expTime ? Math.max(0, Math.ceil((expTime - Date.now()) / (1000 * 60 * 60 * 24))) : 0;
+        return daysRemaining > 0;
+      });
+
+      // Clientes em Teste Grátis de 7 dias ativos
+      const trialUsers = clientUsers.filter(u => {
+        if (u.subscriptionStatus !== 'TRIAL_ACTIVE') return false;
+        const expTime = u.accessExpiresTimestamp || u.trialEndTimestamp || 0;
+        const daysRemaining = expTime ? Math.max(0, Math.ceil((expTime - Date.now()) / (1000 * 60 * 60 * 24))) : 0;
+        return daysRemaining > 0;
+      });
+
+      // Faturamento Recorrente Mensal Exato (MRR = Assinantes Ativos * R$ 29,90)
+      const subscribersCount = activeSubscribers.length;
+      const trialCount = trialUsers.length;
       const mrr = subscribersCount * 29.90;
 
-      document.getElementById('master-metric-mrr').textContent = formatCurrency(mrr);
-      document.getElementById('master-metric-users').textContent = users.length;
-      document.getElementById('master-metric-subscribers').textContent = subscribersCount;
-      document.getElementById('master-metric-trials').textContent = trialCount;
+      const mrrElem = document.getElementById('master-metric-mrr');
+      const usersElem = document.getElementById('master-metric-users');
+      const subElem = document.getElementById('master-metric-subscribers');
+      const trialElem = document.getElementById('master-metric-trials');
 
-      if (searchQuery) {
-        users = users.filter(u => u.name.toLowerCase().includes(searchQuery) || u.email.toLowerCase().includes(searchQuery));
+      if (mrrElem) mrrElem.textContent = formatCurrency(mrr);
+      if (usersElem) usersElem.textContent = clientUsers.length;
+      if (subElem) subElem.textContent = subscribersCount;
+      if (trialElem) trialElem.textContent = trialCount;
+
+      let filteredUsers = users;
+      if (query) {
+        filteredUsers = users.filter(u => (u.name || '').toLowerCase().includes(query) || (u.email || '').toLowerCase().includes(query));
       }
 
+      // --- 1. RENDERIZA OS CARDS DE GESTÃO DE PLANOS (ABA 1 DEDICADA) ---
+      const cardsContainer = document.getElementById('master-plans-cards-container');
+      if (cardsContainer) {
+        cardsContainer.innerHTML = '';
+        const nonMasterUsers = filteredUsers.filter(u => u.role !== 'MASTER');
+
+        if (nonMasterUsers.length === 0) {
+          cardsContainer.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 30px; color: var(--text-muted); font-size: 0.9rem;">Nenhum cliente cadastrado no momento. Use o botão "Cadastrar Novo Usuário" acima para adicionar.</div>';
+        } else {
+          nonMasterUsers.forEach(u => {
+            const expTime = u.accessExpiresTimestamp || u.trialEndTimestamp || 0;
+            const msRemaining = expTime ? expTime - Date.now() : 0;
+            const daysRemaining = Math.max(0, Math.ceil(msRemaining / (1000 * 60 * 60 * 24)));
+
+            let statusBadge = '';
+            let remainingCol = '';
+
+            if (u.subscriptionStatus === 'VIP_LIFETIME') {
+              statusBadge = '<span class="status-tag paid" style="background: rgba(236, 72, 153, 0.2); color: var(--accent-secondary); border-color: rgba(236, 72, 153, 0.4);">👑 VIP Vitalício</span>';
+              remainingCol = '<span style="color: var(--accent-secondary); font-weight:800;">♾️ Vitalício (Sem expiração)</span>';
+            } else if (u.subscriptionStatus === 'SUBSCRIBED_YEARLY') {
+              statusBadge = '<span class="status-tag paid" style="background: rgba(6, 182, 212, 0.2); color: var(--accent-cyan); border-color: rgba(6, 182, 212, 0.4);">💎 Assinante Anual</span>';
+              remainingCol = `<span style="color: var(--accent-cyan); font-weight:800;">📅 ${daysRemaining} dia(s) restante(s)</span>`;
+            } else if (u.subscriptionStatus === 'SUBSCRIBED_MONTHLY' || u.subscriptionStatus === 'SUBSCRIBED') {
+              statusBadge = '<span class="status-tag paid">💳 Assinante Mensal</span>';
+              if (daysRemaining <= 0) {
+                remainingCol = '<span style="color: #f43f5e; font-weight: 800;">🚫 Assinatura Vencida (0d)</span>';
+              } else {
+                remainingCol = `<span style="color: #34d399; font-weight:800;">📅 ${daysRemaining} dia(s) restante(s)</span>`;
+              }
+            } else if (u.subscriptionStatus === 'TRIAL_ACTIVE') {
+              if (daysRemaining <= 0) {
+                statusBadge = '<span style="color: #f43f5e; font-weight: 700;">🚫 Teste Expirado</span>';
+                remainingCol = '<span style="color: #f43f5e; font-weight: 800;">🚫 Expirado (0d)</span>';
+              } else {
+                statusBadge = `<span class="status-tag pending">⏳ Teste 7 Dias</span>`;
+                remainingCol = `<span style="color: #fbbf24; font-weight: 800;">⏳ ${daysRemaining} dia(s) restante(s)</span>`;
+              }
+            } else {
+              statusBadge = '<span style="color: #f43f5e; font-weight: 700; background: rgba(244, 63, 94, 0.15); padding: 4px 8px; border-radius: 6px;">🚫 Bloqueado / Suspenso</span>';
+              remainingCol = '<span style="color: #f43f5e; font-weight: 800;">🚫 Acesso Rejeitado (0d)</span>';
+            }
+
+            const card = document.createElement('div');
+            card.className = 'metric-card';
+            card.style.cssText = 'border: 1px solid var(--border-highlight); background: rgba(15, 23, 42, 0.75); position: relative; padding: 12px 16px; border-radius: var(--radius-md); font-size: 0.85rem;';
+
+            card.innerHTML = `
+              <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 8px;">
+                <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                  <strong style="color: #fff; font-size: 0.95rem;">${escapeHtml(u.name)}</strong>
+                  <span style="font-size: 0.8rem; color: var(--accent-cyan); font-family: var(--font-mono);">📧 ${escapeHtml(u.email)}</span>
+                  <span style="font-size: 0.78rem; color: var(--accent-gold); font-family: var(--font-mono); background: rgba(245,158,11,0.12); padding: 2px 6px; border-radius: 4px;">🔑 ${escapeHtml(u.password || '******')}</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  ${statusBadge}
+                  <span style="font-size: 0.8rem;">${remainingCol}</span>
+                </div>
+              </div>
+
+              <div style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center;">
+                <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; margin-right: 4px;">Alterar Plano:</span>
+                <button class="btn btn-ghost" style="font-size: 0.75rem; padding: 5px 12px; border-color: rgba(245, 158, 11, 0.4); color: #f59e0b; ${u.subscriptionStatus === 'TRIAL_ACTIVE' ? 'background: rgba(245, 158, 11, 0.25); font-weight:800;' : ''}" onclick="masterChangeUserPlan('${u.id}', 'TRIAL_ACTIVE')">
+                  ⏳ Teste (7d)
+                </button>
+                <button class="btn btn-ghost" style="font-size: 0.75rem; padding: 5px 12px; border-color: rgba(52, 211, 153, 0.4); color: #34d399; ${u.subscriptionStatus === 'SUBSCRIBED_MONTHLY' || u.subscriptionStatus === 'SUBSCRIBED' ? 'background: rgba(52, 211, 153, 0.25); font-weight:800;' : ''}" onclick="masterChangeUserPlan('${u.id}', 'SUBSCRIBED_MONTHLY')">
+                  💳 Assinante Mensal
+                </button>
+                <button class="btn btn-ghost" style="font-size: 0.75rem; padding: 5px 12px; border-color: rgba(236, 72, 153, 0.4); color: var(--accent-secondary); ${u.subscriptionStatus === 'VIP_LIFETIME' ? 'background: rgba(236, 72, 153, 0.25); font-weight:800;' : ''}" onclick="masterChangeUserPlan('${u.id}', 'VIP_LIFETIME')">
+                  👑 VIP Vitalício
+                </button>
+                <button class="btn btn-ghost" style="font-size: 0.75rem; padding: 5px 12px; border-color: rgba(244, 63, 94, 0.4); color: #f43f5e; ${u.subscriptionStatus === 'BLOCKED' ? 'background: rgba(244, 63, 94, 0.3); font-weight:800;' : 'background: rgba(244, 63, 94, 0.1);'}" onclick="masterChangeUserPlan('${u.id}', 'BLOCKED')">
+                  🚫 Bloquear
+                </button>
+              </div>
+            `;
+            cardsContainer.appendChild(card);
+          });
+        }
+      }
+
+      // --- 2. RENDERIZA A TABELA GERAL DE USUÁRIOS (ABA 2) ---
       const tbody = document.getElementById('master-users-tbody');
-      tbody.innerHTML = '';
+      if (tbody) {
+        tbody.innerHTML = '';
+        filteredUsers.forEach(u => {
+          const tr = document.createElement('tr');
+          const expTime = u.accessExpiresTimestamp || u.trialEndTimestamp || 0;
+          const msRemaining = expTime ? expTime - Date.now() : 0;
+          const daysRemaining = Math.max(0, Math.ceil(msRemaining / (1000 * 60 * 60 * 24)));
 
-      users.forEach(u => {
-        const tr = document.createElement('tr');
-        const msRemaining = u.trialEndTimestamp ? u.trialEndTimestamp - Date.now() : 0;
-        const daysRemaining = Math.max(0, Math.ceil(msRemaining / (1000 * 60 * 60 * 24)));
+          let statusBadge = '';
+          let remainingCol = '';
 
-        let statusBadge = u.role === 'MASTER' ? '<span class="role-tag role-master">ADMIN MASTER</span>' : 
-          u.subscriptionStatus === 'VIP_LIFETIME' ? '<span class="status-tag paid">👑 VIP Vitalício</span>' :
-          u.subscriptionStatus === 'SUBSCRIBED' ? '<span class="status-tag paid">💳 Assinante</span>' :
-          `<span class="status-tag pending">⏳ Em Teste (${daysRemaining}d)</span>`;
+          if (u.role === 'MASTER') {
+            statusBadge = '<span class="role-tag role-master">ADMIN MASTER</span>';
+            remainingCol = '<span style="color: var(--accent-gold); font-weight:800;">♾️ Sem expiração (Master)</span>';
+          } else if (u.subscriptionStatus === 'VIP_LIFETIME') {
+            statusBadge = '<span class="status-tag paid" style="background: rgba(236, 72, 153, 0.2); color: var(--accent-secondary); border-color: rgba(236, 72, 153, 0.4);">👑 VIP Vitalício</span>';
+            remainingCol = '<span style="color: var(--accent-secondary); font-weight:800;">♾️ Vitalício (Acesso Total)</span>';
+          } else if (u.subscriptionStatus === 'SUBSCRIBED_YEARLY') {
+            statusBadge = '<span class="status-tag paid" style="background: rgba(6, 182, 212, 0.2); color: var(--accent-cyan); border-color: rgba(6, 182, 212, 0.4);">💎 Assinante Anual</span>';
+            remainingCol = `<span style="color: var(--accent-cyan); font-weight:800;">📅 ${daysRemaining} dia(s) de acesso</span>`;
+          } else if (u.subscriptionStatus === 'SUBSCRIBED_MONTHLY' || u.subscriptionStatus === 'SUBSCRIBED') {
+            statusBadge = '<span class="status-tag paid">💳 Assinante Mensal</span>';
+            if (daysRemaining <= 0) {
+              remainingCol = '<span style="color: #f43f5e; font-weight: 800; background: rgba(244, 63, 94, 0.15); padding: 4px 8px; border-radius: 6px;">🚫 Assinatura Vencida (0d)</span>';
+            } else {
+              remainingCol = `<span style="color: #34d399; font-weight:800;">📅 ${daysRemaining} dia(s) restante(s)</span>`;
+            }
+          } else if (u.subscriptionStatus === 'TRIAL_ACTIVE') {
+            if (daysRemaining <= 0) {
+              statusBadge = '<span style="color: #f43f5e; font-weight: 700;">🚫 Acesso Expirado</span>';
+              remainingCol = '<span style="color: #f43f5e; font-weight: 800; background: rgba(244, 63, 94, 0.15); padding: 4px 8px; border-radius: 6px;">🚫 Teste Expirado (0d)</span>';
+            } else if (daysRemaining <= 3) {
+              statusBadge = `<span class="status-tag pending">⏳ Em Teste (${daysRemaining}d)</span>`;
+              remainingCol = `<span style="color: #fbbf24; font-weight: 800; background: rgba(245, 158, 11, 0.2); padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(245, 158, 11, 0.5);">⚠️ EXPIRANDO (${daysRemaining}d)</span>`;
+            } else {
+              statusBadge = `<span class="status-tag pending">⏳ Em Teste (${daysRemaining}d)</span>`;
+              remainingCol = `<span style="color: var(--text-main); font-weight: 700;">⏳ ${daysRemaining} dia(s) restante(s)</span>`;
+            }
+          } else {
+            statusBadge = '<span style="color: #f43f5e; font-weight: 700;">🚫 Acesso Bloqueado / Suspenso</span>';
+            remainingCol = '<span style="color: #f43f5e; font-weight: 800; background: rgba(244, 63, 94, 0.15); padding: 4px 8px; border-radius: 6px;">🚫 Acesso Suspenso (0d)</span>';
+          }
 
-        tr.innerHTML = `
-          <td><strong>${escapeHtml(u.name)}</strong><br><small style="color: var(--text-dim);">${escapeHtml(u.email)}</small></td>
-          <td>${formatDisplayDate(u.registeredAt ? u.registeredAt.split('T')[0] : '2026-08-01')}</td>
-          <td>${statusBadge}</td>
-          <td>${u.role === 'MASTER' ? 'Sem expiração' : `${daysRemaining}d restantes`}</td>
-          <td style="text-align: center;">
-            <select class="select-control" style="width: auto; padding: 4px 8px; font-size: 0.78rem;" onchange="masterChangeUserPlan('${u.id}', this.value)">
-              <option value="VIP_LIFETIME" ${u.subscriptionStatus === 'VIP_LIFETIME' ? 'selected' : ''}>👑 VIP Vitalício</option>
-              <option value="SUBSCRIBED" ${u.subscriptionStatus === 'SUBSCRIBED' ? 'selected' : ''}>💳 Pagamento Mensal</option>
-              <option value="TRIAL_ACTIVE" ${u.subscriptionStatus === 'TRIAL_ACTIVE' ? 'selected' : ''}>⏳ Teste Grátis (+7d)</option>
-              <option value="BLOCKED" ${u.subscriptionStatus === 'BLOCKED' ? 'selected' : ''}>🚫 Bloquear</option>
-            </select>
-          </td>
-          <td style="text-align: center;">
-            <button class="btn btn-ghost" style="padding: 4px 8px; color: #f43f5e; font-size: 0.78rem;" onclick="masterDeleteUser('${u.id}')"><i data-lucide="trash-2"></i> Excluir</button>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
+          tr.innerHTML = `
+            <td><strong>${escapeHtml(u.name)}</strong><br><small style="color: var(--text-dim);">${escapeHtml(u.email)}</small></td>
+            <td>${formatDisplayDate(u.registeredAt ? u.registeredAt.split('T')[0] : '2026-08-01')}</td>
+            <td>${statusBadge}</td>
+            <td>${remainingCol}</td>
+            <td style="text-align: center;">
+              <div style="display: flex; gap: 4px; justify-content: center; flex-wrap: wrap;">
+                ${u.role !== 'MASTER' ? `
+                  <button class="btn btn-gold" style="padding: 4px 8px; font-size: 0.78rem; font-weight: 700;" onclick="openMasterChangePlanModal('${u.id}')" title="Alterar Plano do Cliente"><i data-lucide="award"></i> Alterar Plano</button>
+                  <button class="btn btn-ghost" style="padding: 4px 6px; color: #f59e0b; font-size: 0.78rem;" onclick="masterSetCustomUserDays('${u.id}')" title="Definir Quantidade de Dias de Acesso">⏳ +Dias</button>
+                  <button class="btn btn-ghost" style="padding: 4px 6px; color: var(--accent-gold); font-size: 0.78rem;" onclick="showClientCredentialsModal(saasState.users.find(x=>x.id==='${u.id}'||x.email==='${u.email}'))" title="Copiar Credenciais para Envio"><i data-lucide="key"></i> Acesso</button>
+                  <button class="btn btn-ghost" style="padding: 4px 6px; color: var(--accent-cyan); font-size: 0.78rem;" onclick="masterResetUserPassword('${u.id}')" title="Alterar Senha"><i data-lucide="lock"></i> Senha</button>
+                  <button class="btn btn-ghost" style="padding: 4px 6px; color: #f43f5e; font-size: 0.78rem;" onclick="masterDeleteUser('${u.id}')" title="Excluir Usuário"><i data-lucide="trash-2"></i> Excluir</button>
+                ` : '<span style="font-size:0.75rem; color:var(--text-muted);">Conta Principal</span>'}
+              </div>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
 
       if (window.lucide) lucide.createIcons();
     }
 
-    async function masterChangeUserPlan(userId, newPlan) {
-      const u = saasState.users.find(x => x.id === userId);
-      if (!u) return;
-      u.subscriptionStatus = newPlan;
-      await saveUsers();
-      renderMasterPanel();
+    let targetPlanUserId = null;
+
+    function openMasterChangePlanModal(userId) {
+      const u = saasState.users.find(x => String(x.id) === String(userId) || String(x.email).toLowerCase() === String(userId).toLowerCase());
+      if (!u || u.role === 'MASTER') return;
+
+      targetPlanUserId = u.id;
+
+      document.getElementById('plan-modal-client-name').textContent = u.name || 'Cliente';
+      document.getElementById('plan-modal-client-email').textContent = u.email || '';
+
+      const planNames = {
+        'VIP_LIFETIME': '👑 VIP Vitalício',
+        'SUBSCRIBED_MONTHLY': '💳 Assinante Mensal',
+        'SUBSCRIBED_YEARLY': '💎 Assinante Anual',
+        'SUBSCRIBED': '💳 Assinante Mensal',
+        'TRIAL_ACTIVE': '⏳ Teste Grátis',
+        'BLOCKED': '🚫 Bloqueado'
+      };
+      const expTime = u.accessExpiresTimestamp || u.trialEndTimestamp || 0;
+      const daysRemaining = expTime ? Math.max(0, Math.ceil((expTime - Date.now()) / (1000 * 60 * 60 * 24))) : 0;
+
+      document.getElementById('plan-modal-client-current').textContent = `Plano Atual: ${planNames[u.subscriptionStatus] || u.subscriptionStatus} (${daysRemaining} dia(s) restante(s))`;
+
+      const modal = document.getElementById('master-change-plan-modal');
+      if (modal) modal.classList.add('active');
+      if (window.lucide) lucide.createIcons();
+    }
+    window.openMasterChangePlanModal = openMasterChangePlanModal;
+
+    function closeMasterChangePlanModal() {
+      const modal = document.getElementById('master-change-plan-modal');
+      if (modal) modal.classList.remove('active');
+      targetPlanUserId = null;
+    }
+    window.closeMasterChangePlanModal = closeMasterChangePlanModal;
+
+    function masterApplyPlanFromModal(newPlan) {
+      if (!targetPlanUserId) return;
+      const uid = targetPlanUserId;
+      closeMasterChangePlanModal();
+      masterChangeUserPlan(uid, newPlan);
+    }
+    window.masterApplyPlanFromModal = masterApplyPlanFromModal;
+
+    function showMasterToastConfirmation(msg) {
+      let toast = document.getElementById('master-toast-notification');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'master-toast-notification';
+        toast.style.cssText = 'position: fixed; top: 20px; right: 20px; z-index: 99999; background: #10b981; color: #ffffff; padding: 12px 20px; border-radius: 8px; font-weight: 700; font-size: 0.9rem; box-shadow: 0 10px 25px rgba(0,0,0,0.5); transition: opacity 0.3s ease; opacity: 0; pointer-events: none;';
+        document.body.appendChild(toast);
+      }
+      toast.textContent = msg;
+      toast.style.opacity = '1';
+      setTimeout(() => { toast.style.opacity = '0'; }, 2500);
     }
 
-    async function masterDeleteUser(userId) {
-      if (confirm('Excluir este usuário permanentemente?')) {
-        saasState.users = saasState.users.filter(x => x.id !== userId);
-        await saveUsers();
+    function masterChangeUserPlan(userId, newPlan) {
+      if (!userId || !newPlan) return;
+      
+      const u = saasState.users.find(x => String(x.id) === String(userId) || String(x.email).toLowerCase() === String(userId).toLowerCase());
+      if (!u || u.role === 'MASTER') return;
+
+      if (newPlan === 'CUSTOM_DAYS') {
+        setTimeout(() => { masterSetCustomUserDays(userId); }, 50);
+        return;
+      }
+
+      u.subscriptionStatus = newPlan;
+      let addedDays = 0;
+
+      if (newPlan === 'TRIAL_ACTIVE') {
+        addedDays = 7;
+      } else if (newPlan === 'SUBSCRIBED_MONTHLY' || newPlan === 'SUBSCRIBED') {
+        u.subscriptionStatus = 'SUBSCRIBED_MONTHLY';
+        addedDays = 30;
+      } else if (newPlan === 'SUBSCRIBED_YEARLY') {
+        addedDays = 365;
+      } else if (newPlan === 'VIP_LIFETIME') {
+        addedDays = 36500; // Vitalício (100 anos)
+      } else if (newPlan === 'BLOCKED') {
+        addedDays = -1;
+      }
+
+      if (addedDays > 0) {
+        u.accessExpiresTimestamp = Date.now() + (addedDays * 86400000);
+        u.trialEndTimestamp = u.accessExpiresTimestamp;
+      } else if (addedDays < 0) {
+        u.accessExpiresTimestamp = Date.now() - 86400000;
+        u.trialEndTimestamp = u.accessExpiresTimestamp;
+      }
+
+      // Salva imediatamente no LocalStorage
+      saveMasterUsers();
+
+      const planLabels = {
+        'VIP_LIFETIME': '👑 VIP Vitalício (Sem expiração)',
+        'SUBSCRIBED_MONTHLY': '💳 Assinante Mensal (30 Dias)',
+        'SUBSCRIBED_YEARLY': '💎 Assinante Anual (365 Dias)',
+        'TRIAL_ACTIVE': '⏳ Teste Grátis (+7 Dias)',
+        'BLOCKED': '🚫 Bloqueado (0 Dias)'
+      };
+
+      showMasterToastConfirmation(`✅ Plano de "${u.name}" alterado para ${planLabels[u.subscriptionStatus] || newPlan}`);
+
+      // Aguarda 50ms para que o evento do select seja concluído pelo navegador antes de re-renderizar
+      setTimeout(() => {
         renderMasterPanel();
+      }, 50);
+    }
+    window.masterChangeUserPlan = masterChangeUserPlan;
+
+    function masterSetCustomUserDays(userId) {
+      const u = saasState.users.find(x => String(x.id) === String(userId) || String(x.email).toLowerCase() === String(userId).toLowerCase());
+      if (!u || u.role === 'MASTER') return;
+
+      const input = prompt(`Digite a quantidade de DIAS DE ACESSO liberados para o cliente "${u.name}":\n\nExemplo: 15, 30, 60, 90, 180, 365`, '30');
+      if (input !== null) {
+        const days = parseInt(input.trim(), 10);
+        if (isNaN(days) || days < 0) {
+          alert('Por favor, digite um número de dias válido!');
+          return;
+        }
+
+        if (days === 0) {
+          u.subscriptionStatus = 'BLOCKED';
+          u.accessExpiresTimestamp = Date.now() - 86400000;
+        } else {
+          if (days > 1000) {
+            u.subscriptionStatus = 'VIP_LIFETIME';
+          } else if (days >= 300) {
+            u.subscriptionStatus = 'SUBSCRIBED_YEARLY';
+          } else {
+            u.subscriptionStatus = 'SUBSCRIBED_MONTHLY';
+          }
+          u.accessExpiresTimestamp = Date.now() + (days * 86400000);
+        }
+        u.trialEndTimestamp = u.accessExpiresTimestamp;
+
+        saveMasterUsers();
+        showMasterToastConfirmation(`⏳ Liberados ${days} dia(s) de acesso para "${u.name}"`);
+        
+        setTimeout(() => {
+          renderMasterPanel();
+        }, 50);
       }
     }
+    window.masterSetCustomUserDays = masterSetCustomUserDays;
+
+    function masterDeleteUser(userId) {
+      const u = saasState.users.find(x => String(x.id) === String(userId));
+      if (!u || u.role === 'MASTER') return;
+
+      if (confirm(`Excluir permanentemente o cliente "${u.name}" (${u.email})?`)) {
+        saasState.users = saasState.users.filter(x => String(x.id) !== String(userId));
+        localStorage.removeItem(`finansaas_user_status_${u.id}`);
+        if (u.email) localStorage.removeItem(`finansaas_user_status_${u.email.toLowerCase()}`);
+        saveMasterUsers();
+        renderMasterPanel();
+        showMasterToastConfirmation(`🗑️ Cliente "${u.name}" excluído com sucesso.`);
+      }
+    }
+    window.masterDeleteUser = masterDeleteUser;
+
+    function masterResetUserPassword(userId) {
+      const u = saasState.users.find(x => String(x.id) === String(userId));
+      if (!u) return;
+
+      const newPass = prompt(`Digite a nova senha para o cliente "${u.name}":`, u.password || '123456');
+      if (newPass && newPass.trim().length >= 4) {
+        u.password = newPass.trim();
+        saveMasterUsers();
+        renderMasterPanel();
+        showClientCredentialsModal(u);
+      } else if (newPass !== null) {
+        alert('A senha deve ter no mínimo 4 caracteres!');
+      }
+    }
+    window.masterResetUserPassword = masterResetUserPassword;
+
+    function openMasterAddUserModal() {
+      const form = document.getElementById('master-add-user-form');
+      if (form) form.reset();
+      const passInput = document.getElementById('master-new-pass');
+      if (passInput) passInput.value = '123456';
+      const modal = document.getElementById('master-add-user-modal');
+      if (modal) modal.classList.add('active');
+    }
+    window.openMasterAddUserModal = openMasterAddUserModal;
+
+    function closeMasterAddUserModal() {
+      const modal = document.getElementById('master-add-user-modal');
+      if (modal) modal.classList.remove('active');
+    }
+    window.closeMasterAddUserModal = closeMasterAddUserModal;
+
+    function showClientCredentialsModal(u) {
+      if (!u) return;
+      const nameElem = document.getElementById('cred-display-name');
+      const emailElem = document.getElementById('cred-display-email');
+      const passElem = document.getElementById('cred-display-pass');
+      const planElem = document.getElementById('cred-display-plan');
+
+      if (nameElem) nameElem.textContent = u.name || '-';
+      if (emailElem) emailElem.textContent = u.email || '-';
+      if (passElem) passElem.textContent = u.password || '123456';
+
+      const planLabels = {
+        'VIP_LIFETIME': '👑 VIP Vitalício (Acesso Gratuito)',
+        'SUBSCRIBED': '💳 Assinante Mensal (R$ 29,90)',
+        'TRIAL_ACTIVE': '⏳ Teste Grátis (7 Dias)',
+        'BLOCKED': '🚫 Acesso Suspenso'
+      };
+      if (planElem) planElem.textContent = planLabels[u.subscriptionStatus] || u.subscriptionStatus || '-';
+
+      const btnCopy = document.getElementById('btn-copy-client-access');
+      if (btnCopy) {
+        btnCopy.onclick = () => {
+          const appUrl = 'https://atas-finance.vercel.app/';
+          const textToCopy = `🚀 *SEU ACESSO À PLATAFORMA ATLAS FINANCE*\n\n👤 *Nome:* ${u.name}\n📧 *E-mail:* ${u.email}\n🔑 *Senha:* ${u.password || '123456'}\n👑 *Plano:* ${planLabels[u.subscriptionStatus] || u.subscriptionStatus}\n\n📲 *Link de Acesso:* ${appUrl}`;
+          navigator.clipboard.writeText(textToCopy).then(() => {
+            alert('📋 Dados do cliente e link do site copiados com sucesso! Cole no WhatsApp do cliente.');
+          }).catch(() => {
+            prompt('Copie as credenciais abaixo:', textToCopy);
+          });
+        };
+      }
+
+      const modal = document.getElementById('master-user-credentials-modal');
+      if (modal) modal.classList.add('active');
+    }
+    window.showClientCredentialsModal = showClientCredentialsModal;
 
     // --- HELPER UTILS ---
     function formatCurrency(val) {
