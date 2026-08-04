@@ -1819,8 +1819,8 @@
           }
 
           saveMasterUsers();
-          if (window.cadastrarCliente) {
-            window.cadastrarCliente(email, pass, 'CLIENTE');
+          if (window.cadastrarNovoClientePeloSite) {
+            window.cadastrarNovoClientePeloSite(email, pass);
           }
           masterAddForm.reset();
           closeMasterAddUserModal();
@@ -3234,60 +3234,77 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <script>
-    // Configuração da Conexão com o Banco de Dados
+    // Conexão com o Supabase
     const SUPABASE_URL = "https://cdevrbqiupwaczgauszd.supabase.co";
     const SUPABASE_KEY = "sb_publishable_evKYmLK_8Rn5pM1nrF8u3w_GKnCf8xi";
-
     const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 
-    // Função para fazer o Login consultando a nuvem (buscando na tabela 'usuarios')
+    // 1. FUNÇÃO DE LOGIN (Consulta o Supabase na hora)
     async function fazerLogin(email, senha) {
-      if (!supabaseClient) return null;
+      if (!supabaseClient) return false;
       try {
         const { data, error } = await supabaseClient
-          .from('usuarios') // <-- Corrigido para a tabela correta
+          .from('usuarios')
           .select('*')
-          .eq('email', email)
+          .eq('email', (email || '').trim().toLowerCase())
           .eq('senha', senha)
           .single();
 
         if (error || !data) {
-          console.warn(`O e-mail "${email}" não foi encontrado ou a senha está incorreta.`);
-          return null;
+          alert(`O e-mail "${email}" não foi encontrado ou a senha está incorreta. Contate o Administrador Master.`);
+          return false;
         }
 
         if (data.tipo_acesso === 'MASTER') {
-          console.log("Acesso Autorizado! Bem-vindo, Administrador Master.");
+          alert("Acesso Autorizado! Bem-vindo, Administrador Master.");
+          localStorage.setItem("usuario_logado", JSON.stringify(data));
+          // Libera painel Master
         } else {
-          console.log(`Bem-vindo, ${data.email}!`);
+          alert(`Bem-vindo, ${data.email}!`);
+          localStorage.setItem("usuario_logado", JSON.stringify(data));
+          // Libera painel do Cliente
         }
-        return data;
+        return true;
       } catch (err) {
-        console.error('Falha ao consultar tabela usuarios no Supabase:', err);
-        return null;
+        console.error('Erro na requisição Supabase:', err);
+        return false;
       }
     }
     window.fazerLogin = fazerLogin;
 
-    // Função para salvar novos Clientes na nuvem
-    async function cadastrarCliente(email, senha, tipoAcesso = 'CLIENTE') {
+    // 2. FUNÇÃO AUTOMÁTICA DE CADASTRO PELO PAINEL MASTER
+    async function cadastrarNovoClientePeloSite(emailCliente, senhaCliente) {
+      if (!emailCliente || !senhaCliente) {
+        alert("Preencha o e-mail e a senha do cliente.");
+        return;
+      }
+
       if (!supabaseClient) return;
+
       try {
+        // Insere o cliente na tabela 'usuarios' da nuvem na hora
         const { data, error } = await supabaseClient
-          .from('usuarios') // <-- Corrigido para a tabela correta
-          .insert([{ email: email, senha: senha, tipo_acesso: tipoAcesso }]);
+          .from('usuarios')
+          .insert([
+            {
+              email: emailCliente.trim().toLowerCase(),
+              senha: senhaCliente,
+              tipo_acesso: 'CLIENTE'
+            }
+          ]);
 
         if (error) {
-          alert("Erro ao salvar o cliente no banco de dados.");
-          console.error(error);
+          console.error("Erro no Supabase:", error);
+          alert("Erro ao salvar o cliente na nuvem. Verifique se o e-mail já existe.");
         } else {
-          alert("Cliente salvo na nuvem com sucesso!");
+          alert(`Cliente "${emailCliente}" cadastrado com sucesso! Ele já pode fazer login.`);
         }
       } catch (err) {
-        console.error("Exceção ao cadastrar cliente no Supabase:", err);
+        console.error("Exceção no cadastro Supabase:", err);
       }
     }
-    window.cadastrarCliente = cadastrarCliente;
+    window.cadastrarNovoClientePeloSite = cadastrarNovoClientePeloSite;
+    window.cadastrarCliente = cadastrarNovoClientePeloSite;
   </script>
 </body>
 </html>
