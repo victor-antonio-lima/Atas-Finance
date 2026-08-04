@@ -1238,7 +1238,7 @@
        ========================================================================== */
 
     // Configuração da sua Conta Master Oficial
-    const MASTER_EMAIL = "victorantonio464@gmail.com";
+    const MASTER_EMAIL = "victorantoniolima464@gmail.com";
     const MASTER_SENHA = "16041997"; // <-- Senha de Acesso Master Oficial
 
     // Função para validar o login Master (Ultra Tolerante & Garantida)
@@ -1252,27 +1252,19 @@
       const emailDigitado = emailInput ? emailInput.value.trim().toLowerCase() : '';
       const senhaDigitada = passInput ? passInput.value.trim() : '';
 
-      const isMasterEmail = (
-        emailDigitado === "victorantonio464@gmail.com" ||
-        emailDigitado === "victorantoniolima464@gmail.com" ||
-        emailDigitado === "victorantoniolima454@gmail.com" ||
-        emailDigitado.includes("victorantonio") ||
-        emailDigitado === MASTER_EMAIL.toLowerCase()
-      );
-
-      const isMasterPass = (
-        senhaDigitada === "16041997" ||
-        senhaDigitada === "master123" ||
-        senhaDigitada === MASTER_SENHA
-      );
+      const isMasterEmail = (emailDigitado === "victorantoniolima464@gmail.com");
+      const isMasterPass = (senhaDigitada === "16041997" || senhaDigitada === MASTER_SENHA);
 
       // Verificação de segurança da Conta Master
-      if (isMasterEmail || isMasterPass) {
+      if (isMasterEmail && isMasterPass) {
         alert("Acesso Master autorizado! Bem-vindo, Administrador Victor.");
 
         localStorage.setItem("usuario_logado", "MASTER");
 
         loadSaaSStore();
+        // Remove a antiga conta master se existir
+        saasState.users = saasState.users.filter(u => u && u.email && u.email.toLowerCase() !== 'victorantonio464@gmail.com');
+
         let masterUser = saasState.users.find(u => u.email.toLowerCase() === MASTER_EMAIL.toLowerCase());
         if (!masterUser) {
           masterUser = {
@@ -1309,7 +1301,7 @@
       {
         id: 'usr-master-victor',
         name: 'Victor Antonio (Master)',
-        email: 'victorantonio464@gmail.com',
+        email: 'victorantoniolima464@gmail.com',
         password: '16041997',
         role: 'MASTER',
         registeredAt: '2026-01-01T00:00:00.000Z',
@@ -1465,8 +1457,8 @@
           saasState.users = [...PRESET_USERS];
         }
 
-        // Preserva 100% dos usuários cadastrados no LocalStorage
-        saasState.users = saasState.users.filter(u => u && u.email);
+        // Preserva 100% dos usuários cadastrados no LocalStorage e remove a antiga conta master legada
+        saasState.users = saasState.users.filter(u => u && u.email && u.email.toLowerCase() !== 'victorantonio464@gmail.com');
 
         // Aplica a TRAVA INDIVIDUAL DE STATUS e VALIDADE DE DIAS para cada usuário salvo pelo Master
         saasState.users.forEach(u => {
@@ -1555,13 +1547,13 @@
           user = saasState.users.find(u => u.email.trim().toLowerCase() === email);
         }
 
-        // Garante que a conta victorantonio464@gmail.com seja sempre MASTER
-        if (email === 'victorantonio464@gmail.com') {
+        // Garante que a conta victorantoniolima464@gmail.com seja sempre MASTER
+        if (email === 'victorantoniolima464@gmail.com') {
           if (!user) {
             user = {
               id: 'usr-master-victor',
               name: 'Victor Antonio (Master)',
-              email: 'victorantonio464@gmail.com',
+              email: 'victorantoniolima464@gmail.com',
               password: '16041997',
               role: 'MASTER',
               registeredAt: '2026-01-01T00:00:00.000Z',
