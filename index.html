@@ -1,0 +1,2466 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>ATLAS FINANCE PRO - Inteligência Financeira & Gestão de Crédito</title>
+
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Chart.js para Gráficos Interativos -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    :root {
+      --bg-main: #070c18;
+      --bg-card: rgba(15, 23, 42, 0.88);
+      --bg-input: rgba(30, 41, 59, 0.75);
+      --bg-hover: rgba(255, 255, 255, 0.06);
+      --border-color: rgba(255, 255, 255, 0.08);
+      --border-highlight: rgba(99, 102, 241, 0.35);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --accent-primary: #6366f1;
+      --accent-secondary: #ec4899;
+      --accent-cyan: #06b6d4;
+      --accent-gold: #f59e0b;
+      --accent-pix: #10b981;
+      --status-paid: #10b981;
+      --status-paid-bg: rgba(16, 185, 129, 0.15);
+      --status-pending: #f59e0b;
+      --status-pending-bg: rgba(245, 158, 11, 0.15);
+      --font-main: 'Inter', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 18px;
+
+      /* Escala Tipográfica Padrão (Desktop) */
+      --fs-title: 1.5rem;
+      --fs-subtitle: 0.88rem;
+      --fs-body: 0.9rem;
+      --fs-card-value: 1.65rem;
+    }
+
+    /* DETECÇÃO & ESCALA DE FONTE AUTOMÁTICA PARA DISPOSITIVOS MÓVEIS */
+    body.is-mobile {
+      --fs-title: 1.2rem;
+      --fs-subtitle: 0.78rem;
+      --fs-body: 0.82rem;
+      --fs-card-value: 1.25rem;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-main);
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      min-height: 100vh;
+      background-image: 
+        radial-gradient(circle at 10% 10%, rgba(99, 102, 241, 0.14) 0%, transparent 40%),
+        radial-gradient(circle at 90% 90%, rgba(236, 72, 153, 0.12) 0%, transparent 40%),
+        radial-gradient(circle at 50% 50%, rgba(6, 182, 212, 0.06) 0%, transparent 60%);
+      background-attachment: fixed;
+      padding-bottom: 70px; /* Espaço para Bottom Bar no Mobile */
+    }
+
+    /* REMOVE SPINNERS DE INPUT NUMBER */
+    input[type=number]::-webkit-inner-spin-button, 
+    input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+    input[type=number] { -moz-appearance: textfield; }
+
+    /* UTILITY & TYPOGRAPHY */
+    .font-mono { font-family: var(--font-mono); }
+    .col-value { text-align: right !important; font-family: var(--font-mono); font-weight: 700; font-size: 0.95rem; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+    /* INDICADOR VISUAL DE MODO (DESKTOP vs MOBILE) */
+    .device-mode-pill {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 3px 9px; border-radius: 20px; font-size: 0.72rem; font-weight: 700;
+      background: rgba(6, 182, 212, 0.15); color: var(--accent-cyan); border: 1px solid rgba(6, 182, 212, 0.3);
+    }
+
+    /* LAYOUT CONTAINERS */
+    .app-container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+    
+    /* AUTH SCREEN */
+    .auth-container { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+    .auth-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-highlight);
+      border-radius: var(--radius-lg);
+      width: 100%; max-width: 420px;
+      padding: 36px 28px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 35px rgba(99, 102, 241, 0.2);
+      backdrop-filter: blur(20px);
+    }
+    .auth-header { text-align: center; margin-bottom: 24px; }
+    .auth-logo {
+      width: 64px; height: 64px;
+      background: linear-gradient(135deg, #334155, #0f172a);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 20px; margin: 0 auto 14px;
+      display: flex; align-items: center; justify-content: center;
+      color: #f8fafc; box-shadow: 0 12px 28px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.3);
+    }
+    .auth-logo .brand-dollar-sign {
+      font-family: var(--font-mono); font-weight: 900; font-size: 2rem; color: #f8fafc;
+      text-shadow: 0 0 12px rgba(255, 255, 255, 0.6);
+    }
+    .auth-title { font-size: 1.7rem; font-weight: 900; letter-spacing: -0.02em; background: linear-gradient(135deg, #fff, #cbd5e1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .auth-subtitle { font-size: 0.85rem; color: var(--text-muted); margin-top: 4px; }
+
+    /* TOP APP HEADER */
+    .app-header {
+      display: flex; justify-content: space-between; align-items: center; padding: 16px 24px;
+      background: var(--bg-card); backdrop-filter: blur(16px);
+      border: 1px solid var(--border-color); border-radius: var(--radius-lg); margin-bottom: 16px;
+      flex-wrap: wrap; gap: 16px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+    .brand { display: flex; align-items: center; gap: 14px; }
+    .brand-icon {
+      width: 46px; height: 46px;
+      background: linear-gradient(135deg, #334155, #0f172a);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: var(--radius-md);
+      display: flex; align-items: center; justify-content: center;
+      color: #f8fafc; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.25);
+    }
+    .brand-icon .brand-dollar-sign {
+      font-family: var(--font-mono); font-weight: 900; font-size: 1.5rem; color: #f8fafc;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    }
+    .brand-text h1 { font-size: var(--fs-title); font-weight: 800; display: flex; align-items: center; gap: 8px; letter-spacing: -0.01em; }
+    .brand-text h1 span { font-size: 0.72rem; background: rgba(99, 102, 241, 0.2); color: var(--accent-primary); padding: 2px 8px; border-radius: 20px; border: 1px solid rgba(99, 102, 241, 0.3); font-weight: 700; }
+    
+    .header-controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .user-badge { display: flex; align-items: center; gap: 10px; background: var(--bg-input); padding: 6px 14px; border-radius: var(--radius-md); border: 1px solid var(--border-color); font-size: 0.85rem; font-weight: 600; }
+    .role-tag { padding: 3px 10px; border-radius: 12px; font-size: 0.72rem; font-weight: 700; font-family: var(--font-mono); }
+    .role-master { background: rgba(245, 158, 11, 0.2); color: var(--accent-gold); border: 1px solid rgba(245, 158, 11, 0.4); }
+    .role-user { background: rgba(16, 185, 129, 0.2); color: var(--status-paid); border: 1px solid rgba(16, 185, 129, 0.4); }
+
+    .year-selector { display: flex; align-items: center; gap: 8px; background: var(--bg-input); padding: 4px 10px; border-radius: var(--radius-md); border: 1px solid var(--border-color); font-weight: 700; font-family: var(--font-mono); }
+
+    /* BUTTONS & CONTROLS */
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: var(--radius-md); font-size: 0.88rem; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s ease; user-select: none; }
+    .btn:active { transform: scale(0.97); }
+    .btn-primary { background: linear-gradient(135deg, var(--accent-primary), #4338ca); color: #fff; box-shadow: 0 4px 14px rgba(99, 102, 241, 0.3); }
+    .btn-secondary { background: rgba(255, 255, 255, 0.08); color: var(--text-main); border: 1px solid var(--border-color); }
+    .btn-gold { background: linear-gradient(135deg, var(--accent-gold), #d97706); color: #000; font-weight: 700; }
+    .btn-pix { background: linear-gradient(135deg, var(--accent-pix), #0d9488); color: #fff; font-weight: 700; }
+    .btn-ghost { background: transparent; color: var(--text-muted); border: 1px solid var(--border-color); }
+    .btn-icon { background: transparent; border: none; color: var(--text-muted); cursor: pointer; padding: 6px; border-radius: 6px; }
+    .btn-full { width: 100%; justify-content: center; }
+
+    /* TRIAL BANNER */
+    .trial-banner {
+      display: flex; align-items: center; justify-content: space-between;
+      background: linear-gradient(90deg, rgba(245, 158, 11, 0.15), rgba(99, 102, 241, 0.15));
+      border: 1px solid rgba(245, 158, 11, 0.4); border-radius: var(--radius-md);
+      padding: 12px 20px; margin-bottom: 20px; font-size: 0.88rem; flex-wrap: wrap; gap: 10px;
+    }
+    .trial-info { display: flex; align-items: center; gap: 10px; color: #fef08a; font-weight: 600; }
+
+    /* MONTH NAVIGATION TABS */
+    .month-scroll { display: flex; gap: 8px; overflow-x: auto; padding: 6px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); margin-bottom: 20px; -webkit-overflow-scrolling: touch; }
+    .month-tab { flex: 1; min-width: 95px; padding: 10px 14px; border: none; background: transparent; color: var(--text-muted); border-radius: var(--radius-md); font-weight: 600; font-size: 0.88rem; cursor: pointer; display: flex; flex-direction: column; align-items: center; transition: all 0.2s ease; }
+    .month-tab .month-total { font-size: 0.72rem; font-family: var(--font-mono); opacity: 0.85; margin-top: 2px; }
+    .month-tab.active { background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); color: #fff; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3); }
+
+    /* METRICS GRID */
+    .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 16px; margin-bottom: 20px; }
+    .metric-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 18px; backdrop-filter: blur(12px); box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+    .metric-header { display: flex; justify-content: space-between; align-items: center; color: var(--text-muted); font-size: 0.85rem; font-weight: 600; margin-bottom: 8px; }
+    .metric-value { font-size: var(--fs-card-value); font-weight: 800; font-family: var(--font-mono); margin-bottom: 4px; color: var(--text-main); }
+    .metric-sub { font-size: 0.8rem; color: var(--text-dim); }
+
+    /* TOOLBAR & FILTERS */
+    .section-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 16px; flex-wrap: wrap; }
+    .view-tabs { display: flex; gap: 6px; background: var(--bg-card); padding: 4px; border-radius: var(--radius-md); border: 1px solid var(--border-color); }
+    .view-tab { padding: 8px 14px; border: none; background: transparent; color: var(--text-muted); font-weight: 600; font-size: 0.85rem; border-radius: var(--radius-sm); cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s ease; }
+    .view-tab.active { background: rgba(255, 255, 255, 0.12); color: var(--text-main); }
+
+    .filter-group { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+    .search-box {
+      position: relative; display: flex; align-items: center;
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.95));
+      border: 1px solid rgba(99, 102, 241, 0.35); border-radius: 30px; padding: 2px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3), 0 0 12px rgba(99, 102, 241, 0.15);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .search-box:hover { border-color: rgba(99, 102, 241, 0.6); box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4), 0 0 18px rgba(99, 102, 241, 0.25); }
+    .search-box:focus-within { border-color: var(--accent-cyan); box-shadow: 0 0 25px rgba(6, 182, 212, 0.4); transform: translateY(-1px); }
+    .search-box i { position: absolute; left: 14px; color: var(--accent-cyan); width: 18px; height: 18px; pointer-events: none; }
+    .search-box input { width: 250px; padding: 10px 16px 10px 42px; background: transparent; border: none; border-radius: 30px; color: var(--text-main); font-size: 0.88rem; font-weight: 500; outline: none; }
+
+    .select-input { padding: 10px 16px; background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.95)); border: 1px solid rgba(99, 102, 241, 0.35); border-radius: 30px; color: var(--text-main); font-size: 0.85rem; font-weight: 600; cursor: pointer; outline: none; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); }
+
+    /* CONTENT SECTIONS & TABLES */
+    .content-section { margin-bottom: 24px; }
+    .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 12px; }
+    .section-title { display: flex; align-items: center; gap: 10px; }
+    .section-title h2 { font-size: 1.15rem; font-weight: 700; }
+    .section-badge { background: rgba(99, 102, 241, 0.15); color: var(--accent-primary); border: 1px solid rgba(99, 102, 241, 0.3); padding: 4px 12px; border-radius: 20px; font-weight: 700; font-family: var(--font-mono); font-size: 0.85rem; }
+
+    .bank-pills-container { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 12px; }
+    .bank-pill { display: flex; align-items: center; gap: 8px; padding: 6px 12px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 30px; font-size: 0.82rem; font-weight: 600; color: var(--text-muted); cursor: pointer; white-space: nowrap; }
+    .bank-pill.active { border-color: rgba(255, 255, 255, 0.3); color: var(--text-main); background: rgba(255, 255, 255, 0.08); }
+    .bank-pill-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+    .table-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); overflow: hidden; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3); }
+    .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .data-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.88rem; }
+    .data-table th { background: rgba(10, 15, 30, 0.9); color: var(--text-muted); font-weight: 700; text-transform: uppercase; font-size: 0.72rem; padding: 12px 16px; border-bottom: 1px solid var(--border-color); }
+    .data-table td { padding: 12px 16px; border-bottom: 1px solid var(--border-color); color: var(--text-main); vertical-align: middle; }
+    
+    .badge-bank { display: inline-flex; align-items: center; gap: 6px; padding: 3px 8px; border-radius: 6px; font-size: 0.78rem; font-weight: 700; color: #fff; }
+    .badge-category { background: rgba(255, 255, 255, 0.06); color: var(--text-muted); padding: 3px 8px; border-radius: 4px; font-size: 0.78rem; }
+    .badge-installment { font-family: var(--font-mono); background: rgba(99, 102, 241, 0.15); color: var(--accent-primary); padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; }
+    .status-tag { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; cursor: pointer; }
+    .status-tag.paid { background: var(--status-paid-bg); color: var(--status-paid); border: 1px solid rgba(16, 185, 129, 0.3); }
+    .status-tag.pending { background: var(--status-pending-bg); color: var(--status-pending); border: 1px solid rgba(245, 158, 11, 0.3); }
+    .btn-table-action { background: transparent; border: none; color: var(--text-dim); cursor: pointer; padding: 6px; border-radius: 6px; transition: color 0.2s ease; }
+    .btn-table-action:hover { color: #f43f5e; }
+
+    /* CHARTS SECTION */
+    .charts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; margin-bottom: 24px; }
+    .chart-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 20px; backdrop-filter: blur(12px); box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+    .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .chart-container { position: relative; height: 260px; width: 100%; }
+
+    /* MASTER ADMIN DASHBOARD */
+    .master-panel { background: var(--bg-card); border: 1px solid var(--border-highlight); border-radius: var(--radius-lg); padding: 24px; margin-bottom: 24px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5); }
+    .master-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+    .master-title { display: flex; align-items: center; gap: 10px; }
+    .master-title h2 { font-size: 1.3rem; font-weight: 800; color: var(--accent-gold); }
+
+    /* MODALS & PAYWALL */
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.25s ease; padding: 16px; }
+    .modal-overlay.active { opacity: 1; pointer-events: all; }
+    .modal-card { background: #0f172a; border: 1px solid var(--border-highlight); border-radius: var(--radius-lg); width: 100%; max-width: 550px; max-height: 90vh; overflow-y: auto; padding: 24px; box-shadow: 0 25px 50px rgba(0,0,0,0.9); }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; }
+    .btn-close-modal { background: transparent; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer; }
+    
+    .form-group { margin-bottom: 14px; }
+    .form-group label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; }
+    .form-row { display: flex; gap: 12px; }
+    .flex-1 { flex: 1; } .flex-2 { flex: 2; }
+    .input-control, .select-control { width: 100%; padding: 10px 14px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); color: var(--text-main); font-size: 0.9rem; }
+    .input-color-picker { width: 100%; height: 42px; border-radius: var(--radius-md); border: 1px solid var(--border-color); background: var(--bg-input); cursor: pointer; }
+    .radio-toggle { display: flex; background: var(--bg-input); padding: 4px; border-radius: var(--radius-md); border: 1px solid var(--border-color); gap: 4px; }
+    .radio-option { flex: 1; text-align: center; cursor: pointer; }
+    .radio-option input { display: none; }
+    .radio-option span { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 12px; border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 600; color: var(--text-muted); }
+    .radio-option input:checked + span { background: var(--accent-primary); color: #fff; }
+    
+    .bank-list { display: flex; flex-direction: column; gap: 8px; max-height: 180px; overflow-y: auto; }
+    .bank-list-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: var(--bg-input); border-radius: var(--radius-md); border: 1px solid var(--border-color); }
+
+    /* MOBILE NAVIGATION BOTTOM BAR (SÓ EXIBIDO EM CELULARES) */
+    .mobile-bottom-bar {
+      display: none; position: fixed; bottom: 0; left: 0; width: 100%;
+      background: rgba(15, 23, 42, 0.96); backdrop-filter: blur(20px);
+      border-top: 1px solid var(--border-highlight);
+      padding: 8px 12px; z-index: 999;
+      justify-content: space-around; align-items: center;
+      box-shadow: 0 -10px 25px rgba(0,0,0,0.5);
+    }
+    .mobile-nav-item {
+      display: flex; flex-direction: column; align-items: center; gap: 3px;
+      color: var(--text-muted); font-size: 0.68rem; font-weight: 600;
+      background: transparent; border: none; cursor: pointer; padding: 4px 8px;
+    }
+    .mobile-nav-item.active { color: var(--accent-primary); }
+    .mobile-nav-item i { width: 20px; height: 20px; }
+
+    /* FLOATING ACTION BUTTON (FAB) PARA CELULAR */
+    .mobile-fab-btn {
+      display: none; position: fixed; bottom: 75px; right: 20px;
+      width: 56px; height: 56px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      color: #fff; border: none; box-shadow: 0 8px 24px rgba(99, 102, 241, 0.5);
+      align-items: center; justify-content: center; z-index: 998; cursor: pointer;
+    }
+
+    /* ==========================================================================
+       OTIMIZAÇÕES RESPONSIVAS DEDICADAS (DISPOSITIVOS MÓVEIS / TABLETS)
+       ========================================================================== */
+    @media (max-width: 768px) {
+      body.is-mobile .mobile-bottom-bar { display: flex; }
+      body.is-mobile .mobile-fab-btn { display: flex; }
+
+      .app-container { padding: 12px 10px; }
+      
+      /* Header & Branding */
+      .app-header { padding: 12px 14px; flex-direction: column; align-items: stretch; gap: 10px; border-radius: var(--radius-md); }
+      .brand { justify-content: space-between; width: 100%; }
+      .brand-icon { width: 38px; height: 38px; }
+      .brand-text h1 { font-size: 1.15rem; }
+      .header-controls { justify-content: space-between; width: 100%; gap: 6px; }
+      .user-badge { padding: 4px 8px; font-size: 0.76rem; flex: 1; justify-content: space-between; }
+
+      /* Esconde botões redundantes da barra superior do desktop no celular */
+      .header-controls #btn-open-transaction-modal { display: none !important; }
+
+      /* Metrics Grid (2 Colunas no Mobile) */
+      .metrics-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 14px; }
+      .metric-card { padding: 12px 10px; border-radius: var(--radius-md); }
+      .metric-header { font-size: 0.72rem; margin-bottom: 4px; }
+      
+      /* Card de Salário Ocupa 2 Colunas */
+      .metrics-grid .metric-card:first-child { grid-column: span 2; }
+
+      /* Month Scroll Tabs */
+      .month-scroll { padding: 4px; gap: 4px; border-radius: var(--radius-md); }
+      .month-tab { min-width: 74px; padding: 6px 8px; font-size: 0.75rem; }
+      .month-tab .month-total { font-size: 0.65rem; }
+
+      /* Toolbar & Search Box */
+      .section-toolbar { flex-direction: column; align-items: stretch; gap: 10px; }
+      .view-tabs { width: 100%; justify-content: space-between; display: none; } /* Controlado pela bottom bar no mobile */
+      .filter-group { width: 100%; flex-direction: column; align-items: stretch; gap: 8px; }
+      .search-box { width: 100%; }
+      .search-box input { width: 100% !important; }
+      .select-input { width: 100%; }
+
+      /* Table Cards & Touch Optimizations */
+      .table-card { border-radius: var(--radius-md); }
+      .data-table th, .data-table td { padding: 10px 8px; font-size: 0.78rem; }
+      
+      /* Modals em Telas Pequenas */
+      .modal-overlay { padding: 8px; }
+      .modal-card { padding: 18px 14px; border-radius: 16px; max-height: 88vh; }
+      .form-row { flex-direction: column; gap: 10px; }
+
+      /* Master Admin Dashboard */
+      .master-panel { padding: 14px 10px; border-radius: var(--radius-md); }
+      .master-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+      .master-header button { width: 100%; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==================== AUTH CONTAINER (LOGIN EXCLUSIVO) ==================== -->
+  <div id="auth-screen" class="auth-container">
+    <div class="auth-card">
+      <div class="auth-header">
+        <div class="auth-logo"><span class="brand-dollar-sign">$</span></div>
+        <h2 class="auth-title">ATLAS FINANCE</h2>
+        <p class="auth-subtitle">Gestão de Cartões, Contas & Inteligência Financeira</p>
+      </div>
+
+      <!-- Form Login -->
+      <form id="login-form" style="margin-top: 20px;">
+        <div class="form-group">
+          <label for="login-email">E-mail de Acesso</label>
+          <input type="email" id="login-email" placeholder="seuemail@exemplo.com" value="victorantoniolima464@gmail.com" required class="input-control">
+        </div>
+        <div class="form-group">
+          <label for="login-password">Senha de Acesso</label>
+          <input type="password" id="login-password" placeholder="••••••••" value="master123" required class="input-control">
+        </div>
+        <button type="submit" class="btn btn-primary btn-full"><i data-lucide="log-in"></i> Entrar na Plataforma</button>
+        
+        <div style="margin-top: 14px; text-align: center;">
+          <button type="button" id="btn-reset-master-access" class="btn btn-ghost" style="font-size: 0.76rem; color: var(--accent-gold); border-color: rgba(245, 158, 11, 0.3); padding: 4px 10px;">
+            ⚡ Restaurar Acesso Master (victorantoniolima464@gmail.com)
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== MAIN PLATFORM APP ==================== -->
+  <div id="app-screen" class="app-container" style="display: none;">
+
+    <!-- APP HEADER -->
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-icon"><span class="brand-dollar-sign">$</span></div>
+        <div class="brand-text">
+          <h1>ATLAS FINANCE <span>PRO</span></h1>
+          <p style="font-size: 0.78rem; color: var(--text-muted); display: flex; align-items: center; gap: 6px;">
+            Controle de Crédito, Contas & Orçamento
+            <span id="device-mode-badge" class="device-mode-pill"><i data-lucide="monitor" style="width:12px;"></i> Desktop Mode</span>
+          </p>
+        </div>
+      </div>
+
+      <div class="header-controls">
+        <div class="user-badge">
+          <i data-lucide="user"></i>
+          <span id="user-display-name">Usuário</span>
+          <span id="user-role-tag" class="role-tag role-user">TRIAL</span>
+        </div>
+
+        <div class="year-selector">
+          <button id="prev-year-btn" class="btn-icon"><i data-lucide="chevron-left"></i></button>
+          <span id="current-year-display">2026</span>
+          <button id="next-year-btn" class="btn-icon"><i data-lucide="chevron-right"></i></button>
+        </div>
+
+        <button id="btn-master-panel" class="btn btn-gold" style="display: none;">
+          <i data-lucide="shield"></i> Painel Master
+        </button>
+        <button id="btn-open-transaction-modal" class="btn btn-primary">
+          <i data-lucide="plus-circle"></i> Novo Lançamento
+        </button>
+        <button id="btn-open-bank-modal" class="btn btn-secondary">
+          <i data-lucide="credit-card"></i> Cartões
+        </button>
+        <button id="btn-open-change-my-pass" class="btn btn-ghost" title="Alterar Senha de Acesso">
+          <i data-lucide="key-round"></i> Senha
+        </button>
+        <button id="btn-logout" class="btn btn-ghost" title="Sair da Conta">
+          <i data-lucide="log-out"></i> Sair
+        </button>
+      </div>
+    </header>
+
+    <!-- TRIAL & SUBSCRIPTION BANNER -->
+    <div id="trial-banner" class="trial-banner" style="display: none;">
+      <div class="trial-info">
+        <i data-lucide="clock" style="color: var(--accent-gold);"></i>
+        <span id="trial-banner-text">Você está no período de teste gratuito. Restam 7 dias.</span>
+      </div>
+      <button id="btn-subscribe-now" class="btn btn-gold"><i data-lucide="zap"></i> Assinar Agora (R$ 29,90/mês)</button>
+    </div>
+
+    <!-- MONTH NAVIGATION -->
+    <nav class="month-nav">
+      <div class="month-scroll" id="month-tabs-container"></div>
+    </nav>
+
+    <!-- ==================== MASTER ADMIN PANEL ==================== -->
+    <section id="master-admin-section" class="master-panel" style="display: none;">
+      <div class="master-header">
+        <div class="master-title">
+          <i data-lucide="shield-check" style="color: var(--accent-gold); width: 28px; height: 28px;"></i>
+          <div>
+            <h2 style="display: flex; align-items: center; gap: 10px;">
+              Painel de Gestão Master (Usuários & Acessos)
+              <span class="status-tag paid" style="font-size: 0.75rem; background: rgba(16, 185, 129, 0.2); color: #34d399; border-color: rgba(16, 185, 129, 0.4);">
+                <i data-lucide="cloud"></i> Nuvem Conectada (Real-Time)
+              </span>
+            </h2>
+            <p>Cadastro de novos clientes, gerenciamento de acessos, senhas e exclusão de contas</p>
+          </div>
+        </div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <button class="btn btn-gold" id="btn-open-master-add-user" onclick="openMasterAddUserModal()">
+            <i data-lucide="user-plus"></i> Cadastrar Novo Usuário
+          </button>
+          <button class="btn btn-ghost" id="btn-close-master-panel">&times; Fechar Painel Admin</button>
+        </div>
+      </div>
+
+      <!-- MASTER METRICS -->
+      <div class="metrics-grid">
+        <div class="metric-card" style="border-color: rgba(245, 158, 11, 0.4);">
+          <div class="metric-header"><span>Faturamento Total (MRR)</span><i data-lucide="dollar-sign" style="color: var(--accent-gold);"></i></div>
+          <div class="metric-value" id="master-metric-mrr" style="color: var(--accent-gold);">R$ 0,00</div>
+          <div class="metric-sub">Receita bruta de assinaturas</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-header"><span>Total Geral de Usuários</span><i data-lucide="users"></i></div>
+          <div class="metric-value" id="master-metric-users">0</div>
+          <div class="metric-sub">Cadastros na plataforma</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-header"><span>Assinantes Ativos</span><i data-lucide="check-circle" style="color: var(--status-paid);"></i></div>
+          <div class="metric-value" id="master-metric-subscribers" style="color: var(--status-paid);">0</div>
+          <div class="metric-sub">Pagantes recorrentes</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-header"><span>Usuários em Teste Grátis</span><i data-lucide="clock" style="color: var(--status-pending);"></i></div>
+          <div class="metric-value" id="master-metric-trials" style="color: var(--status-pending);">0</div>
+          <div class="metric-sub">Período de 7 dias grátis</div>
+        </div>
+      </div>
+
+      <!-- ALERTA DE CLIENTES COM ACESSO EXPIRANDO EM BREVE -->
+      <div id="master-expiring-alert-banner" style="display: none; background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.4); border-radius: var(--radius-md); padding: 12px 16px; margin-bottom: 16px; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 1.3rem;">⚠️</span>
+          <div>
+            <span style="color: #fbbf24; font-weight: 800; font-size: 0.92rem;" id="master-expiring-alert-text">Existem 0 cliente(s) com o teste expirando em menos de 2 dias!</span>
+            <p style="font-size: 0.78rem; color: var(--text-muted); margin: 2px 0 0 0;">Decida se deseja manter o acesso ativo ou encerrar a conta abaixo.</p>
+          </div>
+        </div>
+        <button class="btn btn-ghost" style="color: #fbbf24; border-color: rgba(245, 158, 11, 0.5); font-size: 0.78rem; padding: 6px 12px;" onclick="masterFilterExpiringUsers()">
+          🔍 Filtrar Clientes Expirando
+        </button>
+      </div>
+
+      <!-- MASTER USERS HEADER & SEARCH TOOLBAR -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 12px;">
+        <h3 style="font-size: 1rem; color: var(--text-main); margin: 0;">Gestão de Usuários & Contas</h3>
+        <div class="search-box" style="padding: 1px;">
+          <i data-lucide="search"></i>
+          <input type="text" id="master-search-users-input" placeholder="Buscar usuário por nome ou e-mail..." style="width: 280px;">
+        </div>
+      </div>
+
+      <!-- MASTER USERS TABLE -->
+      <div class="table-card">
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Usuário</th>
+                <th>Data Cadastro</th>
+                <th>Status / Licença</th>
+                <th>Período Restante</th>
+                <th style="text-align: center;">Alterar Status</th>
+                <th style="text-align: center;">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="master-users-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- METRICS OVERVIEW -->
+    <section class="metrics-grid">
+      <!-- Card Salário e Saldo Livre -->
+      <div class="metric-card" style="border-color: rgba(6, 182, 212, 0.4);">
+        <div class="metric-header">
+          <span>Meu Salário Mensal</span>
+          <button id="btn-toggle-salary-lock" class="btn btn-ghost" style="padding: 2px 8px; font-size: 0.75rem; border-color: rgba(6, 182, 212, 0.3); color: var(--accent-cyan);">
+            ✏️ Editar
+          </button>
+        </div>
+        
+        <!-- Estado Leitura (Default) -->
+        <div id="salary-read-box" style="display: flex; align-items: baseline; gap: 6px; margin-bottom: 4px;">
+          <div class="metric-value" id="salary-display-value" style="color: var(--accent-cyan);">R$ 0,00</div>
+        </div>
+
+        <!-- Estado Edição (Input) -->
+        <div id="salary-edit-box" style="display: none; gap: 6px; margin-bottom: 4px;">
+          <input type="number" id="user-salary-input" step="any" min="0" placeholder="0.00" class="input-control font-mono" style="padding: 4px 8px; font-size: 1rem; color: var(--accent-cyan); border-color: rgba(6, 182, 212, 0.5);">
+          <button id="btn-save-salary-input" class="btn btn-primary" style="padding: 4px 10px; font-size: 0.75rem;">Confirmar</button>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px; padding-top: 6px; border-top: 1px solid rgba(255,255,255,0.06);">
+          <span style="font-size: 0.78rem; color: var(--text-muted);">Saldo Livre Restante:</span>
+          <span id="salary-free-balance" style="font-family: var(--font-mono); font-weight: 800; font-size: 0.95rem; color: var(--status-paid);">R$ 0,00</span>
+        </div>
+        <div class="progress-bar-container" style="background: rgba(255,255,255,0.08); height: 4px; border-radius: 2px; margin-top: 6px; overflow: hidden;">
+          <div id="salary-progress-bar" style="background: linear-gradient(90deg, var(--accent-cyan), var(--accent-primary)); height: 100%; width: 0%; transition: width 0.3s ease;"></div>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-header"><span>Faturas do Mês (Cartões)</span><i data-lucide="credit-card" style="color: var(--accent-primary);"></i></div>
+        <div class="metric-value" id="metric-cards-total">R$ 0,00</div>
+        <div class="metric-sub" id="metric-cards-sub">0 lançamento(s)</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-header"><span>Contas da Casa (Mês)</span><i data-lucide="home" style="color: var(--accent-secondary);"></i></div>
+        <div class="metric-value" id="metric-bills-total">R$ 0,00</div>
+        <div class="metric-sub" id="metric-bills-sub">0 conta(s)</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-header"><span>Total Geral do Mês</span><i data-lucide="pie-chart" style="color: var(--accent-gold);"></i></div>
+        <div class="metric-value" id="metric-grand-total">R$ 0,00</div>
+        <div class="metric-sub" id="metric-grand-sub">Pago: R$ 0,00 | Pendente: R$ 0,00</div>
+      </div>
+    </section>
+
+    <!-- SECTION TOOLBAR & FILTERS -->
+    <div class="section-toolbar">
+      <div class="view-tabs" id="desktop-view-tabs">
+        <button class="view-tab active" data-view="all"><i data-lucide="layers"></i> Todas as Despesas</button>
+        <button class="view-tab" data-view="cards"><i data-lucide="credit-card"></i> Faturas (Cartão)</button>
+        <button class="view-tab" data-view="bills"><i data-lucide="home"></i> Contas da Casa</button>
+        <button class="view-tab" data-view="limits"><i data-lucide="bar-chart-2"></i> Limites de Cartão</button>
+        <button class="view-tab" data-view="analytics"><i data-lucide="pie-chart"></i> Gráficos Analytics</button>
+      </div>
+
+      <div class="filter-group">
+        <div class="search-box">
+          <i data-lucide="search"></i>
+          <input type="text" id="search-input" placeholder="Buscar despesa ou local...">
+        </div>
+        <select id="bank-filter" class="select-input">
+          <option value="ALL">💳 Todos os Cartões</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- CHARTS ANALYTICS SECTION -->
+    <div id="analytics-section" class="content-section" style="display: none;">
+      <div class="section-header">
+        <div class="section-title">
+          <i data-lucide="pie-chart" style="color: var(--accent-gold);"></i>
+          <h2>Inteligência Financeira & Gráficos do Mês</h2>
+        </div>
+      </div>
+      <div class="charts-grid">
+        <div class="chart-card">
+          <div class="chart-header">
+            <h4 style="font-size: 0.95rem; color: var(--text-main);">Gastos por Categoria</h4>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">Mês Atual</span>
+          </div>
+          <div class="chart-container">
+            <canvas id="categoryPieChart"></canvas>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-header">
+            <h4 style="font-size: 0.95rem; color: var(--text-main);">Visão Geral: Salário vs Gastos vs Saldo</h4>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">Comparativo</span>
+          </div>
+          <div class="chart-container">
+            <canvas id="balanceBarChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BANK LIMITS SUMMARY -->
+    <div id="bank-limits-section" class="content-section" style="display: none;">
+      <div class="section-header">
+        <div class="section-title">
+          <i data-lucide="credit-card" style="color: var(--accent-primary);"></i>
+          <h2>Limites & Uso dos Cartões de Crédito</h2>
+        </div>
+      </div>
+      <div id="bank-limits-grid" class="metrics-grid"></div>
+    </div>
+
+    <!-- CARDS TRANSACTIONS TABLE -->
+    <section id="cards-section" class="content-section">
+      <div class="section-header">
+        <div class="section-title">
+          <i data-lucide="credit-card" style="color: var(--accent-primary);"></i>
+          <h2>Lançamentos de Cartões de Crédito</h2>
+        </div>
+        <div class="section-badge" id="cards-table-badge">R$ 0,00</div>
+      </div>
+      
+      <div class="bank-pills-container" id="bank-pills-filter"></div>
+
+      <div class="table-card">
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Descrição / Local</th>
+                <th>Cartão</th>
+                <th>Categoria</th>
+                <th>Data</th>
+                <th>Parcela</th>
+                <th style="text-align: right;">Valor (R$)</th>
+                <th>Status</th>
+                <th style="text-align: center;">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="cards-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- HOUSE BILLS TABLE -->
+    <section id="bills-section" class="content-section">
+      <div class="section-header">
+        <div class="section-title">
+          <i data-lucide="home" style="color: var(--accent-secondary);"></i>
+          <h2>Contas da Casa & Despesas Fixas</h2>
+        </div>
+        <div class="section-badge" id="bills-table-badge" style="background: rgba(236, 72, 153, 0.15); color: var(--accent-secondary); border-color: rgba(236, 72, 153, 0.3);">R$ 0,00</div>
+      </div>
+
+      <div class="table-card">
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Descrição / Conta</th>
+                <th>Categoria</th>
+                <th>Vencimento</th>
+                <th style="text-align: right;">Valor (R$)</th>
+                <th>Status</th>
+                <th style="text-align: center;">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="bills-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- FLOATING ACTION BUTTON (MOBILE ONLY FAB "+") -->
+  <button id="mobile-fab-btn" class="mobile-fab-btn" title="Novo Lançamento">
+    <i data-lucide="plus" style="width: 28px; height: 28px;"></i>
+  </button>
+
+  <!-- MOBILE BOTTOM NAVIGATION BAR -->
+  <nav class="mobile-bottom-bar" id="mobile-bottom-bar">
+    <button class="mobile-nav-item active" data-view="all">
+      <i data-lucide="layers"></i>
+      <span>Início</span>
+    </button>
+    <button class="mobile-nav-item" data-view="cards">
+      <i data-lucide="credit-card"></i>
+      <span>Cartões</span>
+    </button>
+    <button class="mobile-nav-item" data-view="bills">
+      <i data-lucide="home"></i>
+      <span>Contas</span>
+    </button>
+    <button class="mobile-nav-item" data-view="limits">
+      <i data-lucide="bar-chart-2"></i>
+      <span>Limites</span>
+    </button>
+    <button class="mobile-nav-item" data-view="analytics">
+      <i data-lucide="pie-chart"></i>
+      <span>Gráficos</span>
+    </button>
+  </nav>
+
+  <!-- ==================== MODALS ==================== -->
+
+  <!-- MODAL: ADD / EDIT TRANSACTION -->
+  <div class="modal-overlay" id="transaction-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="tx-modal-title"><i data-lucide="plus-circle"></i> Novo Lançamento Financeiro</h3>
+        <button class="btn-close-modal" id="btn-close-tx-modal">&times;</button>
+      </div>
+
+      <form id="transaction-form">
+        <input type="hidden" id="editing-tx-id">
+        <!-- TIPO DE LANÇAMENTO -->
+        <div class="form-group" id="group-tx-type-toggle">
+          <label>Tipo de Lançamento *</label>
+          <div class="radio-toggle">
+            <label class="radio-option">
+              <input type="radio" name="txType" value="CARD" checked>
+              <span><i data-lucide="credit-card"></i> Cartão de Crédito</span>
+            </label>
+            <label class="radio-option">
+              <input type="radio" name="txType" value="BILL">
+              <span><i data-lucide="home"></i> Conta da Casa</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- FORMA DE PAGAMENTO -->
+        <div class="form-group" id="group-tx-payment-method">
+          <label for="tx-pay-method">Forma de Pagamento *</label>
+          <select id="tx-pay-method" class="select-control">
+            <option value="CARD">💳 Cartão de Crédito (Selecionar Cartão)</option>
+            <option value="BANK_DEBIT">🏦 Débito Direto em Conta / Cartão de Débito (Selecionar Banco)</option>
+            <option value="PIX">⚡ PIX / Transferência Instantânea</option>
+            <option value="BOLETO">📄 Boleto Bancário</option>
+            <option value="CASH">💵 Dinheiro em Espécie</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="tx-description">Descrição / Local *</label>
+          <input type="text" id="tx-description" placeholder="Ex: Supermercado, Fatura Luz, Amazon..." required class="input-control">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label for="tx-amount">Valor (R$) *</label>
+            <input type="number" id="tx-amount" step="0.01" min="0.01" placeholder="0,00" required class="input-control font-mono">
+          </div>
+          <div class="form-group flex-1" id="group-bank">
+            <label for="tx-bank" id="label-tx-bank">Selecionar em qual Cartão / Banco *</label>
+            <select id="tx-bank" class="select-control"></select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label for="tx-category">Categoria</label>
+            <select id="tx-category" class="select-control">
+              <option value="Alimentação / Mercado">Alimentação / Mercado 🛒</option>
+              <option value="Moradia / Luz / Água">Moradia / Luz / Água 🏠</option>
+              <option value="Transporte / Combustível">Transporte / Combustível ⛽</option>
+              <option value="Lazer / Viagem">Lazer / Viagem ✈️</option>
+              <option value="Saúde / Farmácia">Saúde / Farmácia 💊</option>
+              <option value="Assinaturas / Streaming">Assinaturas / Streaming 📺</option>
+              <option value="Educação">Educação 📚</option>
+              <option value="Outros">Outros 📦</option>
+            </select>
+          </div>
+          <div class="form-group flex-1">
+            <label for="tx-date">Data do Lançamento *</label>
+            <input type="date" id="tx-date" required class="input-control">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group flex-1" id="group-installments">
+            <label for="tx-installments">Parcelamento</label>
+            <select id="tx-installments" class="select-control">
+              <option value="1">À vista (1x)</option>
+              <option value="2">2x parcelas</option>
+              <option value="3">3x parcelas</option>
+              <option value="4">4x parcelas</option>
+              <option value="5">5x parcelas</option>
+              <option value="6">6x parcelas</option>
+              <option value="10">10x parcelas</option>
+              <option value="12">12x parcelas (1 ano)</option>
+              <option value="15">15x parcelas</option>
+              <option value="18">18x parcelas</option>
+              <option value="24">24x parcelas (2 anos)</option>
+              <option value="36">36x parcelas (3 anos)</option>
+              <option value="48">48x parcelas (4 anos)</option>
+              <option value="CUSTOM">✏️ Outra quantidade (Digitar...)</option>
+            </select>
+            <div id="group-custom-installments" style="display: none; margin-top: 6px;">
+              <input type="number" id="tx-custom-installments" min="1" max="120" placeholder="Digite a qtd de parcelas (ex: 18, 24, 60)" class="input-control font-mono">
+            </div>
+          </div>
+          <div class="form-group flex-1">
+            <label for="tx-status">Status de Pagamento</label>
+            <select id="tx-status" class="select-control">
+              <option value="PENDING">Pendente ⏳</option>
+              <option value="PAID">Pago / Quitado ✅</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+          <button type="button" class="btn btn-ghost" id="btn-cancel-tx">Cancelar</button>
+          <button type="submit" class="btn btn-primary" id="btn-submit-tx"><i data-lucide="check"></i> Salvar Lançamento</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: BANK MANAGER -->
+  <div class="modal-overlay" id="bank-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3><i data-lucide="credit-card"></i> Gerenciar Cartões de Crédito</h3>
+        <button class="btn-close-modal" id="btn-close-bank-modal">&times;</button>
+      </div>
+      
+      <form id="add-bank-form" style="margin-bottom: 20px;">
+        <input type="hidden" id="editing-bank-id">
+        <h4 id="bank-form-title" style="margin-top: 0; margin-bottom: 12px; font-size: 0.95rem; color: var(--accent-cyan); display: flex; align-items: center; gap: 6px;">
+          <i data-lucide="plus-circle" style="width: 16px;"></i> Cadastrar Novo Cartão
+        </h4>
+        <div class="form-row">
+          <div class="form-group flex-2">
+            <label for="new-bank-name">Nome do Banco / Cartão *</label>
+            <input type="text" id="new-bank-name" placeholder="Ex: Nubank, Itaú, XP..." required class="input-control">
+          </div>
+          <div class="form-group flex-1">
+            <label for="new-bank-limit">Limite R$ *</label>
+            <input type="number" id="new-bank-limit" step="any" min="0" placeholder="Ex: 3500.50" required class="input-control font-mono">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label for="new-bank-due">Dia Vencimento</label>
+            <input type="number" id="new-bank-due" min="1" max="31" value="10" class="input-control">
+          </div>
+          <div class="form-group flex-1">
+            <label for="new-bank-color">Cor da Badge</label>
+            <input type="color" id="new-bank-color" value="#6366f1" class="input-color-picker">
+          </div>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button type="submit" id="btn-submit-bank" class="btn btn-primary flex-1"><i data-lucide="plus"></i> Cadastrar Cartão de Crédito</button>
+          <button type="button" id="btn-cancel-edit-bank" class="btn btn-ghost" style="display: none; padding: 6px 12px;" onclick="cancelBankEdit()">Cancelar</button>
+        </div>
+      </form>
+
+      <hr class="divider" style="margin: 16px 0; border-color: var(--border-color);">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <h4 style="margin: 0;">Meus Cartões Cadastrados</h4>
+        <button id="btn-clear-all-banks" class="btn btn-ghost" style="padding: 4px 10px; font-size: 0.78rem; color: #f43f5e; border-color: rgba(244, 63, 94, 0.3);">
+          <i data-lucide="trash-2" style="width: 14px;"></i> Excluir Todos
+        </button>
+      </div>
+      <div id="registered-banks-list" class="bank-list"></div>
+    </div>
+  </div>
+
+  <!-- MODAL: PAYWALL -->
+  <div class="modal-overlay" id="paywall-modal">
+    <div class="modal-card paywall-card">
+      <div style="font-size: 2.5rem; margin-bottom: 10px;">🚀</div>
+      <h2 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 8px;">Seu Período de Teste Expirou!</h2>
+      <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 16px;">
+        Para continuar utilizando a plataforma ATLAS FINANCE e gerenciar seus cartões e despesas sem interrupções, assine agora o plano mensal.
+      </p>
+
+      <div class="paywall-price">R$ 29,90 <span style="font-size: 1rem; color: var(--text-muted); font-weight: 400;">/mês</span></div>
+
+      <div id="master-redirect-checkout-box" style="display: none; margin-bottom: 16px;">
+        <button type="button" class="btn btn-gold btn-full" id="btn-open-master-redirect-link" style="background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); border-color: rgba(6, 182, 212, 0.5); font-weight: 800;">
+          <i data-lucide="external-link"></i> Ir para a Página Oficial de Pagamento (Redirecionar)
+        </button>
+      </div>
+
+      <div class="auth-tabs" style="max-width: 300px; margin: 0 auto 16px;">
+        <button class="auth-tab active" id="tab-checkout-pix">PIX Instantâneo</button>
+        <button class="auth-tab" id="tab-checkout-card">Cartão de Crédito</button>
+      </div>
+
+      <div id="checkout-pix-box" class="pix-box">
+        <p style="font-size: 0.85rem; font-weight: 600; color: var(--accent-pix);">Escaneie o QrCode Pix para ativar agora:</p>
+        <div class="pix-qr">
+          <svg viewBox="0 0 100 100" style="width: 100%; height: 100%;">
+            <path d="M0,0 h100 v100 h-100 z" fill="#fff"/>
+            <path d="M10,10 h30 v30 h-30 z M15,15 v20 h20 v-20 z M50,10 h40 v10 h-40 z M50,30 h40 v10 h-40 z M10,50 h10 v40 h-10 z M30,50 h20 v20 h-20 z M60,50 h30 v40 h-30 z" fill="#0f172a"/>
+          </svg>
+        </div>
+        <button class="btn btn-pix btn-full" id="btn-copy-pix" style="margin-top: 10px;"><i data-lucide="copy"></i> Copiar Chave Pix Copia e Cola</button>
+        <button class="btn btn-gold btn-full" id="btn-confirm-pix-pay" style="margin-top: 10px;"><i data-lucide="check-circle"></i> Já fiz o Pagamento (Ativar Acesso)</button>
+      </div>
+
+      <form id="checkout-card-form" style="display: none; text-align: left; margin-top: 16px;">
+        <div class="form-group">
+          <label>Número do Cartão</label>
+          <input type="text" placeholder="0000 0000 0000 0000" required class="input-control font-mono">
+        </div>
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label>Validade</label>
+            <input type="text" placeholder="MM/AA" required class="input-control font-mono">
+          </div>
+          <div class="form-group flex-1">
+            <label>CVC</label>
+            <input type="text" placeholder="123" required class="input-control font-mono">
+          </div>
+        </div>
+        <button type="submit" class="btn btn-gold btn-full" style="margin-top: 10px;"><i data-lucide="lock"></i> Pagar R$ 29,90 e Ativar Licença</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: MASTER ADD USER -->
+  <div class="modal-overlay" id="master-add-user-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3><i data-lucide="user-plus" style="color: var(--accent-gold);"></i> Cadastrar Novo Usuário (Master Admin)</h3>
+        <button class="btn-close-modal" id="btn-close-master-add-user" onclick="closeMasterAddUserModal()">&times;</button>
+      </div>
+      <form id="master-add-user-form">
+        <div class="form-group">
+          <label for="master-new-name">Nome Completo do Usuário *</label>
+          <input type="text" id="master-new-name" placeholder="Ex: Maria Santos" required class="input-control">
+        </div>
+        <div class="form-group">
+          <label for="master-new-email">E-mail de Acesso *</label>
+          <input type="email" id="master-new-email" placeholder="usuario@exemplo.com" required class="input-control">
+        </div>
+        <div class="form-group">
+          <label for="master-new-pass">Senha Inicial de Acesso *</label>
+          <input type="text" id="master-new-pass" placeholder="Defina a senha do cliente" value="123456" required class="input-control font-mono">
+        </div>
+        <div class="form-group">
+          <label for="master-new-plan">Plano / Licença Inicial *</label>
+          <select id="master-new-plan" class="select-control">
+            <option value="VIP_LIFETIME">👑 Gratuito para Sempre (VIP Vitalício)</option>
+            <option value="SUBSCRIBED">💳 Assinante Mensal (R$ 29,90/mês)</option>
+            <option value="TRIAL_ACTIVE">⏳ Período de Teste (+7 Dias)</option>
+            <option value="BLOCKED">🚫 Acesso Suspenso (Bloqueado)</option>
+          </select>
+        </div>
+        <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+          <button type="button" class="btn btn-ghost" id="btn-cancel-master-add-user" onclick="closeMasterAddUserModal()">Cancelar</button>
+          <button type="submit" class="btn btn-gold"><i data-lucide="check"></i> Cadastrar Usuário & Gerar Acesso</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: CREDENCIAIS DO CLIENTE PRONTAS PARA ENVIO -->
+  <div class="modal-overlay" id="master-user-credentials-modal">
+    <div class="modal-card" style="max-width: 460px; text-align: center;">
+      <div style="font-size: 2.2rem; margin-bottom: 6px;">🎉</div>
+      <h3 style="color: var(--accent-gold); font-size: 1.25rem; font-weight: 800; margin-bottom: 4px;">Acesso do Cliente Gerado com Sucesso!</h3>
+      <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 16px;">Os dados abaixo foram salvos e já estão prontos para envio.</p>
+
+      <div style="background: var(--bg-input); border: 1px solid var(--border-highlight); border-radius: var(--radius-md); padding: 16px; text-align: left; margin-bottom: 16px; font-family: var(--font-mono); font-size: 0.88rem; line-height: 1.6;">
+        <div><strong>👤 Nome:</strong> <span id="cred-display-name" style="color: #fff;">-</span></div>
+        <div><strong>📧 E-mail:</strong> <span id="cred-display-email" style="color: var(--accent-cyan);">-</span></div>
+        <div><strong>🔑 Senha:</strong> <span id="cred-display-pass" style="color: var(--accent-gold); font-weight: 800;">-</span></div>
+        <div><strong>📋 Plano/Licença:</strong> <span id="cred-display-plan" style="color: var(--status-paid);">-</span></div>
+      </div>
+
+      <button class="btn btn-gold btn-full" id="btn-copy-client-access" style="margin-bottom: 8px;">
+        <i data-lucide="copy"></i> Copiar Acesso Completo para WhatsApp
+      </button>
+      <button class="btn btn-ghost btn-full" onclick="document.getElementById('master-user-credentials-modal').classList.remove('active')">
+        Fechar Janela
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL: MASTER EDIT USER -->
+  <div class="modal-overlay" id="master-edit-user-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3><i data-lucide="edit-3" style="color: var(--accent-gold);"></i> Editar Usuário / Conta Master</h3>
+        <button class="btn-close-modal" id="btn-close-master-edit-user">&times;</button>
+      </div>
+      <form id="master-edit-user-form">
+        <input type="hidden" id="master-edit-id">
+
+        <div class="form-group">
+          <label for="master-edit-name">Nome Completo *</label>
+          <input type="text" id="master-edit-name" required class="input-control">
+        </div>
+        <div class="form-group">
+          <label for="master-edit-email">E-mail de Acesso *</label>
+          <input type="email" id="master-edit-email" required class="input-control">
+        </div>
+        <div class="form-group">
+          <label for="master-edit-pass">Senha de Acesso *</label>
+          <input type="text" id="master-edit-pass" required class="input-control font-mono" style="font-weight: 700;">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label for="master-edit-role">Perfil de Acesso</label>
+            <select id="master-edit-role" class="select-control">
+              <option value="MASTER">👑 Administrador Master</option>
+              <option value="USER">👤 Usuário Padrão</option>
+            </select>
+          </div>
+          <div class="form-group flex-1">
+            <label for="master-edit-plan">Plano / Licença</label>
+            <select id="master-edit-plan" class="select-control">
+              <option value="VIP_LIFETIME">👑 Gratuito para Sempre (VIP)</option>
+              <option value="SUBSCRIBED">💳 Assinante Mensal (R$ 29,90)</option>
+              <option value="TRIAL_ACTIVE">⏳ Período de Teste (+7 Dias)</option>
+              <option value="BLOCKED">🚫 Bloquear Acesso</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+          <button type="button" class="btn btn-ghost" id="btn-cancel-master-edit-user">Cancelar</button>
+          <button type="submit" class="btn btn-gold"><i data-lucide="check-circle"></i> Salvar Alterações</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: PRIMEIRA SENHA DEFINITIVA APÓS PRIMEIRO LOGIN -->
+  <div class="modal-overlay" id="first-login-pass-modal" style="z-index: 99999;">
+    <div class="modal-card" style="max-width: 440px; text-align: center;">
+      <div style="font-size: 2.5rem; margin-bottom: 8px;">🔐</div>
+      <h3 style="color: var(--accent-gold); font-size: 1.3rem; font-weight: 800; margin-bottom: 6px;">Defina sua Senha Definitiva de Acesso</h3>
+      <p style="font-size: 0.84rem; color: var(--text-muted); margin-bottom: 20px;">
+        Seja bem-vindo(a)! Como este é o seu primeiro acesso à plataforma, crie a sua senha pessoal definitiva para garantir a segurança da sua conta.
+      </p>
+
+      <form id="first-login-pass-form" style="text-align: left;">
+        <div class="form-group">
+          <label for="first-login-new-pass">Crie sua Senha Definitiva *</label>
+          <input type="password" id="first-login-new-pass" placeholder="Digite sua nova senha" required class="input-control font-mono">
+        </div>
+        <div class="form-group">
+          <label for="first-login-confirm-pass">Confirme a Nova Senha *</label>
+          <input type="password" id="first-login-confirm-pass" placeholder="Confirme sua nova senha" required class="input-control font-mono">
+        </div>
+
+        <button type="submit" class="btn btn-gold btn-full" style="margin-top: 10px;">
+          <i data-lucide="check-circle"></i> Salvar Senha Definitiva e Entrar
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: CHANGE LOGGED USER PASSWORD -->
+  <div class="modal-overlay" id="change-pass-modal">
+    <div class="modal-card" style="max-width: 420px;">
+      <div class="modal-header">
+        <h3 style="display: flex; align-items: center; gap: 8px;"><i data-lucide="key-round"></i> Alterar Minha Senha</h3>
+        <button class="btn-close-modal" id="btn-close-change-pass-modal">&times;</button>
+      </div>
+
+      <form id="change-my-pass-form">
+        <div class="form-group">
+          <label for="my-new-pass">Nova Senha *</label>
+          <input type="password" id="my-new-pass" placeholder="••••••••" required class="input-control font-mono">
+        </div>
+        <div class="form-group">
+          <label for="my-confirm-new-pass">Confirmar Nova Senha *</label>
+          <input type="password" id="my-confirm-new-pass" placeholder="••••••••" required class="input-control font-mono">
+        </div>
+
+        <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+          <button type="button" class="btn btn-ghost" id="btn-cancel-change-pass">Cancelar</button>
+          <button type="submit" class="btn btn-primary"><i data-lucide="check-circle"></i> Atualizar Senha</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    /* ==========================================================================
+       ATLAS FINANCE ENGINE - AUTOMATIC DEVICE DETECTION & ADAPTIVE UX
+       ========================================================================== */
+
+    const MONTH_NAMES = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+    const DEFAULT_TRIAL_DAYS = 7;
+
+    // PRESET EXCLUSIVO DE MASTER ADMIN E USUÁRIOS INICIAIS
+    const PRESET_USERS = [
+      {
+        id: 'usr-master-victor',
+        name: 'Victor Antonio Lima (Master)',
+        email: 'victorantoniolima464@gmail.com',
+        password: 'master123',
+        role: 'MASTER',
+        registeredAt: '2026-01-01T00:00:00.000Z',
+        subscriptionStatus: 'SUBSCRIBED',
+        trialEndTimestamp: Date.now() + (365 * 86400000)
+      },
+      {
+        id: 'usr-gabriel-julio',
+        name: 'Gabriel Julio',
+        email: 'gabriemjulio@gmail.com',
+        password: '123456',
+        role: 'USER',
+        registeredAt: new Date().toISOString(),
+        subscriptionStatus: 'SUBSCRIBED',
+        trialEndTimestamp: Date.now() + (365 * 86400000)
+      }
+    ];
+
+    // GLOBAL APP STATE
+    let saasState = {
+      users: [],
+      currentUser: null,
+      year: 2026,
+      currentMonth: 7,
+      selectedView: 'all',
+      selectedBankFilter: 'ALL',
+      searchQuery: '',
+      userBanks: [],
+      userTransactions: [],
+      userSalary: 0,
+      userSalaryLocked: false,
+      isMobile: false
+    };
+
+    let categoryPieChartInstance = null;
+    let balanceBarChartInstance = null;
+
+    // --- DETECÇÃO AUTOMÁTICA DE DISPOSITIVO (DISPOSITIVO MÓVEL VS COMPUTADOR) ---
+    function detectDeviceAndApplyLayout() {
+      const userAgentMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      const isSmallScreen = window.innerWidth <= 768;
+
+      saasState.isMobile = userAgentMobile || isSmallScreen;
+
+      const badge = document.getElementById('device-mode-badge');
+
+      if (saasState.isMobile) {
+        document.body.classList.add('is-mobile');
+        document.body.classList.remove('is-desktop');
+        if (badge) {
+          badge.innerHTML = '<i data-lucide="smartphone" style="width:12px;"></i> Mobile Mode';
+          badge.style.background = 'rgba(236, 72, 153, 0.15)';
+          badge.style.color = 'var(--accent-secondary)';
+          badge.style.borderColor = 'rgba(236, 72, 153, 0.3)';
+        }
+      } else {
+        document.body.classList.add('is-desktop');
+        document.body.classList.remove('is-mobile');
+        if (badge) {
+          badge.innerHTML = '<i data-lucide="monitor" style="width:12px;"></i> Desktop Mode';
+          badge.style.background = 'rgba(6, 182, 212, 0.15)';
+          badge.style.color = 'var(--accent-cyan)';
+          badge.style.borderColor = 'rgba(6, 182, 212, 0.3)';
+        }
+      }
+
+      if (window.lucide) lucide.createIcons();
+    }
+
+    // --- INITIALIZATION ---
+    document.addEventListener('DOMContentLoaded', async () => {
+      detectDeviceAndApplyLayout();
+      window.addEventListener('resize', detectDeviceAndApplyLayout);
+
+      loadSaaSStore();
+      setupAuthListeners();
+      setupAppListeners();
+      
+      if (saasState.currentUser) {
+        showAppScreen();
+      } else {
+        showAuthScreen();
+      }
+
+      if (window.lucide) lucide.createIcons();
+
+      // Sincroniza o Banco Online em Nuvem
+      await fetchUsersFromCloudDB();
+      verifyCurrentActiveUserSession();
+
+      // Loop Watchdog em Tempo Real (a cada 3s)
+      setInterval(async () => {
+        if (saasState.currentUser && saasState.currentUser.role !== 'MASTER') {
+          await fetchUsersFromCloudDB();
+          verifyCurrentActiveUserSession();
+        }
+      }, 3000);
+    });
+
+    // --- WATCHDOG DE SESSÃO REALTIME ---
+    function verifyCurrentActiveUserSession() {
+      if (!saasState.currentUser || saasState.currentUser.role === 'MASTER') return;
+
+      const uid = saasState.currentUser.id;
+      const latestUser = saasState.users.find(u => u.id === uid || u.email.toLowerCase() === saasState.currentUser.email.toLowerCase());
+
+      if (!latestUser) {
+        forceUserLogout('⚠️ Sua conta foi removida pelo Administrador Master.');
+        return;
+      }
+      if (latestUser.password && String(latestUser.password).trim() !== String(saasState.currentUser.password).trim()) {
+        forceUserLogout('🔒 Sua senha foi alterada pelo Administrador Master. Faça login novamente.');
+        return;
+      }
+      if (latestUser.subscriptionStatus === 'BLOCKED' || latestUser.subscriptionStatus === 'TRIAL_EXPIRED') {
+        forceUserLogout('🚫 Seu acesso foi suspenso ou bloqueado pelo Administrador Master.');
+        return;
+      }
+    }
+
+    function forceUserLogout(msg) {
+      localStorage.removeItem('finansaas_active_user');
+      saasState.currentUser = null;
+      showAuthScreen();
+      alert(msg);
+    }
+    window.verifyCurrentActiveUserSession = verifyCurrentActiveUserSession;
+
+    // --- REALTIME CLOUD DB ENGINE ---
+    const LIVE_CLOUD_DB_URL = "https://api.restful-api.dev/objects/ff808181932bad2e019335f68b120001";
+
+    async function fetchUsersFromCloudDB() {
+      try {
+        const res = await fetch(LIVE_CLOUD_DB_URL, { cache: 'no-cache' });
+        if (res.ok) {
+          const cloudObj = await res.json();
+          if (cloudObj && cloudObj.data && Array.isArray(cloudObj.data.users)) {
+            const list = cloudObj.data.users;
+            list.forEach(ru => {
+              if (!ru || !ru.email) return;
+              const idx = saasState.users.findIndex(u => u.email.toLowerCase() === ru.email.toLowerCase());
+              if (idx === -1) {
+                saasState.users.push(ru);
+              } else {
+                saasState.users[idx].subscriptionStatus = ru.subscriptionStatus || saasState.users[idx].subscriptionStatus;
+                saasState.users[idx].password = ru.password || saasState.users[idx].password;
+                saasState.users[idx].name = ru.name || saasState.users[idx].name;
+                saasState.users[idx].role = ru.role || saasState.users[idx].role;
+              }
+            });
+            localStorage.setItem('finansaas_users', JSON.stringify(saasState.users));
+            if (saasState.currentUser && saasState.currentUser.role === 'MASTER') {
+              renderMasterPanel();
+            } else if (saasState.currentUser) {
+              verifyCurrentActiveUserSession();
+            }
+          }
+        }
+      } catch (err) {
+        console.warn('Banco em nuvem offline:', err);
+      }
+    }
+
+    async function saveUsersToCloudDB() {
+      try {
+        const res = await fetch(LIVE_CLOUD_DB_URL, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: "ATLAS_FINANCE_USER_STORE",
+            data: { users: saasState.users, updatedAt: new Date().toISOString() }
+          })
+        });
+        return res.ok;
+      } catch (err) {
+        console.warn('Erro ao sincronizar com nuvem:', err);
+        return false;
+      }
+    }
+
+    // --- SAAS STORE (PERSISTENCE) ---
+    function loadSaaSStore() {
+      const savedUsers = localStorage.getItem('finansaas_users');
+      if (savedUsers) {
+        try {
+          saasState.users = JSON.parse(savedUsers);
+        } catch (err) {
+          saasState.users = [...PRESET_USERS];
+        }
+
+        PRESET_USERS.forEach(preset => {
+          const idx = saasState.users.findIndex(u => u.email.toLowerCase() === preset.email.toLowerCase());
+          if (idx === -1) {
+            saasState.users.push(preset);
+          } else {
+            if (preset.email.toLowerCase() === 'victorantoniolima464@gmail.com') {
+              saasState.users[idx].role = 'MASTER';
+              saasState.users[idx].subscriptionStatus = 'SUBSCRIBED';
+              if (!saasState.users[idx].password) saasState.users[idx].password = 'master123';
+            }
+          }
+        });
+        saveUsers();
+      } else {
+        saasState.users = [...PRESET_USERS];
+        saveUsers();
+      }
+
+      const activeUserId = localStorage.getItem('finansaas_active_user');
+      if (activeUserId) {
+        saasState.currentUser = saasState.users.find(u => u.id === activeUserId) || null;
+      }
+    }
+
+    async function saveUsers() {
+      localStorage.setItem('finansaas_users', JSON.stringify(saasState.users));
+      await saveUsersToCloudDB();
+    }
+
+    function loadUserData() {
+      if (!saasState.currentUser) return;
+      const uid = saasState.currentUser.id;
+      saasState.userBanks = JSON.parse(localStorage.getItem(`finansaas_banks_${uid}`) || '[]');
+      saasState.userTransactions = JSON.parse(localStorage.getItem(`finansaas_tx_${uid}`) || '[]');
+      saasState.userSalary = parseFloat(localStorage.getItem(`finansaas_salary_${uid}`)) || 0;
+      saasState.userSalaryLocked = localStorage.getItem(`finansaas_salary_locked_${uid}`) === 'true';
+    }
+
+    function saveUserData() {
+      if (!saasState.currentUser) return;
+      const uid = saasState.currentUser.id;
+      localStorage.setItem(`finansaas_banks_${uid}`, JSON.stringify(saasState.userBanks));
+      localStorage.setItem(`finansaas_tx_${uid}`, JSON.stringify(saasState.userTransactions));
+      localStorage.setItem(`finansaas_salary_${uid}`, saasState.userSalary || 0);
+      localStorage.setItem(`finansaas_salary_locked_${uid}`, saasState.userSalaryLocked ? 'true' : 'false');
+    }
+
+    // --- AUTH FLOW ---
+    function setupAuthListeners() {
+      const btnResetMaster = document.getElementById('btn-reset-master-access');
+      if (btnResetMaster) {
+        btnResetMaster.addEventListener('click', async () => {
+          loadSaaSStore();
+          const masterEmail = 'victorantoniolima464@gmail.com';
+          let masterUser = saasState.users.find(u => u.email.toLowerCase() === masterEmail);
+
+          if (!masterUser) {
+            masterUser = {
+              id: 'usr-master-victor',
+              name: 'Victor Antonio Lima (Master)',
+              email: masterEmail,
+              password: 'master123',
+              role: 'MASTER',
+              registeredAt: '2026-01-01T00:00:00.000Z',
+              subscriptionStatus: 'SUBSCRIBED',
+              trialEndTimestamp: Date.now() + (365 * 86400000)
+            };
+            saasState.users.push(masterUser);
+          } else {
+            masterUser.role = 'MASTER';
+            masterUser.password = 'master123';
+            masterUser.subscriptionStatus = 'SUBSCRIBED';
+            masterUser.isFirstLogin = false;
+          }
+
+          await saveUsers();
+          document.getElementById('login-email').value = masterEmail;
+          document.getElementById('login-password').value = 'master123';
+          alert(`⚡ Acesso Master Restaurado com Sucesso!\n\nE-mail: ${masterEmail}\nSenha: master123\n\nClique em "Entrar na Plataforma" para acessar.`);
+        });
+      }
+
+      document.getElementById('login-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('login-email').value.trim().toLowerCase();
+        const pass = document.getElementById('login-password').value.trim();
+
+        if (!email || !pass) return;
+
+        loadSaaSStore();
+        let user = saasState.users.find(u => u.email.trim().toLowerCase() === email);
+        if (!user) {
+          await fetchUsersFromCloudDB();
+          user = saasState.users.find(u => u.email.trim().toLowerCase() === email);
+        }
+
+        // Garante que a conta victorantoniolima464@gmail.com seja sempre MASTER
+        if (email === 'victorantoniolima464@gmail.com') {
+          if (!user) {
+            user = {
+              id: 'usr-master-victor',
+              name: 'Victor Antonio Lima (Master)',
+              email: 'victorantoniolima464@gmail.com',
+              password: 'master123',
+              role: 'MASTER',
+              registeredAt: '2026-01-01T00:00:00.000Z',
+              subscriptionStatus: 'SUBSCRIBED',
+              trialEndTimestamp: Date.now() + (365 * 86400000)
+            };
+            saasState.users.push(user);
+            await saveUsers();
+          } else {
+            user.role = 'MASTER';
+            user.subscriptionStatus = 'SUBSCRIBED';
+          }
+        }
+
+        if (!user) {
+          alert(`⚠️ O e-mail "${email}" não foi encontrado. Contate o Administrador Master.`);
+          return;
+        }
+
+        if (String(user.password || '').trim() !== pass) {
+          alert('❌ Senha incorreta!');
+          return;
+        }
+
+        if (user.subscriptionStatus === 'BLOCKED') {
+          alert('🚫 Conta bloqueada pelo Administrador Master.');
+          return;
+        }
+
+        if (user.role === 'USER' && (user.isFirstLogin === true || pass === '123456')) {
+          saasState.currentUser = user;
+          localStorage.setItem('finansaas_active_user', user.id);
+          document.getElementById('first-login-pass-modal').classList.add('active');
+          return;
+        }
+
+        saasState.currentUser = user;
+        localStorage.setItem('finansaas_active_user', user.id);
+        showAppScreen();
+      });
+
+      const firstPassForm = document.getElementById('first-login-pass-form');
+      if (firstPassForm) {
+        firstPassForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const newPass = document.getElementById('first-login-new-pass').value.trim();
+          const confirmPass = document.getElementById('first-login-confirm-pass').value.trim();
+
+          if (!newPass || newPass !== confirmPass || newPass.length < 4) {
+            alert('Senhas inválidas ou não coincidem (mínimo 4 caracteres)!');
+            return;
+          }
+
+          if (saasState.currentUser) {
+            saasState.currentUser.password = newPass;
+            saasState.currentUser.isFirstLogin = false;
+            const idx = saasState.users.findIndex(u => u.id === saasState.currentUser.id);
+            if (idx !== -1) {
+              saasState.users[idx].password = newPass;
+              saasState.users[idx].isFirstLogin = false;
+            }
+            saveUsers();
+            document.getElementById('first-login-pass-modal').classList.remove('active');
+            showAppScreen();
+            alert('🎉 Senha definitiva salva com sucesso!');
+          }
+        });
+      }
+    }
+
+    function showAuthScreen() {
+      document.getElementById('auth-screen').style.display = 'flex';
+      document.getElementById('app-screen').style.display = 'none';
+    }
+
+    function showAppScreen() {
+      document.getElementById('auth-screen').style.display = 'none';
+      document.getElementById('app-screen').style.display = 'block';
+
+      loadUserData();
+      updateUserHeaderBadge();
+      checkTrialAndSubscriptionStatus();
+      renderAll();
+
+      if (saasState.currentUser && saasState.currentUser.role === 'MASTER') {
+        document.getElementById('master-admin-section').style.display = 'block';
+        renderMasterPanel();
+      }
+    }
+
+    function updateUserHeaderBadge() {
+      const u = saasState.currentUser;
+      if (!u) return;
+
+      document.getElementById('user-display-name').textContent = u.name;
+      const roleTag = document.getElementById('user-role-tag');
+
+      if (u.role === 'MASTER') {
+        roleTag.textContent = 'ADMIN MASTER';
+        roleTag.className = 'role-tag role-master';
+      } else if (u.subscriptionStatus === 'VIP_LIFETIME') {
+        roleTag.textContent = 'VIP VITALÍCIO';
+        roleTag.className = 'role-tag role-master';
+      } else {
+        roleTag.textContent = u.subscriptionStatus === 'SUBSCRIBED' ? 'ASSINANTE' : 'TRIAL';
+        roleTag.className = `role-tag ${u.subscriptionStatus === 'SUBSCRIBED' ? 'role-user' : ''}`;
+      }
+
+      const btnMaster = document.getElementById('btn-master-panel');
+      if (btnMaster) btnMaster.style.display = u.role === 'MASTER' ? 'inline-flex' : 'none';
+    }
+
+    function checkTrialAndSubscriptionStatus() {
+      const u = saasState.currentUser;
+      if (!u || u.role === 'MASTER' || u.subscriptionStatus === 'VIP_LIFETIME') {
+        document.getElementById('trial-banner').style.display = 'none';
+        return;
+      }
+
+      const trialBanner = document.getElementById('trial-banner');
+      const trialText = document.getElementById('trial-banner-text');
+
+      if (u.subscriptionStatus === 'SUBSCRIBED') {
+        trialBanner.style.display = 'none';
+      } else if (u.subscriptionStatus === 'BLOCKED') {
+        trialBanner.style.display = 'none';
+        openPaywallModal();
+      } else {
+        const msRemaining = u.trialEndTimestamp - Date.now();
+        const daysRemaining = Math.ceil(msRemaining / (1000 * 60 * 60 * 24));
+        if (msRemaining <= 0) {
+          u.subscriptionStatus = 'TRIAL_EXPIRED';
+          saveUsers();
+          trialBanner.style.display = 'none';
+          openPaywallModal();
+        } else {
+          trialBanner.style.display = 'flex';
+          trialText.textContent = `Seu período de teste grátis expira em ${daysRemaining} dia(s).`;
+        }
+      }
+    }
+
+    function openPaywallModal() {
+      document.getElementById('paywall-modal').classList.add('active');
+    }
+
+    // --- APP EVENT LISTENERS ---
+    function setupAppListeners() {
+      document.getElementById('btn-logout').addEventListener('click', () => {
+        localStorage.removeItem('finansaas_active_user');
+        saasState.currentUser = null;
+        showAuthScreen();
+      });
+
+      document.getElementById('prev-year-btn').addEventListener('click', () => {
+        saasState.year--;
+        document.getElementById('current-year-display').textContent = saasState.year;
+        renderAll();
+      });
+      document.getElementById('next-year-btn').addEventListener('click', () => {
+        saasState.year++;
+        document.getElementById('current-year-display').textContent = saasState.year;
+        renderAll();
+      });
+
+      // Controles do Salário
+      const salaryInput = document.getElementById('user-salary-input');
+      const salaryLockBtn = document.getElementById('btn-toggle-salary-lock');
+
+      if (salaryLockBtn) {
+        salaryLockBtn.addEventListener('click', () => {
+          if (saasState.userSalaryLocked) {
+            saasState.userSalaryLocked = false;
+            saveUserData();
+            renderMetrics();
+          } else {
+            const val = parseFloat(salaryInput.value) || 0;
+            if (val <= 0) {
+              alert('Digite um valor de salário válido!');
+              return;
+            }
+            saasState.userSalary = val;
+            saasState.userSalaryLocked = true;
+            saveUserData();
+            renderMetrics();
+          }
+        });
+      }
+
+      const saveSalaryBtn = document.getElementById('btn-save-salary-input');
+      if (saveSalaryBtn) {
+        saveSalaryBtn.addEventListener('click', () => {
+          const val = parseFloat(salaryInput.value) || 0;
+          if (val <= 0) return;
+          saasState.userSalary = val;
+          saasState.userSalaryLocked = true;
+          saveUserData();
+          renderMetrics();
+        });
+      }
+
+      // Master Panel Toggle
+      document.getElementById('btn-master-panel').addEventListener('click', () => {
+        renderMasterPanel();
+        document.getElementById('master-admin-section').style.display = 'block';
+      });
+      document.getElementById('btn-close-master-panel').addEventListener('click', () => {
+        document.getElementById('master-admin-section').style.display = 'none';
+      });
+
+      // Search Box
+      document.getElementById('search-input').addEventListener('input', (e) => {
+        saasState.searchQuery = e.target.value.toLowerCase();
+        renderTables();
+      });
+
+      // View Tabs (Desktop & Mobile Sync)
+      function switchView(viewName) {
+        saasState.selectedView = viewName;
+        document.querySelectorAll('.view-tab').forEach(t => {
+          t.classList.toggle('active', t.dataset.view === viewName);
+        });
+        document.querySelectorAll('.mobile-nav-item').forEach(m => {
+          m.classList.toggle('active', m.dataset.view === viewName);
+        });
+        updateViewVisibility();
+      }
+
+      document.querySelectorAll('.view-tab').forEach(t => {
+        t.addEventListener('click', (e) => switchView(e.currentTarget.dataset.view));
+      });
+
+      document.querySelectorAll('.mobile-nav-item').forEach(m => {
+        m.addEventListener('click', (e) => switchView(e.currentTarget.dataset.view));
+      });
+
+      // Mobile FAB '+' Button
+      const mobileFab = document.getElementById('mobile-fab-btn');
+      if (mobileFab) mobileFab.addEventListener('click', openTxModal);
+
+      // Bank Filter
+      document.getElementById('bank-filter').addEventListener('change', (e) => {
+        saasState.selectedBankFilter = e.target.value;
+        renderAll();
+      });
+
+      // Open Modals
+      document.getElementById('btn-open-transaction-modal').addEventListener('click', openTxModal);
+      document.getElementById('btn-close-tx-modal').addEventListener('click', closeTxModal);
+      document.getElementById('btn-cancel-tx').addEventListener('click', closeTxModal);
+
+      document.getElementById('btn-open-bank-modal').addEventListener('click', openBankModal);
+      document.getElementById('btn-close-bank-modal').addEventListener('click', closeBankModal);
+
+      // Change Password Modal
+      document.getElementById('btn-open-change-my-pass').addEventListener('click', () => {
+        document.getElementById('change-my-pass-form').reset();
+        document.getElementById('change-pass-modal').classList.add('active');
+      });
+      document.getElementById('btn-close-change-pass-modal').addEventListener('click', () => {
+        document.getElementById('change-pass-modal').classList.remove('active');
+      });
+      document.getElementById('btn-cancel-change-pass').addEventListener('click', () => {
+        document.getElementById('change-pass-modal').classList.remove('active');
+      });
+
+      document.getElementById('change-my-pass-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const newPass = document.getElementById('my-new-pass').value.trim();
+        const confirmPass = document.getElementById('my-confirm-new-pass').value.trim();
+        if (!newPass || newPass !== confirmPass || newPass.length < 4) {
+          alert('Senhas inválidas ou não coincidem!');
+          return;
+        }
+        if (saasState.currentUser) {
+          saasState.currentUser.password = newPass;
+          const u = saasState.users.find(x => x.id === saasState.currentUser.id);
+          if (u) u.password = newPass;
+          saveUsers();
+          document.getElementById('change-pass-modal').classList.remove('active');
+          alert('✅ Sua senha foi alterada!');
+        }
+      });
+
+      // Submit Forms
+      document.getElementById('transaction-form').addEventListener('submit', handleTxFormSubmit);
+      document.getElementById('add-bank-form').addEventListener('submit', handleAddBankSubmit);
+
+      // Paywall Actions
+      document.getElementById('tab-checkout-pix').addEventListener('click', () => {
+        document.getElementById('tab-checkout-pix').classList.add('active');
+        document.getElementById('tab-checkout-card').classList.remove('active');
+        document.getElementById('checkout-pix-box').style.display = 'block';
+        document.getElementById('checkout-card-form').style.display = 'none';
+      });
+
+      document.getElementById('tab-checkout-card').addEventListener('click', () => {
+        document.getElementById('tab-checkout-card').classList.add('active');
+        document.getElementById('tab-checkout-pix').classList.remove('active');
+        document.getElementById('checkout-card-form').style.display = 'block';
+        document.getElementById('checkout-pix-box').style.display = 'none';
+      });
+
+      document.getElementById('btn-confirm-pix-pay').addEventListener('click', () => {
+        if (saasState.currentUser) {
+          saasState.currentUser.subscriptionStatus = 'SUBSCRIBED';
+          saveUsers();
+          document.getElementById('paywall-modal').classList.remove('active');
+          updateUserHeaderBadge();
+          alert('🎉 Assinatura ativada com sucesso!');
+        }
+      });
+    }
+
+    // --- RENDER ENGINE ---
+    function renderAll() {
+      renderMonthTabs();
+      renderMetrics();
+      renderBankFilterSelect();
+      renderBankPills();
+      renderTables();
+      renderBankLimitsGrid();
+      renderCharts();
+      updateViewVisibility();
+    }
+
+    function renderMonthTabs() {
+      const container = document.getElementById('month-tabs-container');
+      container.innerHTML = '';
+
+      MONTH_NAMES.forEach((mName, idx) => {
+        const btn = document.createElement('button');
+        btn.className = `month-tab ${idx === saasState.currentMonth ? 'active' : ''}`;
+
+        let monthSum = 0;
+        saasState.userTransactions.filter(tx => tx.year === saasState.year && tx.month === idx).forEach(tx => {
+          monthSum += Number(tx.amount);
+        });
+
+        btn.innerHTML = `
+          <span>${mName.substring(0, 3)}</span>
+          <span class="month-total">${monthSum > 0 ? formatCurrency(monthSum) : 'R$ 0,00'}</span>
+        `;
+        btn.addEventListener('click', () => {
+          saasState.currentMonth = idx;
+          renderAll();
+        });
+        container.appendChild(btn);
+      });
+    }
+
+    function renderMetrics() {
+      const year = saasState.year;
+      const month = saasState.currentMonth;
+
+      const monthlyTx = saasState.userTransactions.filter(tx => tx.year === year && tx.month === month);
+      
+      const cardTx = monthlyTx.filter(tx => tx.type === 'CARD');
+      const billTx = monthlyTx.filter(tx => tx.type === 'BILL');
+
+      const cardsSum = cardTx.reduce((sum, t) => sum + Number(t.amount), 0);
+      const billsSum = billTx.reduce((sum, t) => sum + Number(t.amount), 0);
+      const grandSum = cardsSum + billsSum;
+
+      const paidSum = monthlyTx.filter(t => t.status === 'PAID').reduce((sum, t) => sum + Number(t.amount), 0);
+      const pendingSum = monthlyTx.filter(t => t.status === 'PENDING').reduce((sum, t) => sum + Number(t.amount), 0);
+
+      // Salário
+      const salaryInput = document.getElementById('user-salary-input');
+      const salaryDisplay = document.getElementById('salary-display-value');
+      const salaryReadBox = document.getElementById('salary-read-box');
+      const salaryEditBox = document.getElementById('salary-edit-box');
+      const lockBtn = document.getElementById('btn-toggle-salary-lock');
+      
+      if (saasState.userSalaryLocked) {
+        if (salaryReadBox) salaryReadBox.style.display = 'flex';
+        if (salaryEditBox) salaryEditBox.style.display = 'none';
+        if (lockBtn) lockBtn.innerHTML = '✏️ Editar';
+        if (salaryDisplay) salaryDisplay.textContent = formatCurrency(saasState.userSalary);
+      } else {
+        if (salaryReadBox) salaryReadBox.style.display = 'none';
+        if (salaryEditBox) salaryEditBox.style.display = 'flex';
+        if (lockBtn) lockBtn.innerHTML = '🔒 Travar';
+        if (salaryInput) salaryInput.value = saasState.userSalary || '';
+      }
+
+      // Saldo Livre
+      const freeBalance = saasState.userSalary - grandSum;
+      const freeBalanceElem = document.getElementById('salary-free-balance');
+      if (freeBalanceElem) {
+        freeBalanceElem.textContent = formatCurrency(freeBalance);
+        freeBalanceElem.style.color = freeBalance >= 0 ? 'var(--status-paid)' : '#f43f5e';
+      }
+
+      // Barra Salário
+      const progressBar = document.getElementById('salary-progress-bar');
+      if (progressBar) {
+        const spentPct = saasState.userSalary > 0 ? Math.min(100, (grandSum / saasState.userSalary) * 100) : 0;
+        progressBar.style.width = `${spentPct}%`;
+        progressBar.style.background = spentPct > 90 ? 'linear-gradient(90deg, #f59e0b, #f43f5e)' : 'linear-gradient(90deg, var(--accent-cyan), var(--accent-primary))';
+      }
+
+      document.getElementById('metric-cards-total').textContent = formatCurrency(cardsSum);
+      document.getElementById('metric-cards-sub').textContent = `${cardTx.length} lançamento(s)`;
+
+      document.getElementById('metric-bills-total').textContent = formatCurrency(billsSum);
+      document.getElementById('metric-bills-sub').textContent = `${billTx.length} conta(s)`;
+
+      document.getElementById('metric-grand-total').textContent = formatCurrency(grandSum);
+      document.getElementById('metric-grand-sub').textContent = `Pago: ${formatCurrency(paidSum)} | Pendente: ${formatCurrency(pendingSum)}`;
+    }
+
+    function renderBankFilterSelect() {
+      const select = document.getElementById('bank-filter');
+      select.innerHTML = '<option value="ALL">💳 Todos os Cartões</option>';
+      saasState.userBanks.forEach(b => {
+        const opt = document.createElement('option');
+        opt.value = b.id;
+        opt.textContent = `${b.name} (Venc: ${b.dueDay})`;
+        if (saasState.selectedBankFilter === b.id) opt.selected = true;
+        select.appendChild(opt);
+      });
+    }
+
+    function renderBankPills() {
+      const container = document.getElementById('bank-pills-filter');
+      container.innerHTML = '';
+
+      if (saasState.userBanks.length === 0) {
+        container.style.display = 'none';
+        return;
+      }
+      container.style.display = 'flex';
+
+      const allPill = document.createElement('div');
+      allPill.className = `bank-pill ${saasState.selectedBankFilter === 'ALL' ? 'active' : ''}`;
+      allPill.innerHTML = '<span>Todos os Cartões</span>';
+      allPill.addEventListener('click', () => {
+        saasState.selectedBankFilter = 'ALL';
+        renderAll();
+      });
+      container.appendChild(allPill);
+
+      saasState.userBanks.forEach(b => {
+        const pill = document.createElement('div');
+        pill.className = `bank-pill ${saasState.selectedBankFilter === b.id ? 'active' : ''}`;
+        pill.innerHTML = `
+          <span class="bank-pill-dot" style="background: ${b.color};"></span>
+          <span>${escapeHtml(b.name)}</span>
+        `;
+        pill.addEventListener('click', () => {
+          saasState.selectedBankFilter = b.id;
+          renderAll();
+        });
+        container.appendChild(pill);
+      });
+    }
+
+    function renderTables() {
+      const year = saasState.year;
+      const month = saasState.currentMonth;
+      const q = saasState.searchQuery;
+
+      let cardTx = saasState.userTransactions.filter(tx => tx.type === 'CARD' && tx.year === year && tx.month === month);
+      let billTx = saasState.userTransactions.filter(tx => tx.type === 'BILL' && tx.year === year && tx.month === month);
+
+      if (saasState.selectedBankFilter !== 'ALL') {
+        cardTx = cardTx.filter(tx => tx.bankId === saasState.selectedBankFilter);
+      }
+
+      if (q) {
+        cardTx = cardTx.filter(tx => tx.description.toLowerCase().includes(q) || tx.category.toLowerCase().includes(q));
+        billTx = billTx.filter(tx => tx.description.toLowerCase().includes(q) || tx.category.toLowerCase().includes(q));
+      }
+
+      // Render Tabela Cartões
+      const cardsTbody = document.getElementById('cards-tbody');
+      cardsTbody.innerHTML = '';
+      let cardsTotal = 0;
+
+      if (cardTx.length === 0) {
+        cardsTbody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding:30px; color:var(--text-dim);">Nenhum lançamento de cartão para este mês.</td></tr>';
+      } else {
+        cardTx.forEach((tx, idx) => {
+          cardsTotal += Number(tx.amount);
+          const bank = saasState.userBanks.find(b => b.id === tx.bankId) || { name: 'Cartão', color: '#6366f1' };
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${idx + 1}</td>
+            <td><strong>${escapeHtml(tx.description)}</strong></td>
+            <td><span class="badge-bank" style="background: ${bank.color};">${escapeHtml(bank.name)}</span></td>
+            <td><span class="badge-category">${escapeHtml(tx.category)}</span></td>
+            <td>${formatDisplayDate(tx.date)}</td>
+            <td>${tx.installmentTotal > 1 ? `<span class="badge-installment">${tx.installmentCurrent}/${tx.installmentTotal}x</span>` : 'À vista'}</td>
+            <td class="col-value">${formatCurrency(tx.amount)}</td>
+            <td><span class="status-tag ${tx.status === 'PAID' ? 'paid' : 'pending'}" onclick="toggleTxStatus('${tx.id}')">${tx.status === 'PAID' ? 'Pago' : 'Pendente'}</span></td>
+            <td style="text-align: center;">
+              <div style="display:flex; gap:4px; justify-content:center;">
+                <button class="btn-table-action" onclick="editTx('${tx.id}')" title="Editar Lançamento"><i data-lucide="edit-3"></i></button>
+                <button class="btn-table-action" onclick="duplicateTx('${tx.id}')" title="Duplicar Lançamento"><i data-lucide="copy"></i></button>
+                <button class="btn-table-action" onclick="deleteTx('${tx.id}')" title="Excluir Lançamento"><i data-lucide="trash-2"></i></button>
+              </div>
+            </td>
+          `;
+          cardsTbody.appendChild(tr);
+        });
+      }
+
+      // Render Tabela Contas da Casa
+      let billsTotal = 0;
+      const billsTbody = document.getElementById('bills-tbody');
+      billsTbody.innerHTML = '';
+
+      if (billTx.length === 0) {
+        billsTbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:30px; color:var(--text-dim);">Nenhuma conta de casa lançada para este mês.</td></tr>';
+      } else {
+        billTx.forEach((tx, idx) => {
+          billsTotal += Number(tx.amount);
+          const bank = saasState.userBanks.find(b => b.id === tx.bankId);
+          let paymentBadge = '';
+
+          if (tx.bankId && bank) {
+            paymentBadge = `<span class="badge-bank" style="background: ${bank.color}; font-size: 0.72rem; margin-left: 6px;">💳 ${escapeHtml(bank.name)}</span>`;
+          } else if (tx.payMethod === 'PIX') {
+            paymentBadge = `<span class="badge-category" style="background: rgba(16, 185, 129, 0.15); color: #34d399; font-size: 0.72rem; margin-left: 6px;">⚡ PIX</span>`;
+          } else if (tx.payMethod === 'BOLETO') {
+            paymentBadge = `<span class="badge-category" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; font-size: 0.72rem; margin-left: 6px;">📄 Boleto</span>`;
+          } else {
+            paymentBadge = `<span class="badge-category" style="background: rgba(14, 165, 233, 0.15); color: #38bdf8; font-size: 0.72rem; margin-left: 6px;">🏦 Débito</span>`;
+          }
+
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${idx + 1}</td>
+            <td><strong>${escapeHtml(tx.description)}</strong>${paymentBadge}</td>
+            <td><span class="badge-category">${escapeHtml(tx.category)}</span></td>
+            <td>${formatDisplayDate(tx.date)}</td>
+            <td class="col-value" style="color: var(--accent-secondary);">${formatCurrency(tx.amount)}</td>
+            <td><span class="status-tag ${tx.status === 'PAID' ? 'paid' : 'pending'}" onclick="toggleTxStatus('${tx.id}')">${tx.status === 'PAID' ? 'Pago' : 'Pendente'}</span></td>
+            <td style="text-align: center;">
+              <div style="display:flex; gap:4px; justify-content:center;">
+                <button class="btn-table-action" onclick="editTx('${tx.id}')" title="Editar Lançamento"><i data-lucide="edit-3"></i></button>
+                <button class="btn-table-action" onclick="duplicateTx('${tx.id}')" title="Duplicar Lançamento"><i data-lucide="copy"></i></button>
+                <button class="btn-table-action" onclick="deleteTx('${tx.id}')" title="Excluir Lançamento"><i data-lucide="trash-2"></i></button>
+              </div>
+            </td>
+          `;
+          billsTbody.appendChild(tr);
+        });
+      }
+
+      document.getElementById('cards-table-badge').textContent = formatCurrency(cardsTotal);
+      document.getElementById('bills-table-badge').textContent = formatCurrency(billsTotal);
+
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function renderBankLimitsGrid() {
+      const grid = document.getElementById('bank-limits-grid');
+      grid.innerHTML = '';
+
+      if (saasState.userBanks.length === 0) {
+        grid.innerHTML = '<div style="grid-column: 1/-1; color: var(--text-dim); text-align: center; padding: 20px;">Nenhum cartão cadastrado.</div>';
+        return;
+      }
+
+      saasState.userBanks.forEach(b => {
+        let usedMonth = 0;
+        saasState.userTransactions.filter(t => t.type === 'CARD' && t.bankId === b.id && t.year === saasState.year && t.month === saasState.currentMonth).forEach(t => {
+          usedMonth += Number(t.amount);
+        });
+
+        const limit = Number(b.limit) || 0;
+        const available = limit - usedMonth;
+        const pctUsed = limit > 0 ? Math.min(100, (usedMonth / limit) * 100) : 0;
+
+        const card = document.createElement('div');
+        card.className = 'metric-card';
+        card.style.borderColor = b.color;
+        card.innerHTML = `
+          <div class="metric-header">
+            <span style="display:flex; align-items:center; gap:6px;"><span class="bank-pill-dot" style="background:${b.color}"></span> <strong>${escapeHtml(b.name)}</strong></span>
+            <span style="font-size:0.75rem;">Venc. dia ${b.dueDay}</span>
+          </div>
+          <div class="metric-value" style="font-size: 1.3rem;">${formatCurrency(limit)}</div>
+          <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px;">Fatura Mês: <strong style="color: var(--accent-primary);">${formatCurrency(usedMonth)}</strong></div>
+          <div style="display:flex; justify-content:space-between; font-size:0.75rem; color: var(--text-dim); margin-bottom: 4px;">
+            <span>Limite Disponível:</span>
+            <strong style="color: ${available >= 0 ? 'var(--status-paid)' : '#f43f5e'}">${formatCurrency(available)}</strong>
+          </div>
+          <div style="background: rgba(255,255,255,0.08); height: 6px; border-radius: 3px; overflow: hidden;">
+            <div style="background: ${b.color}; height: 100%; width: ${pctUsed}%;"></div>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    // --- GRÁFICOS INTERATIVOS (CHART.JS) ---
+    function renderCharts() {
+      if (!window.Chart) return;
+
+      const year = saasState.year;
+      const month = saasState.currentMonth;
+      const monthlyTx = saasState.userTransactions.filter(tx => tx.year === year && tx.month === month);
+
+      // 1. Gráfico de Pizza (Categorias)
+      const categoryTotals = {};
+      monthlyTx.forEach(t => {
+        const cat = t.category || 'Outros';
+        categoryTotals[cat] = (categoryTotals[cat] || 0) + Number(t.amount);
+      });
+
+      const pieLabels = Object.keys(categoryTotals);
+      const pieData = Object.values(categoryTotals);
+      const pieColors = ['#6366f1', '#ec4899', '#06b6d4', '#f59e0b', '#10b981', '#a855f7', '#3b82f6', '#64748b'];
+
+      const ctxPie = document.getElementById('categoryPieChart');
+      if (ctxPie) {
+        if (categoryPieChartInstance) categoryPieChartInstance.destroy();
+        categoryPieChartInstance = new Chart(ctxPie, {
+          type: 'doughnut',
+          data: {
+            labels: pieLabels.length > 0 ? pieLabels : ['Sem dados'],
+            datasets: [{
+              data: pieData.length > 0 ? pieData : [1],
+              backgroundColor: pieData.length > 0 ? pieColors : ['rgba(255,255,255,0.1)'],
+              borderWidth: 0
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { position: 'bottom', labels: { color: '#94a3b8', font: { family: 'Inter', size: 11 } } }
+            }
+          }
+        });
+      }
+
+      // 2. Gráfico de Barras (Salário vs Gastos vs Saldo)
+      const cardsSum = monthlyTx.filter(t => t.type === 'CARD').reduce((sum, t) => sum + Number(t.amount), 0);
+      const billsSum = monthlyTx.filter(t => t.type === 'BILL').reduce((sum, t) => sum + Number(t.amount), 0);
+      const totalSpent = cardsSum + billsSum;
+      const freeBalance = Math.max(0, saasState.userSalary - totalSpent);
+
+      const ctxBar = document.getElementById('balanceBarChart');
+      if (ctxBar) {
+        if (balanceBarChartInstance) balanceBarChartInstance.destroy();
+        balanceBarChartInstance = new Chart(ctxBar, {
+          type: 'bar',
+          data: {
+            labels: ['Meu Salário', 'Cartões', 'Contas Fixas', 'Saldo Livre'],
+            datasets: [{
+              label: 'Valor em R$',
+              data: [saasState.userSalary, cardsSum, billsSum, freeBalance],
+              backgroundColor: ['#06b6d4', '#6366f1', '#ec4899', '#10b981'],
+              borderRadius: 6
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              x: { ticks: { color: '#94a3b8', font: { family: 'Inter' } }, grid: { display: false } },
+              y: { ticks: { color: '#94a3b8', font: { family: 'JetBrains Mono' } }, grid: { color: 'rgba(255,255,255,0.05)' } }
+            }
+          }
+        });
+      }
+    }
+
+    function updateViewVisibility() {
+      const v = saasState.selectedView;
+      const cardsSec = document.getElementById('cards-section');
+      const billsSec = document.getElementById('bills-section');
+      const limitsSec = document.getElementById('bank-limits-section');
+      const analyticsSec = document.getElementById('analytics-section');
+
+      if (v === 'all') {
+        cardsSec.style.display = 'block';
+        billsSec.style.display = 'block';
+        limitsSec.style.display = 'none';
+        analyticsSec.style.display = 'none';
+      } else if (v === 'cards') {
+        cardsSec.style.display = 'block';
+        billsSec.style.display = 'none';
+        limitsSec.style.display = 'none';
+        analyticsSec.style.display = 'none';
+      } else if (v === 'bills') {
+        cardsSec.style.display = 'none';
+        billsSec.style.display = 'block';
+        limitsSec.style.display = 'none';
+        analyticsSec.style.display = 'none';
+      } else if (v === 'limits') {
+        cardsSec.style.display = 'none';
+        billsSec.style.display = 'none';
+        limitsSec.style.display = 'block';
+        analyticsSec.style.display = 'none';
+      } else if (v === 'analytics') {
+        cardsSec.style.display = 'none';
+        billsSec.style.display = 'none';
+        limitsSec.style.display = 'none';
+        analyticsSec.style.display = 'block';
+      }
+    }
+
+    // --- TRANSACTION HANDLERS ---
+    function openTxModal() {
+      document.getElementById('editing-tx-id').value = '';
+      document.getElementById('transaction-form').reset();
+      document.getElementById('tx-modal-title').innerHTML = '<i data-lucide="plus-circle"></i> Novo Lançamento Financeiro';
+      populateBankSelectOptions();
+      document.getElementById('tx-date').value = formatDateStr(saasState.year, saasState.currentMonth, 10);
+      document.getElementById('transaction-modal').classList.add('active');
+    }
+    function closeTxModal() { document.getElementById('transaction-modal').classList.remove('active'); }
+
+    function handleTxFormSubmit(e) {
+      e.preventDefault();
+      const editId = document.getElementById('editing-tx-id').value;
+      const type = document.querySelector('input[name="txType"]:checked').value;
+      const description = document.getElementById('tx-description').value.trim();
+      const totalAmount = parseFloat(document.getElementById('tx-amount').value);
+      const category = document.getElementById('tx-category').value;
+      const dateStr = document.getElementById('tx-date').value;
+      const status = document.getElementById('tx-status').value;
+
+      if (!description || isNaN(totalAmount) || !dateStr) return;
+
+      const dateObj = new Date(dateStr + 'T00:00:00');
+      const baseYear = dateObj.getFullYear();
+      const baseMonth = dateObj.getMonth();
+
+      if (editId) {
+        // Edição
+        const tx = saasState.userTransactions.find(t => t.id === editId);
+        if (tx) {
+          tx.description = description;
+          tx.amount = totalAmount.toFixed(2);
+          tx.category = category;
+          tx.date = dateStr;
+          tx.status = status;
+        }
+      } else {
+        // Novo Lançamento
+        if (type === 'CARD') {
+          const bankId = document.getElementById('tx-bank').value;
+          let instVal = document.getElementById('tx-installments').value;
+          let installments = instVal === 'CUSTOM' ? (parseInt(document.getElementById('tx-custom-installments').value, 10) || 1) : (parseInt(instVal, 10) || 1);
+          const installmentAmount = totalAmount / installments;
+
+          for (let i = 0; i < installments; i++) {
+            let instMonth = baseMonth + i;
+            let instYear = baseYear + Math.floor(instMonth / 12);
+            instMonth = instMonth % 12;
+
+            saasState.userTransactions.push({
+              id: `tx-${Date.now()}-${i}`,
+              type: 'CARD',
+              bankId: bankId,
+              description: description,
+              amount: installmentAmount.toFixed(2),
+              category: category,
+              year: instYear,
+              month: instMonth,
+              date: formatDateStr(instYear, instMonth, dateObj.getDate()),
+              installmentCurrent: i + 1,
+              installmentTotal: installments,
+              status: i === 0 ? status : 'PENDING'
+            });
+          }
+        } else {
+          const payMethod = document.getElementById('tx-pay-method').value;
+          saasState.userTransactions.push({
+            id: `tx-${Date.now()}`,
+            type: 'BILL',
+            payMethod: payMethod,
+            description: description,
+            amount: totalAmount.toFixed(2),
+            category: category,
+            year: baseYear,
+            month: baseMonth,
+            date: dateStr,
+            installmentCurrent: 1,
+            installmentTotal: 1,
+            status: status
+          });
+        }
+      }
+
+      saveUserData();
+      closeTxModal();
+      renderAll();
+    }
+
+    function editTx(txId) {
+      const tx = saasState.userTransactions.find(t => t.id === txId);
+      if (!tx) return;
+
+      document.getElementById('editing-tx-id').value = tx.id;
+      document.getElementById('tx-description').value = tx.description;
+      document.getElementById('tx-amount').value = tx.amount;
+      document.getElementById('tx-category').value = tx.category;
+      document.getElementById('tx-date').value = tx.date;
+      document.getElementById('tx-status').value = tx.status;
+
+      document.getElementById('tx-modal-title').innerHTML = '<i data-lucide="edit-3"></i> Editar Lançamento';
+      document.getElementById('transaction-modal').classList.add('active');
+    }
+
+    function duplicateTx(txId) {
+      const tx = saasState.userTransactions.find(t => t.id === txId);
+      if (!tx) return;
+
+      const dup = { ...tx, id: `tx-${Date.now()}`, description: `${tx.description} (Cópia)` };
+      saasState.userTransactions.push(dup);
+      saveUserData();
+      renderAll();
+    }
+
+    function toggleTxStatus(txId) {
+      const tx = saasState.userTransactions.find(t => t.id === txId);
+      if (tx) {
+        tx.status = tx.status === 'PAID' ? 'PENDING' : 'PAID';
+        saveUserData();
+        renderAll();
+      }
+    }
+
+    function deleteTx(txId) {
+      if (confirm('Excluir este lançamento?')) {
+        saasState.userTransactions = saasState.userTransactions.filter(t => t.id !== txId);
+        saveUserData();
+        renderAll();
+      }
+    }
+
+    // --- BANK MANAGER LOGIC ---
+    function openBankModal() {
+      cancelBankEdit();
+      renderRegisteredBanksList();
+      document.getElementById('bank-modal').classList.add('active');
+    }
+    function closeBankModal() { document.getElementById('bank-modal').classList.remove('active'); }
+
+    function populateBankSelectOptions() {
+      const select = document.getElementById('tx-bank');
+      select.innerHTML = '';
+      if (saasState.userBanks.length === 0) {
+        select.innerHTML = '<option value="">(Nenhum cartão cadastrado)</option>';
+        return;
+      }
+      saasState.userBanks.forEach(b => {
+        const opt = document.createElement('option');
+        opt.value = b.id;
+        opt.textContent = `${b.name} (Venc: dia ${b.dueDay})`;
+        select.appendChild(opt);
+      });
+    }
+
+    function handleAddBankSubmit(e) {
+      e.preventDefault();
+      const editId = document.getElementById('editing-bank-id').value;
+      const name = document.getElementById('new-bank-name').value.trim();
+      const limit = parseFloat(document.getElementById('new-bank-limit').value);
+      const dueDay = parseInt(document.getElementById('new-bank-due').value, 10) || 10;
+      const color = document.getElementById('new-bank-color').value || '#6366f1';
+
+      if (!name || isNaN(limit)) return;
+
+      if (editId) {
+        const bank = saasState.userBanks.find(b => b.id === editId);
+        if (bank) {
+          bank.name = name;
+          bank.limit = limit;
+          bank.dueDay = dueDay;
+          bank.color = color;
+        }
+      } else {
+        saasState.userBanks.push({ id: `bank-${Date.now()}`, name, limit, dueDay, color });
+      }
+
+      saveUserData();
+      cancelBankEdit();
+      renderRegisteredBanksList();
+      populateBankSelectOptions();
+      renderAll();
+    }
+
+    function editBank(bankId) {
+      const bank = saasState.userBanks.find(b => b.id === bankId);
+      if (!bank) return;
+
+      document.getElementById('editing-bank-id').value = bank.id;
+      document.getElementById('new-bank-name').value = bank.name;
+      document.getElementById('new-bank-limit').value = bank.limit;
+      document.getElementById('new-bank-due').value = bank.dueDay;
+      document.getElementById('new-bank-color').value = bank.color;
+
+      document.getElementById('bank-form-title').innerHTML = '<i data-lucide="edit-3"></i> Editar Cartão';
+      document.getElementById('btn-cancel-edit-bank').style.display = 'inline-block';
+    }
+
+    function cancelBankEdit() {
+      document.getElementById('editing-bank-id').value = '';
+      document.getElementById('add-bank-form').reset();
+      document.getElementById('bank-form-title').innerHTML = '<i data-lucide="plus-circle"></i> Cadastrar Novo Cartão';
+      document.getElementById('btn-cancel-edit-bank').style.display = 'none';
+    }
+
+    function renderRegisteredBanksList() {
+      const list = document.getElementById('registered-banks-list');
+      list.innerHTML = '';
+
+      if (saasState.userBanks.length === 0) {
+        list.innerHTML = '<div style="color: var(--text-dim); font-size: 0.85rem; text-align: center; padding: 12px;">Nenhum cartão cadastrado ainda.</div>';
+        return;
+      }
+
+      saasState.userBanks.forEach(b => {
+        const item = document.createElement('div');
+        item.className = 'bank-list-item';
+        item.innerHTML = `
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span class="bank-pill-dot" style="background: ${b.color}; width: 14px; height: 14px;"></span>
+            <div>
+              <strong>${escapeHtml(b.name)}</strong>
+              <div style="font-size: 0.78rem; color: var(--text-muted);">Vencimento: dia ${b.dueDay} | Limite: ${formatCurrency(b.limit)}</div>
+            </div>
+          </div>
+          <div style="display: flex; gap: 6px;">
+            <button class="btn btn-ghost" style="padding: 4px 8px; font-size: 0.75rem; color: var(--accent-cyan);" onclick="editBank('${b.id}')">✏️ Editar</button>
+            <button class="btn btn-ghost" style="padding: 4px 8px; font-size: 0.75rem; color: #f43f5e;" onclick="deleteBank('${b.id}')">🗑️ Excluir</button>
+          </div>
+        `;
+        list.appendChild(item);
+      });
+    }
+
+    function deleteBank(bankId) {
+      if (confirm('Excluir este cartão?')) {
+        saasState.userBanks = saasState.userBanks.filter(b => b.id !== bankId);
+        saveUserData();
+        renderRegisteredBanksList();
+        populateBankSelectOptions();
+        renderAll();
+      }
+    }
+
+    // --- MASTER ADMIN PANEL ---
+    function renderMasterPanel() {
+      let users = saasState.users;
+      const searchQuery = (document.getElementById('master-search-users-input')?.value || '').trim().toLowerCase();
+
+      const subscribersCount = users.filter(u => u.subscriptionStatus === 'SUBSCRIBED').length;
+      const trialCount = users.filter(u => u.subscriptionStatus === 'TRIAL_ACTIVE').length;
+      const mrr = subscribersCount * 29.90;
+
+      document.getElementById('master-metric-mrr').textContent = formatCurrency(mrr);
+      document.getElementById('master-metric-users').textContent = users.length;
+      document.getElementById('master-metric-subscribers').textContent = subscribersCount;
+      document.getElementById('master-metric-trials').textContent = trialCount;
+
+      if (searchQuery) {
+        users = users.filter(u => u.name.toLowerCase().includes(searchQuery) || u.email.toLowerCase().includes(searchQuery));
+      }
+
+      const tbody = document.getElementById('master-users-tbody');
+      tbody.innerHTML = '';
+
+      users.forEach(u => {
+        const tr = document.createElement('tr');
+        const msRemaining = u.trialEndTimestamp ? u.trialEndTimestamp - Date.now() : 0;
+        const daysRemaining = Math.max(0, Math.ceil(msRemaining / (1000 * 60 * 60 * 24)));
+
+        let statusBadge = u.role === 'MASTER' ? '<span class="role-tag role-master">ADMIN MASTER</span>' : 
+          u.subscriptionStatus === 'VIP_LIFETIME' ? '<span class="status-tag paid">👑 VIP Vitalício</span>' :
+          u.subscriptionStatus === 'SUBSCRIBED' ? '<span class="status-tag paid">💳 Assinante</span>' :
+          `<span class="status-tag pending">⏳ Em Teste (${daysRemaining}d)</span>`;
+
+        tr.innerHTML = `
+          <td><strong>${escapeHtml(u.name)}</strong><br><small style="color: var(--text-dim);">${escapeHtml(u.email)}</small></td>
+          <td>${formatDisplayDate(u.registeredAt ? u.registeredAt.split('T')[0] : '2026-08-01')}</td>
+          <td>${statusBadge}</td>
+          <td>${u.role === 'MASTER' ? 'Sem expiração' : `${daysRemaining}d restantes`}</td>
+          <td style="text-align: center;">
+            <select class="select-control" style="width: auto; padding: 4px 8px; font-size: 0.78rem;" onchange="masterChangeUserPlan('${u.id}', this.value)">
+              <option value="VIP_LIFETIME" ${u.subscriptionStatus === 'VIP_LIFETIME' ? 'selected' : ''}>👑 VIP Vitalício</option>
+              <option value="SUBSCRIBED" ${u.subscriptionStatus === 'SUBSCRIBED' ? 'selected' : ''}>💳 Pagamento Mensal</option>
+              <option value="TRIAL_ACTIVE" ${u.subscriptionStatus === 'TRIAL_ACTIVE' ? 'selected' : ''}>⏳ Teste Grátis (+7d)</option>
+              <option value="BLOCKED" ${u.subscriptionStatus === 'BLOCKED' ? 'selected' : ''}>🚫 Bloquear</option>
+            </select>
+          </td>
+          <td style="text-align: center;">
+            <button class="btn btn-ghost" style="padding: 4px 8px; color: #f43f5e; font-size: 0.78rem;" onclick="masterDeleteUser('${u.id}')"><i data-lucide="trash-2"></i> Excluir</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      if (window.lucide) lucide.createIcons();
+    }
+
+    async function masterChangeUserPlan(userId, newPlan) {
+      const u = saasState.users.find(x => x.id === userId);
+      if (!u) return;
+      u.subscriptionStatus = newPlan;
+      await saveUsers();
+      renderMasterPanel();
+    }
+
+    async function masterDeleteUser(userId) {
+      if (confirm('Excluir este usuário permanentemente?')) {
+        saasState.users = saasState.users.filter(x => x.id !== userId);
+        await saveUsers();
+        renderMasterPanel();
+      }
+    }
+
+    // --- HELPER UTILS ---
+    function formatCurrency(val) {
+      return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val || 0);
+    }
+    function formatDateStr(y, m, d) {
+      return `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+    }
+    function formatDisplayDate(dateStr) {
+      if (!dateStr) return '';
+      const parts = dateStr.split('-');
+      return parts.length < 3 ? dateStr : `${parts[2]}/${parts[1]}/${parts[0]}`;
+    }
+    function escapeHtml(str) {
+      return str ? str.replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[m]) : '';
+    }
+  </script>
+</body>
+</html>
