@@ -222,7 +222,20 @@
     
     .badge-bank { display: inline-flex; align-items: center; gap: 6px; padding: 3px 8px; border-radius: 6px; font-size: 0.78rem; font-weight: 700; color: #fff; }
     .badge-category { background: rgba(255, 255, 255, 0.06); color: var(--text-muted); padding: 3px 8px; border-radius: 4px; font-size: 0.78rem; }
-    .badge-installment { font-family: var(--font-mono); background: rgba(99, 102, 241, 0.15); color: var(--accent-primary); padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; }
+    .badge-installment {
+      font-family: var(--font-mono);
+      background: linear-gradient(135deg, #fbbf24, #f59e0b);
+      color: #0f172a;
+      border: 1px solid #fef08a;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      box-shadow: 0 0 12px rgba(245, 158, 11, 0.5), 0 2px 6px rgba(0,0,0,0.4);
+      display: inline-flex;
+      align-items: center;
+    }
     .status-tag { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; cursor: pointer; }
     .status-tag.paid { background: var(--status-paid-bg); color: var(--status-paid); border: 1px solid rgba(16, 185, 129, 0.3); }
     .status-tag.pending { background: var(--status-pending-bg); color: var(--status-pending); border: 1px solid rgba(245, 158, 11, 0.3); }
@@ -853,8 +866,9 @@
 
         <div class="form-row">
           <div class="form-group flex-1">
-            <label for="tx-amount">Valor (R$) *</label>
-            <input type="number" id="tx-amount" step="0.01" min="0.01" placeholder="0,00" required class="input-control font-mono">
+            <label for="tx-amount" style="color: var(--accent-gold); font-weight:700;">Valor de CADA Parcela (R$) *</label>
+            <input type="number" id="tx-amount" step="0.01" min="0.01" placeholder="Ex: 200.00 (Valor idêntico em cada mês)" required class="input-control font-mono">
+            <small style="font-size:0.75rem; color:var(--text-muted); display:block; margin-top:3px;">📌 Este valor será mantido idêntico em todas as parcelas dos meses seguintes.</small>
           </div>
           <div class="form-group flex-1" id="group-bank">
             <label for="tx-bank" id="label-tx-bank">Selecionar em qual Cartão / Banco *</label>
@@ -2321,7 +2335,7 @@
             tr.innerHTML = `
               <td>${idx + 1}</td>
               <td><strong>${escapeHtml(tx.description)}</strong></td>
-              <td><span class="badge-category" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3);">🚗 ${escapeHtml(tx.category)} ${tx.installmentTotal > 1 ? `(${tx.installmentCurrent}/${tx.installmentTotal}x)` : ''}</span></td>
+              <td><span class="badge-category" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3);">🚗 ${escapeHtml(tx.category)} ${tx.installmentTotal > 1 ? `<span class="badge-installment" style="margin-left: 4px;">${tx.installmentCurrent}/${tx.installmentTotal}x</span>` : ''}</span></td>
               <td>${formatDisplayDate(tx.date)}</td>
               <td>${paymentBadge}</td>
               <td class="col-value" style="color: #f59e0b; text-align: right; font-weight:700;">${formatCurrency(tx.amount)}</td>
@@ -2545,17 +2559,43 @@
       const baseMonth = dateObj.getMonth();
 
       if (editId) {
-        // Edição de lançamento individual
+        // Edição de lançamento (com opção de replicar valor para parcelas vinculadas)
         const tx = saasState.userTransactions.find(t => t.id === editId);
         if (tx) {
-          tx.description = description;
-          tx.amount = enteredAmount.toFixed(2);
-          tx.category = category;
-          tx.date = dateStr;
-          tx.status = status;
-          tx.payMethod = payMethod;
-          if (type === 'CARD' || type === 'VEHICLE') {
-            tx.bankId = document.getElementById('tx-bank').value;
+          const isParcelado = tx.installmentTotal > 1 || tx.groupId;
+          let updateAll = false;
+
+          if (isParcelado) {
+            const linkedTxs = saasState.userTransactions.filter(t => 
+              (tx.groupId && t.groupId === tx.groupId) || 
+              (t.description.toLowerCase() === tx.description.toLowerCase() && t.category === tx.category && t.installmentTotal === tx.installmentTotal)
+            );
+            if (linkedTxs.length > 1) {
+              updateAll = confirm(`Deseja aplicar o novo valor (R$ ${enteredAmount.toFixed(2)}) e a nova descrição em TODAS as ${linkedTxs.length} parcelas vinculadas dos outros meses?`);
+              if (updateAll) {
+                linkedTxs.forEach(t => {
+                  t.description = description;
+                  t.amount = enteredAmount.toFixed(2);
+                  t.category = category;
+                  t.payMethod = payMethod;
+                  if (type === 'CARD' || type === 'VEHICLE') {
+                    t.bankId = document.getElementById('tx-bank').value;
+                  }
+                });
+              }
+            }
+          }
+
+          if (!updateAll) {
+            tx.description = description;
+            tx.amount = enteredAmount.toFixed(2);
+            tx.category = category;
+            tx.date = dateStr;
+            tx.status = status;
+            tx.payMethod = payMethod;
+            if (type === 'CARD' || type === 'VEHICLE') {
+              tx.bankId = document.getElementById('tx-bank').value;
+            }
           }
         }
       } else {
@@ -2624,7 +2664,7 @@
     }
 
     function editTx(txId) {
-      const tx = saasState.userTransactions.find(t => t.id === editId || t.id === txId);
+      const tx = saasState.userTransactions.find(t => String(t.id) === String(txId));
       if (!tx) return;
 
       document.getElementById('editing-tx-id').value = tx.id;
