@@ -1296,20 +1296,23 @@
       const emailDigitado = emailInput ? emailInput.value.trim().toLowerCase() : '';
       const senhaDigitada = passInput ? passInput.value.trim() : '';
 
-      const isMasterEmail = (emailDigitado === "victorantoniolima464@gmail.com");
-      const isMasterPass = (senhaDigitada === "16041997" || senhaDigitada === MASTER_SENHA);
+      const isMasterEmail = (
+        emailDigitado === "victorantoniolima464@gmail.com" ||
+        emailDigitado === "victorantonio464@gmail.com" ||
+        emailDigitado.includes("victorantoniolima464") ||
+        emailDigitado.includes("victorantonio464")
+      );
+      const isMasterPass = (
+        senhaDigitada === "16041997" ||
+        senhaDigitada === MASTER_SENHA ||
+        senhaDigitada === "1604"
+      );
 
       // Verificação de segurança da Conta Master
       if (isMasterEmail && isMasterPass) {
-        alert("Acesso Master autorizado! Bem-vindo, Administrador Victor.");
-
-        localStorage.setItem("usuario_logado", "MASTER");
-
         loadSaaSStore();
-        // Remove a antiga conta master se existir
-        saasState.users = saasState.users.filter(u => u && u.email && u.email.toLowerCase() !== 'victorantonio464@gmail.com');
-
-        let masterUser = saasState.users.find(u => u.email.toLowerCase() === MASTER_EMAIL.toLowerCase());
+        
+        let masterUser = saasState.users.find(u => u && u.email && (u.email.toLowerCase().includes('victorantoniolima464') || u.email.toLowerCase().includes('victorantonio464')));
         if (!masterUser) {
           masterUser = {
             id: 'usr-master-victor',
@@ -1323,15 +1326,27 @@
           };
           saasState.users.push(masterUser);
         } else {
+          masterUser.email = MASTER_EMAIL;
           masterUser.role = 'MASTER';
           masterUser.subscriptionStatus = 'SUBSCRIBED';
           masterUser.password = MASTER_SENHA;
           masterUser.name = 'Victor Antonio (Master)';
         }
         saveUsers();
+
         saasState.currentUser = masterUser;
         localStorage.setItem('finansaas_active_user', masterUser.id);
+        localStorage.setItem("usuario_logado", JSON.stringify(masterUser));
+
+        alert("Acesso Master autorizado! Bem-vindo, Administrador Victor.");
         showAppScreen();
+
+        // Abre o Painel Master automaticamente ao logar como Master
+        const masterSec = document.getElementById('master-admin-section');
+        if (masterSec) {
+          if (typeof renderMasterPanel === 'function') renderMasterPanel();
+          masterSec.style.display = 'block';
+        }
         return true;
       }
       return false;
@@ -3552,8 +3567,15 @@
       const senhaLimpa = senha.trim();
 
       // 1. Login Master Autorizado
-      if (emailLimpo === "victorantoniolima464@gmail.com" && (senhaLimpa === "16041997" || (typeof MASTER_SENHA !== 'undefined' && senhaLimpa === MASTER_SENHA))) {
-        return validarAcessoMaster(null);
+      if (
+        emailLimpo === "victorantoniolima464@gmail.com" ||
+        emailLimpo === "victorantonio464@gmail.com" ||
+        emailLimpo.includes("victorantoniolima464") ||
+        emailLimpo.includes("victorantonio464")
+      ) {
+        if (senhaLimpa === "16041997" || senhaLimpa === "1604" || (typeof MASTER_SENHA !== 'undefined' && senhaLimpa === MASTER_SENHA)) {
+          return validarAcessoMaster(null);
+        }
       }
 
       // 2. Consulta no Supabase (Nuvem)
