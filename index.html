@@ -2595,22 +2595,30 @@
         const tx = saasState.userTransactions.find(t => String(t.id) === String(editId));
         if (tx) {
           const isParcelado = tx.installmentTotal > 1 || tx.groupId || tx.isSubscription;
-
           let updateLinked = false;
+
           if (isParcelado) {
             const linked = saasState.userTransactions.filter(t => 
               (tx.groupId && t.groupId === tx.groupId) || 
               (t.description.toLowerCase() === tx.description.toLowerCase() && t.category === tx.category && t.installmentTotal === tx.installmentTotal)
             );
+
             if (linked.length > 1) {
-              updateLinked = confirm(`Deseja aplicar as alterações (Valor R$ ${enteredAmount.toFixed(2)}, parcelamento ${totalInstallments}x, etc.) em TODAS as ${linked.length} parcelas vinculadas nos outros meses?`);
+              updateLinked = confirm(`Deseja aplicar as alterações (Valor R$ ${enteredAmount.toFixed(2)}, parcela ${startInstallment}/${totalInstallments}x, etc.) em TODAS as ${linked.length} parcelas vinculadas nos outros meses?`);
               if (updateLinked) {
-                linked.forEach(t => {
+                // Ordena cronologicamente para ajustar as parcelas em sequência
+                linked.sort((a, b) => (a.year * 12 + a.month) - (b.year * 12 + b.month));
+                const editIndex = linked.findIndex(l => String(l.id) === String(tx.id));
+                const baseOffset = editIndex >= 0 ? editIndex : 0;
+
+                linked.forEach((t, idx) => {
+                  const calcNumber = startInstallment + (idx - baseOffset);
                   t.description = isRecurring ? `${description} (Assinatura)` : description;
                   t.amount = installmentAmount.toFixed(2);
                   t.category = category;
                   t.payMethod = payMethod;
                   t.type = type;
+                  t.installmentCurrent = Math.max(1, Math.min(totalInstallments, calcNumber));
                   t.installmentTotal = isRecurring ? 12 : totalInstallments;
                   t.isSubscription = isRecurring;
                   if (type === 'CARD' || type === 'VEHICLE') {
@@ -2636,6 +2644,37 @@
             tx.isSubscription = isRecurring;
             if (type === 'CARD' || type === 'VEHICLE') {
               tx.bankId = bankId;
+            }
+
+            // Se alterou de à vista para parcelado, gera as parcelas futuras faltantes
+            if (totalInstallments > 1 && (!tx.groupId || saasState.userTransactions.filter(t => t.groupId === tx.groupId).length <= 1)) {
+              const newGroupId = tx.groupId || `grp-${Date.now()}`;
+              tx.groupId = newGroupId;
+              const remainingSteps = isRecurring ? 12 : (totalInstallments - startInstallment + 1);
+              for (let step = 1; step < remainingSteps; step++) {
+                const currentInstNumber = isRecurring ? (step + 1) : (startInstallment + step);
+                let instMonth = baseMonth + step;
+                let instYear = baseYear + Math.floor(instMonth / 12);
+                instMonth = instMonth % 12;
+
+                saasState.userTransactions.push({
+                  id: `tx-${Date.now()}-${step}`,
+                  groupId: newGroupId,
+                  isSubscription: isRecurring,
+                  type: type,
+                  bankId: bankId,
+                  payMethod: payMethod,
+                  description: isRecurring ? `${description} (Assinatura)` : description,
+                  amount: installmentAmount.toFixed(2),
+                  category: category,
+                  year: instYear,
+                  month: instMonth,
+                  date: formatDateStr(instYear, instMonth, dateObj.getDate()),
+                  installmentCurrent: currentInstNumber,
+                  installmentTotal: isRecurring ? 12 : totalInstallments,
+                  status: 'PENDING'
+                });
+              }
             }
           }
         }
