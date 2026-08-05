@@ -893,8 +893,8 @@
           <div class="form-group flex-1">
             <label for="tx-category">Categoria *</label>
             <select id="tx-category" class="select-control">
-              <option value="Assinatura / Recorrência Mensal 🔄">🔄 Assinatura / Recorrência Mensal</option>
               <option value="Alimentação / Mercado">Alimentação / Mercado 🛒</option>
+              <option value="Assinatura / Recorrência Mensal 🔄">🔄 Assinatura / Recorrência Mensal</option>
               <option value="Moradia / Luz / Água">Moradia / Luz / Água 🏠</option>
               <option value="Transporte / Combustível">Transporte / Combustível ⛽</option>
               <option value="Lazer / Viagem">Lazer / Viagem ✈️</option>
@@ -2569,7 +2569,29 @@
       document.getElementById('editing-tx-id').value = '';
       document.getElementById('transaction-form').reset();
       document.getElementById('tx-modal-title').innerHTML = '<i data-lucide="plus-circle"></i> Novo Lançamento Financeiro';
+
+      // Redefine o tipo de lançamento para Cartão de Crédito por padrão
+      const defaultTypeRadio = document.querySelector('input[name="txType"][value="CARD"]');
+      if (defaultTypeRadio) {
+        defaultTypeRadio.checked = true;
+        defaultTypeRadio.dispatchEvent(new Event('change'));
+      }
+
       populateBankSelectOptions();
+
+      // Redefine a categoria para a primeira opção padrão e dispara o evento change
+      const categorySelect = document.getElementById('tx-category');
+      if (categorySelect) {
+        categorySelect.selectedIndex = 0;
+        categorySelect.dispatchEvent(new Event('change'));
+      }
+
+      // Redefine o parcelamento para À vista (1x) e dispara o evento change
+      const selectInst = document.getElementById('tx-installments');
+      if (selectInst) {
+        selectInst.value = '1';
+        selectInst.dispatchEvent(new Event('change'));
+      }
 
       // Data padrão inicializada no dia atual em que o usuário está na plataforma
       const today = new Date();
@@ -2580,8 +2602,14 @@
 
       const customGroup = document.getElementById('group-custom-installments');
       const startInstGroup = document.getElementById('group-start-installment');
+      const subInfoGroup = document.getElementById('group-subscription-info');
+      const groupInstallments = document.getElementById('group-installments');
+
       if (customGroup) customGroup.style.display = 'none';
       if (startInstGroup) startInstGroup.style.display = 'none';
+      if (subInfoGroup) subInfoGroup.style.display = 'none';
+      if (groupInstallments) groupInstallments.style.display = 'flex';
+
       const startInstInput = document.getElementById('tx-start-installment');
       if (startInstInput) startInstInput.value = '1';
 
