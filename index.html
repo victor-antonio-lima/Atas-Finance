@@ -912,14 +912,6 @@
                 💡 <strong>Dica:</strong> Se a conta já está em andamento, digite a parcela em que você está neste mês (ex: parcela 4). O sistema gerará a parcela 4 neste mês e espelhará automaticamente as parcelas 5, 6... até o final nos meses seguintes!
               </small>
             </div>
-
-            <!-- CHECKBOX VALOR DA PARCELA INDIVIDUAL -->
-            <div id="group-amount-calc" style="display: none; margin-top: 8px;">
-              <label style="font-size: 0.8rem; color: var(--text-main); cursor: pointer; display: flex; align-items: center; gap: 6px;">
-                <input type="checkbox" id="tx-is-installment-value">
-                <span>O valor digitado acima (R$) é o valor de <strong>CADA parcela individual</strong></span>
-              </label>
-            </div>
           </div>
           <div class="form-group flex-1">
             <label for="tx-status">Status de Pagamento</label>
@@ -2004,13 +1996,11 @@
           const val = e.target.value;
           const customGroup = document.getElementById('group-custom-installments');
           const startInstGroup = document.getElementById('group-start-installment');
-          const amountCalcGroup = document.getElementById('group-amount-calc');
 
           if (customGroup) customGroup.style.display = val === 'CUSTOM' ? 'block' : 'none';
 
           const isMultiple = val !== '1';
           if (startInstGroup) startInstGroup.style.display = isMultiple ? 'block' : 'none';
-          if (amountCalcGroup) amountCalcGroup.style.display = isMultiple ? 'block' : 'none';
         });
       }
 
@@ -2528,10 +2518,8 @@
 
       const customGroup = document.getElementById('group-custom-installments');
       const startInstGroup = document.getElementById('group-start-installment');
-      const amountCalcGroup = document.getElementById('group-amount-calc');
       if (customGroup) customGroup.style.display = 'none';
       if (startInstGroup) startInstGroup.style.display = 'none';
-      if (amountCalcGroup) amountCalcGroup.style.display = 'none';
       const startInstInput = document.getElementById('tx-start-installment');
       if (startInstInput) startInstInput.value = '1';
 
@@ -2579,12 +2567,13 @@
         if (startInstallment < 1) startInstallment = 1;
         if (startInstallment > totalInstallments) startInstallment = totalInstallments;
 
-        const isInstallmentValue = document.getElementById('tx-is-installment-value')?.checked || false;
-        const installmentAmount = (totalInstallments > 1 && !isInstallmentValue) ? (enteredAmount / totalInstallments) : enteredAmount;
+        // O valor digitado é replicado no mesmo valor integral para cada parcela nos meses seguintes
+        const installmentAmount = enteredAmount;
         const bankId = document.getElementById('tx-bank') ? document.getElementById('tx-bank').value : '';
+        const groupId = `grp-${Date.now()}`;
 
         if (totalInstallments > 1) {
-          // Espelhamento automático de parcelas para os meses futuros
+          // Espelhamento automático de parcelas para os meses futuros com o mesmo valor da 1ª parcela
           const remainingSteps = totalInstallments - startInstallment + 1;
           for (let step = 0; step < remainingSteps; step++) {
             const currentInstNumber = startInstallment + step;
@@ -2594,6 +2583,7 @@
 
             saasState.userTransactions.push({
               id: `tx-${Date.now()}-${step}`,
+              groupId: groupId,
               type: type,
               bankId: bankId,
               payMethod: payMethod,
@@ -2634,7 +2624,7 @@
     }
 
     function editTx(txId) {
-      const tx = saasState.userTransactions.find(t => t.id === txId);
+      const tx = saasState.userTransactions.find(t => t.id === editId || t.id === txId);
       if (!tx) return;
 
       document.getElementById('editing-tx-id').value = tx.id;
@@ -2669,7 +2659,37 @@
     window.toggleTxStatus = toggleTxStatus;
 
     function deleteTx(txId) {
-      if (confirm('Excluir este lançamento?')) {
+      const tx = saasState.userTransactions.find(t => String(t.id) === String(txId));
+      if (!tx) return;
+
+      const isParcelado = tx.installmentTotal > 1 || tx.groupId;
+
+      if (isParcelado) {
+        const linkedTxs = saasState.userTransactions.filter(t => 
+          (tx.groupId && t.groupId === tx.groupId) || 
+          (t.description.toLowerCase() === tx.description.toLowerCase() && t.category === tx.category && t.installmentTotal === tx.installmentTotal)
+        );
+
+        if (linkedTxs.length > 1) {
+          const choice = confirm(
+            `⚠️ Esta é uma conta/compra parcelada ("${tx.description}" - Parcela ${tx.installmentCurrent}/${tx.installmentTotal}x).\n\n` +
+            `Deseja excluir TODAS as parcelas vinculadas nos outros meses também?\n\n` +
+            `• Clique em [OK] para excluir TODAS as parcelas deste parcelamento em todos os meses.\n` +
+            `• Clique em [CANCELAR] para excluir APENAS esta parcela do mês atual.`
+          );
+
+          if (choice) {
+            saasState.userTransactions = saasState.userTransactions.filter(t => !linkedTxs.some(l => String(l.id) === String(t.id)));
+          } else {
+            saasState.userTransactions = saasState.userTransactions.filter(t => String(t.id) !== String(txId));
+          }
+          saveUserData();
+          renderAll();
+          return;
+        }
+      }
+
+      if (confirm(`Excluir o lançamento "${tx.description}"?`)) {
         saasState.userTransactions = saasState.userTransactions.filter(t => String(t.id) !== String(txId));
         saveUserData();
         renderAll();
