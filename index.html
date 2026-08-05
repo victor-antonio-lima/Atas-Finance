@@ -1347,12 +1347,13 @@
       }
     ];
 
-    // GLOBAL APP STATE
+    // GLOBAL APP STATE (INICIALIZADO COM O ANO E MÊS ATUAL REAL DE HOJE)
+    const nowInit = new Date();
     let saasState = {
       users: [],
       currentUser: null,
-      year: 2026,
-      currentMonth: 7,
+      year: nowInit.getFullYear(),
+      currentMonth: nowInit.getMonth(),
       selectedView: 'all',
       selectedBankFilter: 'ALL',
       searchQuery: '',
@@ -2542,7 +2543,13 @@
       document.getElementById('transaction-form').reset();
       document.getElementById('tx-modal-title').innerHTML = '<i data-lucide="plus-circle"></i> Novo Lançamento Financeiro';
       populateBankSelectOptions();
-      document.getElementById('tx-date').value = formatDateStr(saasState.year, saasState.currentMonth, 10);
+
+      // Data padrão inicializada no dia atual em que o usuário está na plataforma
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, '0');
+      const dd = String(today.getDate()).padStart(2, '0');
+      document.getElementById('tx-date').value = `${yyyy}-${mm}-${dd}`;
 
       const customGroup = document.getElementById('group-custom-installments');
       const startInstGroup = document.getElementById('group-start-installment');
@@ -2573,13 +2580,15 @@
       const baseMonth = dateObj.getMonth();
 
       if (editId) {
-        // Edição de Lançamento Existente
+        // Edição de Lançamento Existente (Atualiza todos os dados incluindo ano e mês)
         const tx = saasState.userTransactions.find(t => String(t.id) === String(editId));
         if (tx) {
           tx.description = description;
           tx.amount = enteredAmount.toFixed(2);
           tx.category = category;
           tx.date = dateStr;
+          tx.year = baseYear;
+          tx.month = baseMonth;
           tx.status = status;
           tx.payMethod = payMethod;
           tx.type = type;
