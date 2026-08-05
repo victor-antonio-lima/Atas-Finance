@@ -903,6 +903,23 @@
             <div id="group-custom-installments" style="display: none; margin-top: 6px;">
               <input type="number" id="tx-custom-installments" min="1" max="120" placeholder="Digite a qtd de parcelas (ex: 18, 24, 60)" class="input-control font-mono">
             </div>
+
+            <!-- PARCELA ATUAL EM ANDAMENTO -->
+            <div id="group-start-installment" style="display: none; margin-top: 10px; background: rgba(245, 158, 11, 0.08); padding: 10px; border-radius: var(--radius-sm); border: 1px solid rgba(245, 158, 11, 0.3);">
+              <label for="tx-start-installment" style="color: #f59e0b; font-weight:700; font-size: 0.85rem;">📍 Parcela Atual (Em Andamento)</label>
+              <input type="number" id="tx-start-installment" min="1" max="120" value="1" placeholder="Em qual parcela está agora? (Ex: 1, 3, 5...)" class="input-control font-mono" style="margin-top: 4px; border-color: rgba(245, 158, 11, 0.5);">
+              <small style="font-size:0.75rem; color:var(--text-muted); display:block; margin-top:4px; line-height: 1.4;">
+                💡 <strong>Dica:</strong> Se a conta já está em andamento, digite a parcela em que você está neste mês (ex: parcela 4). O sistema gerará a parcela 4 neste mês e espelhará automaticamente as parcelas 5, 6... até o final nos meses seguintes!
+              </small>
+            </div>
+
+            <!-- CHECKBOX VALOR DA PARCELA INDIVIDUAL -->
+            <div id="group-amount-calc" style="display: none; margin-top: 8px;">
+              <label style="font-size: 0.8rem; color: var(--text-main); cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                <input type="checkbox" id="tx-is-installment-value">
+                <span>O valor digitado acima (R$) é o valor de <strong>CADA parcela individual</strong></span>
+              </label>
+            </div>
           </div>
           <div class="form-group flex-1">
             <label for="tx-status">Status de Pagamento</label>
@@ -1964,7 +1981,7 @@
           } else {
             // BILL
             if (groupBank) groupBank.style.display = 'none';
-            if (groupInstallments) groupInstallments.style.display = 'none';
+            if (groupInstallments) groupInstallments.style.display = 'block';
             if (descInput) descInput.placeholder = 'Ex: Conta de Luz, Água, Internet, Aluguel...';
             categorySelect.innerHTML = `
               <option value="Alimentação / Mercado">Alimentação / Mercado 🛒</option>
@@ -1980,14 +1997,20 @@
         });
       });
 
-      // Parcelamento Customizado Toggle
+      // Parcelamento & Parcela Atual Toggle
       const selectInst = document.getElementById('tx-installments');
       if (selectInst) {
         selectInst.addEventListener('change', (e) => {
+          const val = e.target.value;
           const customGroup = document.getElementById('group-custom-installments');
-          if (customGroup) {
-            customGroup.style.display = e.target.value === 'CUSTOM' ? 'block' : 'none';
-          }
+          const startInstGroup = document.getElementById('group-start-installment');
+          const amountCalcGroup = document.getElementById('group-amount-calc');
+
+          if (customGroup) customGroup.style.display = val === 'CUSTOM' ? 'block' : 'none';
+
+          const isMultiple = val !== '1';
+          if (startInstGroup) startInstGroup.style.display = isMultiple ? 'block' : 'none';
+          if (amountCalcGroup) amountCalcGroup.style.display = isMultiple ? 'block' : 'none';
         });
       }
 
@@ -2249,6 +2272,8 @@
           if (tx.type === 'VEHICLE') {
             const instText = tx.installmentTotal > 1 ? ` (${tx.installmentCurrent}/${tx.installmentTotal}x)` : '';
             categoryBadge = `<span class="badge-category" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3);">🚗 ${escapeHtml(tx.category)}${instText}</span>`;
+          } else if (tx.installmentTotal > 1) {
+            categoryBadge = `<span class="badge-category">${escapeHtml(tx.category)} <span class="badge-installment" style="margin-left: 4px;">${tx.installmentCurrent}/${tx.installmentTotal}x</span></span>`;
           }
 
           const tr = document.createElement('tr');
@@ -2500,6 +2525,16 @@
       document.getElementById('tx-modal-title').innerHTML = '<i data-lucide="plus-circle"></i> Novo Lançamento Financeiro';
       populateBankSelectOptions();
       document.getElementById('tx-date').value = formatDateStr(saasState.year, saasState.currentMonth, 10);
+
+      const customGroup = document.getElementById('group-custom-installments');
+      const startInstGroup = document.getElementById('group-start-installment');
+      const amountCalcGroup = document.getElementById('group-amount-calc');
+      if (customGroup) customGroup.style.display = 'none';
+      if (startInstGroup) startInstGroup.style.display = 'none';
+      if (amountCalcGroup) amountCalcGroup.style.display = 'none';
+      const startInstInput = document.getElementById('tx-start-installment');
+      if (startInstInput) startInstInput.value = '1';
+
       document.getElementById('transaction-modal').classList.add('active');
     }
     function closeTxModal() { document.getElementById('transaction-modal').classList.remove('active'); }
@@ -2509,43 +2544,56 @@
       const editId = document.getElementById('editing-tx-id').value;
       const type = document.querySelector('input[name="txType"]:checked').value;
       const description = document.getElementById('tx-description').value.trim();
-      const totalAmount = parseFloat(document.getElementById('tx-amount').value);
+      const enteredAmount = parseFloat(document.getElementById('tx-amount').value);
       const category = document.getElementById('tx-category').value;
       const dateStr = document.getElementById('tx-date').value;
       const status = document.getElementById('tx-status').value;
+      const payMethod = document.getElementById('tx-pay-method').value;
 
-      if (!description || isNaN(totalAmount) || !dateStr) return;
+      if (!description || isNaN(enteredAmount) || !dateStr) return;
 
       const dateObj = new Date(dateStr + 'T00:00:00');
       const baseYear = dateObj.getFullYear();
       const baseMonth = dateObj.getMonth();
 
       if (editId) {
-        // Edição
+        // Edição de lançamento individual
         const tx = saasState.userTransactions.find(t => t.id === editId);
         if (tx) {
           tx.description = description;
-          tx.amount = totalAmount.toFixed(2);
+          tx.amount = enteredAmount.toFixed(2);
           tx.category = category;
           tx.date = dateStr;
           tx.status = status;
+          tx.payMethod = payMethod;
+          if (type === 'CARD' || type === 'VEHICLE') {
+            tx.bankId = document.getElementById('tx-bank').value;
+          }
         }
       } else {
-        // Novo Lançamento
-        if (type === 'CARD' || type === 'VEHICLE') {
-          const bankId = document.getElementById('tx-bank').value;
-          let instVal = document.getElementById('tx-installments').value;
-          let installments = instVal === 'CUSTOM' ? (parseInt(document.getElementById('tx-custom-installments').value, 10) || 1) : (parseInt(instVal, 10) || 1);
-          const installmentAmount = totalAmount / installments;
-          const payMethod = document.getElementById('tx-pay-method').value;
+        // Novo Lançamento (Cartão, Conta da Casa ou Carro/Moto)
+        let instVal = document.getElementById('tx-installments').value;
+        let totalInstallments = instVal === 'CUSTOM' ? (parseInt(document.getElementById('tx-custom-installments').value, 10) || 1) : (parseInt(instVal, 10) || 1);
+        let startInstallment = parseInt(document.getElementById('tx-start-installment').value, 10) || 1;
 
-          for (let i = 0; i < installments; i++) {
-            let instMonth = baseMonth + i;
+        if (startInstallment < 1) startInstallment = 1;
+        if (startInstallment > totalInstallments) startInstallment = totalInstallments;
+
+        const isInstallmentValue = document.getElementById('tx-is-installment-value')?.checked || false;
+        const installmentAmount = (totalInstallments > 1 && !isInstallmentValue) ? (enteredAmount / totalInstallments) : enteredAmount;
+        const bankId = document.getElementById('tx-bank') ? document.getElementById('tx-bank').value : '';
+
+        if (totalInstallments > 1) {
+          // Espelhamento automático de parcelas para os meses futuros
+          const remainingSteps = totalInstallments - startInstallment + 1;
+          for (let step = 0; step < remainingSteps; step++) {
+            const currentInstNumber = startInstallment + step;
+            let instMonth = baseMonth + step;
             let instYear = baseYear + Math.floor(instMonth / 12);
             instMonth = instMonth % 12;
 
             saasState.userTransactions.push({
-              id: `tx-${Date.now()}-${i}`,
+              id: `tx-${Date.now()}-${step}`,
               type: type,
               bankId: bankId,
               payMethod: payMethod,
@@ -2555,20 +2603,20 @@
               year: instYear,
               month: instMonth,
               date: formatDateStr(instYear, instMonth, dateObj.getDate()),
-              installmentCurrent: i + 1,
-              installmentTotal: installments,
-              status: i === 0 ? status : 'PENDING'
+              installmentCurrent: currentInstNumber,
+              installmentTotal: totalInstallments,
+              status: step === 0 ? status : 'PENDING'
             });
           }
         } else {
-          // BILL (Conta da Casa)
-          const payMethod = document.getElementById('tx-pay-method').value;
+          // À vista (1x)
           saasState.userTransactions.push({
             id: `tx-${Date.now()}`,
-            type: 'BILL',
+            type: type,
+            bankId: bankId,
             payMethod: payMethod,
             description: description,
-            amount: totalAmount.toFixed(2),
+            amount: enteredAmount.toFixed(2),
             category: category,
             year: baseYear,
             month: baseMonth,
