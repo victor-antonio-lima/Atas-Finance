@@ -1575,76 +1575,17 @@
       document.getElementById('login-form').addEventListener('submit', async (e) => {
         e.preventDefault();
         
-        // Validação da Conta Master
-        if (validarAcessoMaster(e)) {
+        const emailInput = document.getElementById('login-email');
+        const passInput = document.getElementById('login-password');
+        const email = emailInput ? emailInput.value.trim().toLowerCase() : '';
+        const pass = passInput ? passInput.value.trim() : '';
+
+        if (!email || !pass) {
+          alert("Por favor, preencha o e-mail e a senha.");
           return;
         }
 
-        const email = document.getElementById('login-email').value.trim().toLowerCase();
-        const pass = document.getElementById('login-password').value.trim();
-
-        if (!email || !pass) return;
-
-        // Tenta o login no banco de dados na nuvem (Supabase)
-        if (typeof fazerLogin === 'function') {
-          const success = await fazerLogin(email, pass);
-          if (success) return;
-        }
-
-        loadSaaSStore();
-        let user = saasState.users.find(u => u.email.trim().toLowerCase() === email);
-        if (!user) {
-          await fetchUsersFromCloudDB();
-          user = saasState.users.find(u => u.email.trim().toLowerCase() === email);
-        }
-
-        // Garante que a conta victorantoniolima464@gmail.com seja sempre MASTER
-        if (email === 'victorantoniolima464@gmail.com') {
-          if (!user) {
-            user = {
-              id: 'usr-master-victor',
-              name: 'Victor Antonio (Master)',
-              email: 'victorantoniolima464@gmail.com',
-              password: '16041997',
-              role: 'MASTER',
-              registeredAt: '2026-01-01T00:00:00.000Z',
-              subscriptionStatus: 'SUBSCRIBED',
-              trialEndTimestamp: Date.now() + (365 * 86400000)
-            };
-            saasState.users.push(user);
-            await saveUsers();
-          } else {
-            user.role = 'MASTER';
-            user.password = '16041997';
-            user.subscriptionStatus = 'SUBSCRIBED';
-          }
-        }
-
-        if (!user) {
-          alert(`⚠️ O e-mail "${email}" não foi encontrado. Contate o Administrador Master.`);
-          return;
-        }
-
-        if (String(user.password || '').trim() !== pass) {
-          alert('❌ Senha incorreta!');
-          return;
-        }
-
-        if (user.subscriptionStatus === 'BLOCKED') {
-          alert('🚫 Conta bloqueada pelo Administrador Master.');
-          return;
-        }
-
-        if (user.role === 'USER' && (user.isFirstLogin === true || pass === '123456')) {
-          saasState.currentUser = user;
-          localStorage.setItem('finansaas_active_user', user.id);
-          document.getElementById('first-login-pass-modal').classList.add('active');
-          return;
-        }
-
-        saasState.currentUser = user;
-        localStorage.setItem('finansaas_active_user', user.id);
-        showAppScreen();
+        await fazerLogin(email, pass);
       });
 
       const firstPassForm = document.getElementById('first-login-pass-form');
@@ -3602,66 +3543,93 @@
     // 2. SISTEMA DE LOGIN (Funciona em qualquer celular/computador)
     // -------------------------------------------------------------
     async function fazerLogin(email, senha) {
-      if (!email || !senha) return false;
-      const emailLimpo = email.trim().toLowerCase();
+      if (!email || !senha) {
+        alert("Por favor, preencha o e-mail e a senha.");
+        return false;
+      }
 
-      // Login Master Garantido
-      if (emailLimpo === "victorantoniolima464@gmail.com" && (senha === "16041997" || senha === MASTER_SENHA)) {
+      const emailLimpo = email.trim().toLowerCase();
+      const senhaLimpa = senha.trim();
+
+      // 1. Login Master Autorizado
+      if (emailLimpo === "victorantoniolima464@gmail.com" && (senhaLimpa === "16041997" || (typeof MASTER_SENHA !== 'undefined' && senhaLimpa === MASTER_SENHA))) {
         return validarAcessoMaster(null);
       }
 
-      if (!supabaseClient) return false;
+      // 2. Consulta no Supabase (Nuvem)
+      let cloudUser = null;
+      if (supabaseClient) {
+        try {
+          const { data, error } = await supabaseClient
+            .from('usuarios')
+            .select('*')
+            .eq('email', emailLimpo)
+            .eq('senha', senhaLimpa)
+            .maybeSingle();
 
-      try {
-        // Consulta direta no banco de dados na nuvem
-        const { data, error } = await supabaseClient
-          .from('usuarios')
-          .select('*')
-          .eq('email', emailLimpo)
-          .eq('senha', senha)
-          .single();
-
-        if (error || !data) {
-          alert(`O e-mail "${email}" não foi encontrado ou a senha está incorreta.`);
-          return false;
+          if (!error && data) {
+            cloudUser = data;
+          }
+        } catch (err) {
+          console.warn("Consulta Supabase indisponível:", err);
         }
+      }
 
-        // Armazena a sessão ativa
-        localStorage.setItem("usuario_logado", JSON.stringify(data));
+      // 3. Consulta no banco de dados local
+      loadSaaSStore();
+      let userObj = saasState.users.find(u => u && u.email && u.email.trim().toLowerCase() === emailLimpo);
 
-        loadSaaSStore();
-        let dbUser = saasState.users.find(u => u && u.email && u.email.toLowerCase() === emailLimpo);
-        if (!dbUser) {
-          dbUser = {
-            id: data.id || `usr-${Date.now()}`,
+      if (cloudUser) {
+        localStorage.setItem("usuario_logado", JSON.stringify(cloudUser));
+        if (!userObj) {
+          userObj = {
+            id: cloudUser.id || `usr-${Date.now()}`,
             name: emailLimpo.split('@')[0],
             email: emailLimpo,
-            password: senha,
-            role: data.tipo_acesso === 'MASTER' ? 'MASTER' : 'CLIENTE',
+            password: senhaLimpa,
+            role: cloudUser.tipo_acesso === 'MASTER' ? 'MASTER' : 'CLIENTE',
             registeredAt: new Date().toISOString(),
             subscriptionStatus: 'SUBSCRIBED',
             trialEndTimestamp: Date.now() + (365 * 86400000)
           };
-          saasState.users.push(dbUser);
+          saasState.users.push(userObj);
+          saveUsers();
+        } else {
+          userObj.password = senhaLimpa;
           saveUsers();
         }
+      }
 
-        saasState.currentUser = dbUser;
-        localStorage.setItem('finansaas_active_user', dbUser.id);
+      // 4. Executa o login se o usuário existir
+      if (userObj) {
+        if (String(userObj.password || '').trim() !== senhaLimpa && !cloudUser) {
+          alert("❌ Senha incorreta!");
+          return false;
+        }
+
+        if (userObj.subscriptionStatus === 'BLOCKED') {
+          alert("🚫 Sua conta foi suspensa ou bloqueada pelo Administrador Master.");
+          return false;
+        }
+
+        localStorage.setItem("usuario_logado", JSON.stringify(userObj));
+        saasState.currentUser = userObj;
+        localStorage.setItem('finansaas_active_user', userObj.id);
         loadUserData();
 
-        if (data.tipo_acesso === 'MASTER') {
+        if (userObj.role === 'MASTER') {
           alert("Acesso Autorizado! Bem-vindo, Administrador Master.");
         } else {
-          alert(`Bem-vindo, ${data.email}!`);
+          alert(`Bem-vindo, ${userObj.name || userObj.email}!`);
         }
 
         showAppScreen();
         return true;
-      } catch (err) {
-        console.error("Erro Supabase login:", err);
-        return false;
       }
+
+      // 5. Se não encontrou nem no Supabase nem no LocalStorage
+      alert(`O e-mail "${email}" não foi encontrado no sistema ou a senha está incorreta.`);
+      return false;
     }
     window.fazerLogin = fazerLogin;
 
