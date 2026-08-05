@@ -932,6 +932,14 @@
               <input type="number" id="tx-custom-installments" min="1" max="120" placeholder="Digite a qtd de parcelas (ex: 18, 24, 60)" class="input-control font-mono">
             </div>
 
+            <!-- ASSINATURA RECORRENTE INFORMATIVO -->
+            <div id="group-subscription-info" style="display: none; margin-top: 10px; background: rgba(16, 185, 129, 0.1); padding: 10px; border-radius: var(--radius-sm); border: 1px solid rgba(16, 185, 129, 0.3);">
+              <span style="color: #34d399; font-weight:700; font-size: 0.85rem;">🔄 Assinatura / Recorrência Mensal Ativa</span>
+              <small style="font-size:0.75rem; color:var(--text-muted); display:block; margin-top:3px; line-height:1.4;">
+                💡 Este valor será replicado automaticamente como uma conta/assinatura fixa em todos os 12 meses do ano a partir deste mês!
+              </small>
+            </div>
+
             <!-- PARCELA ATUAL EM ANDAMENTO -->
             <div id="group-start-installment" style="display: none; margin-top: 10px; background: rgba(245, 158, 11, 0.08); padding: 10px; border-radius: var(--radius-sm); border: 1px solid rgba(245, 158, 11, 0.3);">
               <label for="tx-start-installment" style="color: #f59e0b; font-weight:700; font-size: 0.85rem;">📍 Parcela Atual (Em Andamento)</label>
@@ -2018,17 +2026,19 @@
         });
       });
 
-      // Parcelamento & Parcela Atual Toggle
+      // Parcelamento & Assinatura Toggle
       const selectInst = document.getElementById('tx-installments');
       if (selectInst) {
         selectInst.addEventListener('change', (e) => {
           const val = e.target.value;
           const customGroup = document.getElementById('group-custom-installments');
           const startInstGroup = document.getElementById('group-start-installment');
+          const subInfoGroup = document.getElementById('group-subscription-info');
 
           if (customGroup) customGroup.style.display = val === 'CUSTOM' ? 'block' : 'none';
+          if (subInfoGroup) subInfoGroup.style.display = val === 'RECURRING' ? 'block' : 'none';
 
-          const isMultiple = val !== '1';
+          const isMultiple = val !== '1' && val !== 'RECURRING';
           if (startInstGroup) startInstGroup.style.display = isMultiple ? 'block' : 'none';
         });
       }
@@ -2249,7 +2259,7 @@
             <td><span class="badge-bank" style="background: ${bank.color};">${escapeHtml(bank.name)}</span></td>
             <td><span class="badge-category">${escapeHtml(tx.category)}</span></td>
             <td>${formatDisplayDate(tx.date)}</td>
-            <td>${tx.installmentTotal > 1 ? `<span class="badge-installment">${tx.installmentCurrent}/${tx.installmentTotal}x</span>` : 'À vista'}</td>
+            <td>${tx.isSubscription ? `<span class="badge-installment-green">🔄 Assinatura</span>` : (tx.installmentTotal > 1 ? `<span class="badge-installment">${tx.installmentCurrent}/${tx.installmentTotal}x</span>` : 'À vista')}</td>
             <td class="col-value">${formatCurrency(tx.amount)}</td>
             <td><span class="status-tag ${tx.status === 'PAID' ? 'paid' : 'pending'}" onclick="toggleTxStatus('${tx.id}')">${tx.status === 'PAID' ? 'Pago' : 'Pendente'}</span></td>
             <td style="text-align: center;">
@@ -2289,8 +2299,10 @@
 
           let categoryBadge = `<span class="badge-category">${escapeHtml(tx.category)}</span>`;
           if (tx.type === 'VEHICLE') {
-            const instText = tx.installmentTotal > 1 ? ` (${tx.installmentCurrent}/${tx.installmentTotal}x)` : '';
+            const instText = tx.isSubscription ? `<span class="badge-installment-green" style="margin-left: 4px;">🔄 Assinatura</span>` : (tx.installmentTotal > 1 ? `<span class="badge-installment" style="margin-left: 4px;">${tx.installmentCurrent}/${tx.installmentTotal}x</span>` : '');
             categoryBadge = `<span class="badge-category" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3);">🚗 ${escapeHtml(tx.category)}${instText}</span>`;
+          } else if (tx.isSubscription) {
+            categoryBadge = `<span class="badge-category">${escapeHtml(tx.category)} <span class="badge-installment-green" style="margin-left: 4px;">🔄 Assinatura</span></span>`;
           } else if (tx.installmentTotal > 1) {
             categoryBadge = `<span class="badge-category">${escapeHtml(tx.category)} <span class="badge-installment" style="margin-left: 4px;">${tx.installmentCurrent}/${tx.installmentTotal}x</span></span>`;
           }
@@ -2350,7 +2362,7 @@
             tr.innerHTML = `
               <td>${idx + 1}</td>
               <td><strong>${escapeHtml(tx.description)}</strong></td>
-              <td><span class="badge-category" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3);">🚗 ${escapeHtml(tx.category)} ${tx.installmentTotal > 1 ? `<span class="badge-installment" style="margin-left: 4px;">${tx.installmentCurrent}/${tx.installmentTotal}x</span>` : ''}</span></td>
+              <td><span class="badge-category" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3);">🚗 ${escapeHtml(tx.category)} ${tx.isSubscription ? `<span class="badge-installment-green" style="margin-left: 4px;">🔄 Assinatura (${tx.installmentCurrent}/12)</span>` : (tx.installmentTotal > 1 ? `<span class="badge-installment" style="margin-left: 4px;">${tx.installmentCurrent}/${tx.installmentTotal}x</span>` : '')}</span></td>
               <td>${formatDisplayDate(tx.date)}</td>
               <td>${paymentBadge}</td>
               <td class="col-value" style="color: #f59e0b; text-align: right; font-weight:700;">${formatCurrency(tx.amount)}</td>
@@ -2613,7 +2625,7 @@
 
                 linked.forEach((t, idx) => {
                   const calcNumber = startInstallment + (idx - baseOffset);
-                  t.description = isRecurring ? `${description} (Assinatura)` : description;
+                  t.description = description;
                   t.amount = installmentAmount.toFixed(2);
                   t.category = category;
                   t.payMethod = payMethod;
@@ -2630,7 +2642,7 @@
           }
 
           if (!updateLinked) {
-            tx.description = isRecurring ? `${description} (Assinatura)` : description;
+            tx.description = description;
             tx.amount = installmentAmount.toFixed(2);
             tx.category = category;
             tx.date = dateStr;
@@ -2664,7 +2676,7 @@
                   type: type,
                   bankId: bankId,
                   payMethod: payMethod,
-                  description: isRecurring ? `${description} (Assinatura)` : description,
+                  description: description,
                   amount: installmentAmount.toFixed(2),
                   category: category,
                   year: instYear,
@@ -2698,7 +2710,7 @@
               type: type,
               bankId: bankId,
               payMethod: payMethod,
-              description: isRecurring ? `${description} (Assinatura)` : description,
+              description: description,
               amount: installmentAmount.toFixed(2),
               category: category,
               year: instYear,
