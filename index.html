@@ -2573,43 +2573,18 @@
       const baseMonth = dateObj.getMonth();
 
       if (editId) {
-        // Edição de lançamento (com opção de replicar valor para parcelas vinculadas)
-        const tx = saasState.userTransactions.find(t => t.id === editId);
+        // Edição de Lançamento Existente
+        const tx = saasState.userTransactions.find(t => String(t.id) === String(editId));
         if (tx) {
-          const isParcelado = tx.installmentTotal > 1 || tx.groupId;
-          let updateAll = false;
-
-          if (isParcelado) {
-            const linkedTxs = saasState.userTransactions.filter(t => 
-              (tx.groupId && t.groupId === tx.groupId) || 
-              (t.description.toLowerCase() === tx.description.toLowerCase() && t.category === tx.category && t.installmentTotal === tx.installmentTotal)
-            );
-            if (linkedTxs.length > 1) {
-              updateAll = confirm(`Deseja aplicar o novo valor (R$ ${enteredAmount.toFixed(2)}) e a nova descrição em TODAS as ${linkedTxs.length} parcelas vinculadas dos outros meses?`);
-              if (updateAll) {
-                linkedTxs.forEach(t => {
-                  t.description = description;
-                  t.amount = enteredAmount.toFixed(2);
-                  t.category = category;
-                  t.payMethod = payMethod;
-                  if (type === 'CARD' || type === 'VEHICLE') {
-                    t.bankId = document.getElementById('tx-bank').value;
-                  }
-                });
-              }
-            }
-          }
-
-          if (!updateAll) {
-            tx.description = description;
-            tx.amount = enteredAmount.toFixed(2);
-            tx.category = category;
-            tx.date = dateStr;
-            tx.status = status;
-            tx.payMethod = payMethod;
-            if (type === 'CARD' || type === 'VEHICLE') {
-              tx.bankId = document.getElementById('tx-bank').value;
-            }
+          tx.description = description;
+          tx.amount = enteredAmount.toFixed(2);
+          tx.category = category;
+          tx.date = dateStr;
+          tx.status = status;
+          tx.payMethod = payMethod;
+          tx.type = type;
+          if (type === 'CARD' || type === 'VEHICLE') {
+            tx.bankId = document.getElementById('tx-bank') ? document.getElementById('tx-bank').value : '';
           }
         }
       } else {
@@ -2622,13 +2597,13 @@
         if (startInstallment < 1) startInstallment = 1;
         if (startInstallment > totalInstallments) startInstallment = totalInstallments;
 
-        // O valor digitado é replicado no mesmo valor para cada mês
+        // O valor digitado é replicado integralmente em todos os meses
         const installmentAmount = enteredAmount;
         const bankId = document.getElementById('tx-bank') ? document.getElementById('tx-bank').value : '';
         const groupId = `grp-${Date.now()}`;
 
         if (isRecurring || totalInstallments > 1) {
-          // Espelhamento automático de parcelas ou assinatura mensal para os meses futuros
+          // Espelhamento automático de parcelas para os meses futuros
           const remainingSteps = isRecurring ? 12 : (totalInstallments - startInstallment + 1);
           for (let step = 0; step < remainingSteps; step++) {
             const currentInstNumber = isRecurring ? (step + 1) : (startInstallment + step);
@@ -2684,11 +2659,74 @@
       if (!tx) return;
 
       document.getElementById('editing-tx-id').value = tx.id;
+
+      // Seleciona o tipo correto (Cartão vs Conta vs Carro/Moto)
+      const radioType = document.querySelector(`input[name="txType"][value="${tx.type}"]`);
+      if (radioType) {
+        radioType.checked = true;
+        const groupBank = document.getElementById('group-bank');
+        const groupInstallments = document.getElementById('group-installments');
+        const categorySelect = document.getElementById('tx-category');
+        const descInput = document.getElementById('tx-description');
+
+        if (tx.type === 'CARD') {
+          if (groupBank) groupBank.style.display = 'block';
+          if (groupInstallments) groupInstallments.style.display = 'block';
+          if (descInput) descInput.placeholder = 'Ex: Supermercado, Amazon, Farmácia...';
+          categorySelect.innerHTML = `
+            <option value="Alimentação / Mercado">Alimentação / Mercado 🛒</option>
+            <option value="Moradia / Luz / Água">Moradia / Luz / Água 🏠</option>
+            <option value="Transporte / Combustível">Transporte / Combustível ⛽</option>
+            <option value="Lazer / Viagem">Lazer / Viagem ✈️</option>
+            <option value="Saúde / Farmácia">Saúde / Farmácia 💊</option>
+            <option value="Assinaturas / Streaming">Assinaturas / Streaming 📺</option>
+            <option value="Educação">Educação 📚</option>
+            <option value="Outros">Outros 📦</option>
+          `;
+        } else if (tx.type === 'VEHICLE') {
+          if (groupBank) groupBank.style.display = 'block';
+          if (groupInstallments) groupInstallments.style.display = 'block';
+          if (descInput) descInput.placeholder = 'Ex: Gasolina Posto Shell, IPVA 2026, Troca de Óleo / Pneus...';
+          categorySelect.innerHTML = `
+            <option value="Combustível (Gasolina / Etanol / Diesel)">⛽ Combustível (Gasolina / Etanol / Diesel)</option>
+            <option value="IPVA & Licenciamento">📜 IPVA & Licenciamento (À vista ou Parcelado)</option>
+            <option value="Manutenção Mensal & Oficina">🔧 Manutenção Mensal & Oficina (Troca de Óleo / Pneus)</option>
+            <option value="Multas de Trânsito">🛑 Multas de Trânsito</option>
+            <option value="Seguro Veicular / Proteção">🛡️ Seguro Veicular / Proteção</option>
+            <option value="Estacionamento & Pedágio">🅿️ Estacionamento & Pedágio</option>
+            <option value="Lava-Rápido & Estética">🧼 Lava-Rápido & Estética</option>
+          `;
+        } else {
+          if (groupBank) groupBank.style.display = 'none';
+          if (groupInstallments) groupInstallments.style.display = 'block';
+          if (descInput) descInput.placeholder = 'Ex: Conta de Luz, Água, Internet, Aluguel...';
+          categorySelect.innerHTML = `
+            <option value="Alimentação / Mercado">Alimentação / Mercado 🛒</option>
+            <option value="Moradia / Luz / Água">Moradia / Luz / Água 🏠</option>
+            <option value="Transporte / Combustível">Transporte / Combustível ⛽</option>
+            <option value="Lazer / Viagem">Lazer / Viagem ✈️</option>
+            <option value="Saúde / Farmácia">Saúde / Farmácia 💊</option>
+            <option value="Assinaturas / Streaming">Assinaturas / Streaming 📺</option>
+            <option value="Educação">Educação 📚</option>
+            <option value="Outros">Outros 📦</option>
+          `;
+        }
+      }
+
+      populateBankSelectOptions();
+
       document.getElementById('tx-description').value = tx.description;
       document.getElementById('tx-amount').value = tx.amount;
       document.getElementById('tx-category').value = tx.category;
       document.getElementById('tx-date').value = tx.date;
-      document.getElementById('tx-status').value = tx.status;
+      document.getElementById('tx-status').value = tx.status || 'PENDING';
+
+      if (document.getElementById('tx-pay-method')) {
+        document.getElementById('tx-pay-method').value = tx.payMethod || 'CARD';
+      }
+      if (document.getElementById('tx-bank') && tx.bankId) {
+        document.getElementById('tx-bank').value = tx.bankId;
+      }
 
       document.getElementById('tx-modal-title').innerHTML = '<i data-lucide="edit-3"></i> Editar Lançamento';
       document.getElementById('transaction-modal').classList.add('active');
