@@ -891,14 +891,14 @@
 
         <div class="form-row">
           <div class="form-group flex-1">
-            <label for="tx-category">Categoria</label>
+            <label for="tx-category">Categoria *</label>
             <select id="tx-category" class="select-control">
+              <option value="Assinatura / Recorrência Mensal 🔄">🔄 Assinatura / Recorrência Mensal</option>
               <option value="Alimentação / Mercado">Alimentação / Mercado 🛒</option>
               <option value="Moradia / Luz / Água">Moradia / Luz / Água 🏠</option>
               <option value="Transporte / Combustível">Transporte / Combustível ⛽</option>
               <option value="Lazer / Viagem">Lazer / Viagem ✈️</option>
               <option value="Saúde / Farmácia">Saúde / Farmácia 💊</option>
-              <option value="Assinaturas / Streaming">Assinaturas / Streaming 📺</option>
               <option value="Educação">Educação 📚</option>
               <option value="Outros">Outros 📦</option>
             </select>
@@ -909,12 +909,19 @@
           </div>
         </div>
 
-        <div class="form-row">
-          <div class="form-group flex-1" id="group-installments">
+        <!-- ASSINATURA RECORRENTE INFORMATIVO -->
+        <div id="group-subscription-info" style="display: none; margin-bottom: 15px; background: rgba(16, 185, 129, 0.1); padding: 12px; border-radius: var(--radius-sm); border: 1px solid rgba(16, 185, 129, 0.3);">
+          <span style="color: #34d399; font-weight:700; font-size: 0.88rem;">🔄 Assinatura / Recorrência Mensal Ativa</span>
+          <small style="font-size:0.78rem; color:var(--text-muted); display:block; margin-top:4px; line-height:1.4;">
+            💡 Este lançamento não é um parcelamento. Ele é uma assinatura/recorrência fixa que será espelhada automaticamente em todos os meses!
+          </small>
+        </div>
+
+        <div class="form-row" id="group-installments">
+          <div class="form-group flex-1">
             <label for="tx-installments">Tipo de Lançamento / Parcelamento</label>
             <select id="tx-installments" class="select-control">
               <option value="1">À vista (1x)</option>
-              <option value="RECURRING">🔄 Assinatura / Recorrência Mensal (Replicar em todos os meses)</option>
               <option value="2">2x parcelas</option>
               <option value="3">3x parcelas</option>
               <option value="4">4x parcelas</option>
@@ -930,14 +937,6 @@
             </select>
             <div id="group-custom-installments" style="display: none; margin-top: 6px;">
               <input type="number" id="tx-custom-installments" min="1" max="120" placeholder="Digite a qtd de parcelas (ex: 18, 24, 60)" class="input-control font-mono">
-            </div>
-
-            <!-- ASSINATURA RECORRENTE INFORMATIVO -->
-            <div id="group-subscription-info" style="display: none; margin-top: 10px; background: rgba(16, 185, 129, 0.1); padding: 10px; border-radius: var(--radius-sm); border: 1px solid rgba(16, 185, 129, 0.3);">
-              <span style="color: #34d399; font-weight:700; font-size: 0.85rem;">🔄 Assinatura / Recorrência Mensal Ativa</span>
-              <small style="font-size:0.75rem; color:var(--text-muted); display:block; margin-top:3px; line-height:1.4;">
-                💡 Este valor será replicado automaticamente como uma conta/assinatura fixa em todos os 12 meses do ano a partir deste mês!
-              </small>
             </div>
 
             <!-- PARCELA ATUAL EM ANDAMENTO -->
@@ -1985,12 +1984,12 @@
             if (groupInstallments) groupInstallments.style.display = 'block';
             if (descInput) descInput.placeholder = 'Ex: Supermercado, Amazon, Farmácia...';
             categorySelect.innerHTML = `
+              <option value="Assinatura / Recorrência Mensal 🔄">🔄 Assinatura / Recorrência Mensal</option>
               <option value="Alimentação / Mercado">Alimentação / Mercado 🛒</option>
               <option value="Moradia / Luz / Água">Moradia / Luz / Água 🏠</option>
               <option value="Transporte / Combustível">Transporte / Combustível ⛽</option>
               <option value="Lazer / Viagem">Lazer / Viagem ✈️</option>
               <option value="Saúde / Farmácia">Saúde / Farmácia 💊</option>
-              <option value="Assinaturas / Streaming">Assinaturas / Streaming 📺</option>
               <option value="Educação">Educação 📚</option>
               <option value="Outros">Outros 📦</option>
             `;
@@ -1999,6 +1998,7 @@
             if (groupInstallments) groupInstallments.style.display = 'block';
             if (descInput) descInput.placeholder = 'Ex: Gasolina Posto Shell, IPVA 2026, Troca de Óleo / Pneus...';
             categorySelect.innerHTML = `
+              <option value="Assinatura / Recorrência Mensal 🔄">🔄 Assinatura / Recorrência Mensal (Seguro/Proteção)</option>
               <option value="Combustível (Gasolina / Etanol / Diesel)">⛽ Combustível (Gasolina / Etanol / Diesel)</option>
               <option value="IPVA & Licenciamento">📜 IPVA & Licenciamento (À vista ou Parcelado)</option>
               <option value="Manutenção Mensal & Oficina">🔧 Manutenção Mensal & Oficina (Troca de Óleo / Pneus)</option>
@@ -2013,32 +2013,47 @@
             if (groupInstallments) groupInstallments.style.display = 'block';
             if (descInput) descInput.placeholder = 'Ex: Conta de Luz, Água, Internet, Aluguel...';
             categorySelect.innerHTML = `
+              <option value="Assinatura / Recorrência Mensal 🔄">🔄 Assinatura / Recorrência Mensal</option>
               <option value="Alimentação / Mercado">Alimentação / Mercado 🛒</option>
               <option value="Moradia / Luz / Água">Moradia / Luz / Água 🏠</option>
               <option value="Transporte / Combustível">Transporte / Combustível ⛽</option>
               <option value="Lazer / Viagem">Lazer / Viagem ✈️</option>
               <option value="Saúde / Farmácia">Saúde / Farmácia 💊</option>
-              <option value="Assinaturas / Streaming">Assinaturas / Streaming 📺</option>
               <option value="Educação">Educação 📚</option>
               <option value="Outros">Outros 📦</option>
             `;
           }
+          categorySelect.dispatchEvent(new Event('change'));
         });
       });
 
-      // Parcelamento & Assinatura Toggle
+      // Categoria Assinatura vs Parcelamento Toggle
+      const categorySelect = document.getElementById('tx-category');
+      if (categorySelect) {
+        categorySelect.addEventListener('change', (e) => {
+          const val = e.target.value || '';
+          const isSub = val.includes('Assinatura') || val.includes('Recorrência');
+          const groupInstallments = document.getElementById('group-installments');
+          const subInfoGroup = document.getElementById('group-subscription-info');
+          const startInstGroup = document.getElementById('group-start-installment');
+
+          if (groupInstallments) groupInstallments.style.display = isSub ? 'none' : 'flex';
+          if (subInfoGroup) subInfoGroup.style.display = isSub ? 'block' : 'none';
+          if (isSub && startInstGroup) startInstGroup.style.display = 'none';
+        });
+      }
+
+      // Parcelamento Toggle
       const selectInst = document.getElementById('tx-installments');
       if (selectInst) {
         selectInst.addEventListener('change', (e) => {
           const val = e.target.value;
           const customGroup = document.getElementById('group-custom-installments');
           const startInstGroup = document.getElementById('group-start-installment');
-          const subInfoGroup = document.getElementById('group-subscription-info');
 
           if (customGroup) customGroup.style.display = val === 'CUSTOM' ? 'block' : 'none';
-          if (subInfoGroup) subInfoGroup.style.display = val === 'RECURRING' ? 'block' : 'none';
 
-          const isMultiple = val !== '1' && val !== 'RECURRING';
+          const isMultiple = val !== '1';
           if (startInstGroup) startInstGroup.style.display = isMultiple ? 'block' : 'none';
         });
       }
@@ -2591,8 +2606,10 @@
       const baseYear = dateObj.getFullYear();
       const baseMonth = dateObj.getMonth();
 
-      let instVal = document.getElementById('tx-installments').value;
-      const isRecurring = instVal === 'RECURRING';
+      const isSubscriptionCategory = category.includes('Assinatura') || category.includes('Recorrência');
+
+      let instVal = isSubscriptionCategory ? '1' : document.getElementById('tx-installments').value;
+      const isRecurring = isSubscriptionCategory;
       let totalInstallments = isRecurring ? 12 : (instVal === 'CUSTOM' ? (parseInt(document.getElementById('tx-custom-installments').value, 10) || 1) : (parseInt(instVal, 10) || 1));
       let startInstallment = isRecurring ? 1 : (parseInt(document.getElementById('tx-start-installment').value, 10) || 1);
 
@@ -2606,19 +2623,18 @@
         // Edição de Lançamento Existente
         const tx = saasState.userTransactions.find(t => String(t.id) === String(editId));
         if (tx) {
-          const isParcelado = tx.installmentTotal > 1 || tx.groupId || tx.isSubscription;
+          const isParcelado = (tx.installmentTotal > 1 && !isSubscriptionCategory) || tx.groupId;
           let updateLinked = false;
 
           if (isParcelado) {
             const linked = saasState.userTransactions.filter(t => 
               (tx.groupId && t.groupId === tx.groupId) || 
-              (t.description.toLowerCase() === tx.description.toLowerCase() && t.category === tx.category && t.installmentTotal === tx.installmentTotal)
+              (t.description.toLowerCase() === tx.description.toLowerCase() && t.category === tx.category)
             );
 
             if (linked.length > 1) {
-              updateLinked = confirm(`Deseja aplicar as alterações (Valor R$ ${enteredAmount.toFixed(2)}, parcela ${startInstallment}/${totalInstallments}x, etc.) em TODAS as ${linked.length} parcelas vinculadas nos outros meses?`);
+              updateLinked = confirm(`Deseja aplicar as alterações (Valor R$ ${enteredAmount.toFixed(2)}, categoria, etc.) em TODAS as ${linked.length} ocorrências vinculadas nos outros meses?`);
               if (updateLinked) {
-                // Ordena cronologicamente para ajustar as parcelas em sequência
                 linked.sort((a, b) => (a.year * 12 + a.month) - (b.year * 12 + b.month));
                 const editIndex = linked.findIndex(l => String(l.id) === String(tx.id));
                 const baseOffset = editIndex >= 0 ? editIndex : 0;
@@ -2630,8 +2646,8 @@
                   t.category = category;
                   t.payMethod = payMethod;
                   t.type = type;
-                  t.installmentCurrent = Math.max(1, Math.min(totalInstallments, calcNumber));
-                  t.installmentTotal = isRecurring ? 12 : totalInstallments;
+                  t.installmentCurrent = isRecurring ? 1 : Math.max(1, Math.min(totalInstallments, calcNumber));
+                  t.installmentTotal = isRecurring ? 1 : totalInstallments;
                   t.isSubscription = isRecurring;
                   if (type === 'CARD' || type === 'VEHICLE') {
                     t.bankId = bankId;
@@ -2651,20 +2667,20 @@
             tx.status = status;
             tx.payMethod = payMethod;
             tx.type = type;
-            tx.installmentCurrent = startInstallment;
-            tx.installmentTotal = isRecurring ? 12 : totalInstallments;
+            tx.installmentCurrent = isRecurring ? 1 : startInstallment;
+            tx.installmentTotal = isRecurring ? 1 : totalInstallments;
             tx.isSubscription = isRecurring;
             if (type === 'CARD' || type === 'VEHICLE') {
               tx.bankId = bankId;
             }
 
-            // Se alterou de à vista para parcelado, gera as parcelas futuras faltantes
-            if (totalInstallments > 1 && (!tx.groupId || saasState.userTransactions.filter(t => t.groupId === tx.groupId).length <= 1)) {
+            // Se alterou para parcelado, gera as parcelas futuras faltantes
+            if (totalInstallments > 1 && !isRecurring && (!tx.groupId || saasState.userTransactions.filter(t => t.groupId === tx.groupId).length <= 1)) {
               const newGroupId = tx.groupId || `grp-${Date.now()}`;
               tx.groupId = newGroupId;
-              const remainingSteps = isRecurring ? 12 : (totalInstallments - startInstallment + 1);
+              const remainingSteps = totalInstallments - startInstallment + 1;
               for (let step = 1; step < remainingSteps; step++) {
-                const currentInstNumber = isRecurring ? (step + 1) : (startInstallment + step);
+                const currentInstNumber = startInstallment + step;
                 let instMonth = baseMonth + step;
                 let instYear = baseYear + Math.floor(instMonth / 12);
                 instMonth = instMonth % 12;
@@ -2672,7 +2688,7 @@
                 saasState.userTransactions.push({
                   id: `tx-${Date.now()}-${step}`,
                   groupId: newGroupId,
-                  isSubscription: isRecurring,
+                  isSubscription: false,
                   type: type,
                   bankId: bankId,
                   payMethod: payMethod,
@@ -2683,7 +2699,7 @@
                   month: instMonth,
                   date: formatDateStr(instYear, instMonth, dateObj.getDate()),
                   installmentCurrent: currentInstNumber,
-                  installmentTotal: isRecurring ? 12 : totalInstallments,
+                  installmentTotal: totalInstallments,
                   status: 'PENDING'
                 });
               }
@@ -2695,10 +2711,10 @@
         const groupId = `grp-${Date.now()}`;
 
         if (isRecurring || totalInstallments > 1) {
-          // Espelhamento automático de parcelas para os meses futuros
+          // Espelhamento automático para os meses futuros (12 meses se for Assinatura)
           const remainingSteps = isRecurring ? 12 : (totalInstallments - startInstallment + 1);
           for (let step = 0; step < remainingSteps; step++) {
-            const currentInstNumber = isRecurring ? (step + 1) : (startInstallment + step);
+            const currentInstNumber = isRecurring ? 1 : (startInstallment + step);
             let instMonth = baseMonth + step;
             let instYear = baseYear + Math.floor(instMonth / 12);
             instMonth = instMonth % 12;
@@ -2716,8 +2732,8 @@
               year: instYear,
               month: instMonth,
               date: formatDateStr(instYear, instMonth, dateObj.getDate()),
-              installmentCurrent: currentInstNumber,
-              installmentTotal: isRecurring ? 12 : totalInstallments,
+              installmentCurrent: isRecurring ? 1 : currentInstNumber,
+              installmentTotal: isRecurring ? 1 : totalInstallments,
               status: step === 0 ? status : 'PENDING'
             });
           }
@@ -2766,12 +2782,12 @@
           if (groupInstallments) groupInstallments.style.display = 'block';
           if (descInput) descInput.placeholder = 'Ex: Supermercado, Amazon, Farmácia...';
           categorySelect.innerHTML = `
+            <option value="Assinatura / Recorrência Mensal 🔄">🔄 Assinatura / Recorrência Mensal</option>
             <option value="Alimentação / Mercado">Alimentação / Mercado 🛒</option>
             <option value="Moradia / Luz / Água">Moradia / Luz / Água 🏠</option>
             <option value="Transporte / Combustível">Transporte / Combustível ⛽</option>
             <option value="Lazer / Viagem">Lazer / Viagem ✈️</option>
             <option value="Saúde / Farmácia">Saúde / Farmácia 💊</option>
-            <option value="Assinaturas / Streaming">Assinaturas / Streaming 📺</option>
             <option value="Educação">Educação 📚</option>
             <option value="Outros">Outros 📦</option>
           `;
@@ -2780,6 +2796,7 @@
           if (groupInstallments) groupInstallments.style.display = 'block';
           if (descInput) descInput.placeholder = 'Ex: Gasolina Posto Shell, IPVA 2026, Troca de Óleo / Pneus...';
           categorySelect.innerHTML = `
+            <option value="Assinatura / Recorrência Mensal 🔄">🔄 Assinatura / Recorrência Mensal (Seguro/Proteção)</option>
             <option value="Combustível (Gasolina / Etanol / Diesel)">⛽ Combustível (Gasolina / Etanol / Diesel)</option>
             <option value="IPVA & Licenciamento">📜 IPVA & Licenciamento (À vista ou Parcelado)</option>
             <option value="Manutenção Mensal & Oficina">🔧 Manutenção Mensal & Oficina (Troca de Óleo / Pneus)</option>
@@ -2793,12 +2810,12 @@
           if (groupInstallments) groupInstallments.style.display = 'block';
           if (descInput) descInput.placeholder = 'Ex: Conta de Luz, Água, Internet, Aluguel...';
           categorySelect.innerHTML = `
+            <option value="Assinatura / Recorrência Mensal 🔄">🔄 Assinatura / Recorrência Mensal</option>
             <option value="Alimentação / Mercado">Alimentação / Mercado 🛒</option>
             <option value="Moradia / Luz / Água">Moradia / Luz / Água 🏠</option>
             <option value="Transporte / Combustível">Transporte / Combustível ⛽</option>
             <option value="Lazer / Viagem">Lazer / Viagem ✈️</option>
             <option value="Saúde / Farmácia">Saúde / Farmácia 💊</option>
-            <option value="Assinaturas / Streaming">Assinaturas / Streaming 📺</option>
             <option value="Educação">Educação 📚</option>
             <option value="Outros">Outros 📦</option>
           `;
@@ -2809,9 +2826,15 @@
 
       document.getElementById('tx-description').value = tx.description;
       document.getElementById('tx-amount').value = tx.amount;
-      document.getElementById('tx-category').value = tx.category;
       document.getElementById('tx-date').value = tx.date;
       document.getElementById('tx-status').value = tx.status || 'PENDING';
+
+      if (tx.isSubscription) {
+        document.getElementById('tx-category').value = 'Assinatura / Recorrência Mensal 🔄';
+      } else {
+        document.getElementById('tx-category').value = tx.category;
+      }
+      document.getElementById('tx-category').dispatchEvent(new Event('change'));
 
       if (document.getElementById('tx-pay-method')) {
         document.getElementById('tx-pay-method').value = tx.payMethod || 'CARD';
@@ -2821,11 +2844,9 @@
       }
 
       // Preenche os campos de parcelamento no modal ao editar
-      if (document.getElementById('tx-installments')) {
+      if (document.getElementById('tx-installments') && !tx.isSubscription) {
         const selectInst = document.getElementById('tx-installments');
-        if (tx.isSubscription) {
-          selectInst.value = 'RECURRING';
-        } else if (tx.installmentTotal > 1) {
+        if (tx.installmentTotal > 1) {
           if (tx.installmentTotal <= 12) {
             selectInst.value = String(tx.installmentTotal);
           } else {
