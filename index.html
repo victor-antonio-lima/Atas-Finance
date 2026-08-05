@@ -1585,6 +1585,12 @@
 
         if (!email || !pass) return;
 
+        // Tenta o login no banco de dados na nuvem (Supabase)
+        if (typeof fazerLogin === 'function') {
+          const success = await fazerLogin(email, pass);
+          if (success) return;
+        }
+
         loadSaaSStore();
         let user = saasState.users.find(u => u.email.trim().toLowerCase() === email);
         if (!user) {
@@ -2061,6 +2067,19 @@
       // Submit Forms
       document.getElementById('transaction-form').addEventListener('submit', handleTxFormSubmit);
       document.getElementById('add-bank-form').addEventListener('submit', handleAddBankSubmit);
+
+      const masterAddForm = document.getElementById('master-add-user-form');
+      if (masterAddForm) {
+        masterAddForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const email = document.getElementById('master-new-email') ? document.getElementById('master-new-email').value.trim() : '';
+          const pass = document.getElementById('master-new-pass') ? document.getElementById('master-new-pass').value.trim() : '123456';
+          if (email && pass) {
+            closeMasterAddUserModal();
+            await cadastrarClientePeloSite(email, pass);
+          }
+        });
+      }
 
       // Paywall Actions
       document.getElementById('tab-checkout-pix').addEventListener('click', () => {
@@ -3574,77 +3593,175 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <script>
-    // Conexão com o Supabase
+    // 1. Conexão com a Nuvem (Supabase)
     const SUPABASE_URL = "https://cdevrbqiupwaczgauszd.supabase.co";
-    const SUPABASE_KEY = "sb_publishable_evKYmLK_8Rn5pM1nrF8u3w_GKnCf8xi";
-    const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+    const SUPABASE_KEY = "sb_publishable_evKYmLK_8Rn5pMlnrF8u3w_GkNCf8xi";
+    const supabaseClient = (typeof supabase !== 'undefined') ? supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 
-    // 1. FUNÇÃO DE LOGIN (Consulta o Supabase na hora)
+    // -------------------------------------------------------------
+    // 2. SISTEMA DE LOGIN (Funciona em qualquer celular/computador)
+    // -------------------------------------------------------------
     async function fazerLogin(email, senha) {
+      if (!email || !senha) return false;
+      const emailLimpo = email.trim().toLowerCase();
+
+      // Login Master Garantido
+      if (emailLimpo === "victorantoniolima464@gmail.com" && (senha === "16041997" || senha === MASTER_SENHA)) {
+        return validarAcessoMaster(null);
+      }
+
       if (!supabaseClient) return false;
+
       try {
+        // Consulta direta no banco de dados na nuvem
         const { data, error } = await supabaseClient
           .from('usuarios')
           .select('*')
-          .eq('email', (email || '').trim().toLowerCase())
+          .eq('email', emailLimpo)
           .eq('senha', senha)
           .single();
 
         if (error || !data) {
-          alert(`O e-mail "${email}" não foi encontrado ou a senha está incorreta. Contate o Administrador Master.`);
+          alert(`O e-mail "${email}" não foi encontrado ou a senha está incorreta.`);
           return false;
         }
 
+        // Armazena a sessão ativa
+        localStorage.setItem("usuario_logado", JSON.stringify(data));
+
+        loadSaaSStore();
+        let dbUser = saasState.users.find(u => u && u.email && u.email.toLowerCase() === emailLimpo);
+        if (!dbUser) {
+          dbUser = {
+            id: data.id || `usr-${Date.now()}`,
+            name: emailLimpo.split('@')[0],
+            email: emailLimpo,
+            password: senha,
+            role: data.tipo_acesso === 'MASTER' ? 'MASTER' : 'CLIENTE',
+            registeredAt: new Date().toISOString(),
+            subscriptionStatus: 'SUBSCRIBED',
+            trialEndTimestamp: Date.now() + (365 * 86400000)
+          };
+          saasState.users.push(dbUser);
+          saveUsers();
+        }
+
+        saasState.currentUser = dbUser;
+        localStorage.setItem('finansaas_active_user', dbUser.id);
+        loadUserData();
+
         if (data.tipo_acesso === 'MASTER') {
           alert("Acesso Autorizado! Bem-vindo, Administrador Master.");
-          localStorage.setItem("usuario_logado", JSON.stringify(data));
-          // Libera painel Master
         } else {
           alert(`Bem-vindo, ${data.email}!`);
-          localStorage.setItem("usuario_logado", JSON.stringify(data));
-          // Libera painel do Cliente
         }
+
+        showAppScreen();
         return true;
       } catch (err) {
-        console.error('Erro na requisição Supabase:', err);
+        console.error("Erro Supabase login:", err);
         return false;
       }
     }
     window.fazerLogin = fazerLogin;
 
-    // 2. FUNÇÃO AUTOMÁTICA DE CADASTRO PELO PAINEL MASTER
-    async function cadastrarNovoClientePeloSite(emailCliente, senhaCliente) {
+    // -------------------------------------------------------------
+    // 3. CADASTRO AUTOMÁTICO DE CLIENTE (Disponível na hora na nuvem)
+    // -------------------------------------------------------------
+    async function cadastrarClientePeloSite(emailCliente, senhaCliente) {
       if (!emailCliente || !senhaCliente) {
-        alert("Preencha o e-mail e a senha do cliente.");
+        alert("Por favor, preencha o e-mail e a senha do cliente.");
         return;
       }
 
-      if (!supabaseClient) return;
+      const emailLimpo = emailCliente.trim().toLowerCase();
 
-      try {
-        // Insere o cliente na tabela 'usuarios' da nuvem na hora
+      if (supabaseClient) {
+        // Envia o novo cliente direto para a tabela na nuvem
         const { data, error } = await supabaseClient
           .from('usuarios')
           .insert([
-            {
-              email: emailCliente.trim().toLowerCase(),
-              senha: senhaCliente,
-              tipo_acesso: 'CLIENTE'
+            { 
+              email: emailLimpo, 
+              senha: senhaCliente, 
+              tipo_acesso: 'CLIENTE' 
             }
           ]);
 
         if (error) {
-          console.error("Erro no Supabase:", error);
-          alert("Erro ao salvar o cliente na nuvem. Verifique se o e-mail já existe.");
+          console.error("Erro Supabase:", error);
+          alert("Erro ao salvar cliente no banco. Verifique se o e-mail já existe.");
+          return;
+        }
+      }
+
+      loadSaaSStore();
+      const newUser = {
+        id: `usr-${Date.now()}`,
+        name: emailLimpo.split('@')[0],
+        email: emailLimpo,
+        password: senhaCliente,
+        role: 'CLIENTE',
+        registeredAt: new Date().toISOString(),
+        subscriptionStatus: 'SUBSCRIBED',
+        trialEndTimestamp: Date.now() + (365 * 86400000)
+      };
+      saasState.users.push(newUser);
+      saveUsers();
+
+      alert(`Cliente "${emailLimpo}" cadastrado com sucesso na nuvem! Ele já pode acessar do próprio celular.`);
+      if (typeof renderMasterPanel === 'function') renderMasterPanel();
+    }
+    window.cadastrarClientePeloSite = cadastrarClientePeloSite;
+    window.cadastrarNovoClientePeloSite = cadastrarClientePeloSite;
+
+    // -------------------------------------------------------------
+    // 4. SINCRONIZAÇÃO DE DADOS / FINANÇAS ENTRE DISPOSITIVOS
+    // -------------------------------------------------------------
+    // Função para carregar dados salvos no banco na nuvem
+    async function carregarDadosSincronizados() {
+      if (!supabaseClient) return;
+      try {
+        const { data, error } = await supabaseClient
+          .from('usuarios')
+          .select('*');
+
+        if (error) {
+          console.error("Erro ao sincronizar dados:", error);
         } else {
-          alert(`Cliente "${emailCliente}" cadastrado com sucesso! Ele já pode fazer login.`);
+          console.log("Dados atualizados da nuvem:", data);
+          if (data && Array.isArray(data)) {
+            loadSaaSStore();
+            data.forEach(dbUser => {
+              if (!dbUser || !dbUser.email) return;
+              const emailClean = dbUser.email.toLowerCase();
+              const exists = saasState.users.find(u => u && u.email && u.email.toLowerCase() === emailClean);
+              if (!exists) {
+                saasState.users.push({
+                  id: dbUser.id || `usr-${Date.now()}`,
+                  name: emailClean.split('@')[0],
+                  email: emailClean,
+                  password: dbUser.senha || dbUser.password || '123456',
+                  role: dbUser.tipo_acesso || dbUser.role || 'CLIENTE',
+                  registeredAt: dbUser.created_at || new Date().toISOString(),
+                  subscriptionStatus: 'SUBSCRIBED',
+                  trialEndTimestamp: Date.now() + (365 * 86400000)
+                });
+              }
+            });
+            saveUsers();
+          }
         }
       } catch (err) {
-        console.error("Exceção no cadastro Supabase:", err);
+        console.error("Exceção na sincronização:", err);
       }
     }
-    window.cadastrarNovoClientePeloSite = cadastrarNovoClientePeloSite;
-    window.cadastrarCliente = cadastrarNovoClientePeloSite;
+    window.carregarDadosSincronizados = carregarDadosSincronizados;
+
+    // Carrega automaticamente os dados sempre que abrir a página
+    document.addEventListener("DOMContentLoaded", () => {
+      carregarDadosSincronizados();
+    });
   </script>
 </body>
 </html>
