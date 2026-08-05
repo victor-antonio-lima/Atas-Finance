@@ -880,9 +880,8 @@
 
         <div class="form-row">
           <div class="form-group flex-1">
-            <label for="tx-amount" style="color: var(--accent-gold); font-weight:700;">Valor de CADA Parcela (R$) *</label>
-            <input type="number" id="tx-amount" step="0.01" min="0.01" placeholder="Ex: 200.00 (Valor idêntico em cada mês)" required class="input-control font-mono">
-            <small style="font-size:0.75rem; color:var(--text-muted); display:block; margin-top:3px;">📌 Este valor será mantido idêntico em todas as parcelas dos meses seguintes.</small>
+            <label for="tx-amount">Valor (R$) *</label>
+            <input type="number" id="tx-amount" step="0.01" min="0.01" placeholder="0,00" required class="input-control font-mono">
           </div>
           <div class="form-group flex-1" id="group-bank">
             <label for="tx-bank" id="label-tx-bank">Selecionar em qual Cartão / Banco *</label>
@@ -912,9 +911,10 @@
 
         <div class="form-row">
           <div class="form-group flex-1" id="group-installments">
-            <label for="tx-installments">Parcelamento</label>
+            <label for="tx-installments">Tipo de Lançamento / Parcelamento</label>
             <select id="tx-installments" class="select-control">
               <option value="1">À vista (1x)</option>
+              <option value="RECURRING">🔄 Assinatura / Recorrência Mensal (Replicar em todos os meses)</option>
               <option value="2">2x parcelas</option>
               <option value="3">3x parcelas</option>
               <option value="4">4x parcelas</option>
@@ -2615,22 +2615,23 @@
       } else {
         // Novo Lançamento (Cartão, Conta da Casa ou Carro/Moto)
         let instVal = document.getElementById('tx-installments').value;
-        let totalInstallments = instVal === 'CUSTOM' ? (parseInt(document.getElementById('tx-custom-installments').value, 10) || 1) : (parseInt(instVal, 10) || 1);
-        let startInstallment = parseInt(document.getElementById('tx-start-installment').value, 10) || 1;
+        const isRecurring = instVal === 'RECURRING';
+        let totalInstallments = isRecurring ? 12 : (instVal === 'CUSTOM' ? (parseInt(document.getElementById('tx-custom-installments').value, 10) || 1) : (parseInt(instVal, 10) || 1));
+        let startInstallment = isRecurring ? 1 : (parseInt(document.getElementById('tx-start-installment').value, 10) || 1);
 
         if (startInstallment < 1) startInstallment = 1;
         if (startInstallment > totalInstallments) startInstallment = totalInstallments;
 
-        // O valor digitado é replicado no mesmo valor integral para cada parcela nos meses seguintes
+        // O valor digitado é replicado no mesmo valor para cada mês
         const installmentAmount = enteredAmount;
         const bankId = document.getElementById('tx-bank') ? document.getElementById('tx-bank').value : '';
         const groupId = `grp-${Date.now()}`;
 
-        if (totalInstallments > 1) {
-          // Espelhamento automático de parcelas para os meses futuros com o mesmo valor da 1ª parcela
-          const remainingSteps = totalInstallments - startInstallment + 1;
+        if (isRecurring || totalInstallments > 1) {
+          // Espelhamento automático de parcelas ou assinatura mensal para os meses futuros
+          const remainingSteps = isRecurring ? 12 : (totalInstallments - startInstallment + 1);
           for (let step = 0; step < remainingSteps; step++) {
-            const currentInstNumber = startInstallment + step;
+            const currentInstNumber = isRecurring ? (step + 1) : (startInstallment + step);
             let instMonth = baseMonth + step;
             let instYear = baseYear + Math.floor(instMonth / 12);
             instMonth = instMonth % 12;
@@ -2638,17 +2639,18 @@
             saasState.userTransactions.push({
               id: `tx-${Date.now()}-${step}`,
               groupId: groupId,
+              isSubscription: isRecurring,
               type: type,
               bankId: bankId,
               payMethod: payMethod,
-              description: description,
+              description: isRecurring ? `${description} (Assinatura)` : description,
               amount: installmentAmount.toFixed(2),
               category: category,
               year: instYear,
               month: instMonth,
               date: formatDateStr(instYear, instMonth, dateObj.getDate()),
               installmentCurrent: currentInstNumber,
-              installmentTotal: totalInstallments,
+              installmentTotal: isRecurring ? 12 : totalInstallments,
               status: step === 0 ? status : 'PENDING'
             });
           }
@@ -2716,7 +2718,7 @@
       const tx = saasState.userTransactions.find(t => String(t.id) === String(txId));
       if (!tx) return;
 
-      const isParcelado = tx.installmentTotal > 1 || tx.groupId;
+      const isParcelado = tx.installmentTotal > 1 || tx.groupId || tx.isSubscription;
 
       if (isParcelado) {
         const linkedTxs = saasState.userTransactions.filter(t => 
@@ -2725,25 +2727,46 @@
         );
 
         if (linkedTxs.length > 1) {
-          const choice = confirm(
-            `⚠️ Esta é uma conta/compra parcelada ("${tx.description}" - Parcela ${tx.installmentCurrent}/${tx.installmentTotal}x).\n\n` +
-            `Deseja excluir TODAS as parcelas vinculadas nos outros meses também?\n\n` +
-            `• Clique em [OK] para excluir TODAS as parcelas deste parcelamento em todos os meses.\n` +
-            `• Clique em [CANCELAR] para excluir APENAS esta parcela do mês atual.`
+          const currentMonthName = MONTH_NAMES[tx.month];
+          const choice = prompt(
+            `📌 EXCLUSÃO DE LANÇAMENTO PARCELADO / RECORRENTE\n` +
+            `Item: "${tx.description}" (${tx.installmentCurrent}/${tx.installmentTotal}x - Mês: ${currentMonthName}/${tx.year})\n\n` +
+            `Como você deseja realizar a exclusão?\n\n` +
+            `Digite o número da sua escolha:\n` +
+            `1 = Excluir APENAS a fatura/parcela deste mês (${currentMonthName}/${tx.year})\n` +
+            `2 = Excluir a partir deste mês (${currentMonthName}) e TODAS as parcelas dos meses FUTUROS\n` +
+            `3 = Excluir TODAS as parcelas de TODOS os meses\n` +
+            `0 = Cancelar (Não excluir nada)`,
+            '1'
           );
 
-          if (choice) {
+          if (choice === '1') {
+            // Exclui apenas esta parcela do mês atual
+            saasState.userTransactions = saasState.userTransactions.filter(t => String(t.id) !== String(txId));
+          } else if (choice === '2') {
+            // Exclui a partir do mês atual e futuros
+            saasState.userTransactions = saasState.userTransactions.filter(t => {
+              const isTargetSeries = linkedTxs.some(l => String(l.id) === String(t.id));
+              if (isTargetSeries) {
+                const isCurrentOrFuture = (t.year > tx.year) || (t.year === tx.year && t.month >= tx.month);
+                return !isCurrentOrFuture;
+              }
+              return true;
+            });
+          } else if (choice === '3') {
+            // Exclui todas de todos os meses
             saasState.userTransactions = saasState.userTransactions.filter(t => !linkedTxs.some(l => String(l.id) === String(t.id)));
           } else {
-            saasState.userTransactions = saasState.userTransactions.filter(t => String(t.id) !== String(txId));
+            return; // Cancelar
           }
+
           saveUserData();
           renderAll();
           return;
         }
       }
 
-      if (confirm(`Excluir o lançamento "${tx.description}"?`)) {
+      if (confirm(`Excluir o lançamento "${tx.description}" do mês de ${MONTH_NAMES[tx.month]}/${tx.year}?`)) {
         saasState.userTransactions = saasState.userTransactions.filter(t => String(t.id) !== String(txId));
         saveUserData();
         renderAll();
