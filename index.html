@@ -2579,36 +2579,68 @@
       const baseYear = dateObj.getFullYear();
       const baseMonth = dateObj.getMonth();
 
+      let instVal = document.getElementById('tx-installments').value;
+      const isRecurring = instVal === 'RECURRING';
+      let totalInstallments = isRecurring ? 12 : (instVal === 'CUSTOM' ? (parseInt(document.getElementById('tx-custom-installments').value, 10) || 1) : (parseInt(instVal, 10) || 1));
+      let startInstallment = isRecurring ? 1 : (parseInt(document.getElementById('tx-start-installment').value, 10) || 1);
+
+      if (startInstallment < 1) startInstallment = 1;
+      if (startInstallment > totalInstallments) startInstallment = totalInstallments;
+
+      const installmentAmount = enteredAmount;
+      const bankId = document.getElementById('tx-bank') ? document.getElementById('tx-bank').value : '';
+
       if (editId) {
-        // Edição de Lançamento Existente (Atualiza todos os dados incluindo ano e mês)
+        // Edição de Lançamento Existente
         const tx = saasState.userTransactions.find(t => String(t.id) === String(editId));
         if (tx) {
-          tx.description = description;
-          tx.amount = enteredAmount.toFixed(2);
-          tx.category = category;
-          tx.date = dateStr;
-          tx.year = baseYear;
-          tx.month = baseMonth;
-          tx.status = status;
-          tx.payMethod = payMethod;
-          tx.type = type;
-          if (type === 'CARD' || type === 'VEHICLE') {
-            tx.bankId = document.getElementById('tx-bank') ? document.getElementById('tx-bank').value : '';
+          const isParcelado = tx.installmentTotal > 1 || tx.groupId || tx.isSubscription;
+
+          let updateLinked = false;
+          if (isParcelado) {
+            const linked = saasState.userTransactions.filter(t => 
+              (tx.groupId && t.groupId === tx.groupId) || 
+              (t.description.toLowerCase() === tx.description.toLowerCase() && t.category === tx.category && t.installmentTotal === tx.installmentTotal)
+            );
+            if (linked.length > 1) {
+              updateLinked = confirm(`Deseja aplicar as alterações (Valor R$ ${enteredAmount.toFixed(2)}, parcelamento ${totalInstallments}x, etc.) em TODAS as ${linked.length} parcelas vinculadas nos outros meses?`);
+              if (updateLinked) {
+                linked.forEach(t => {
+                  t.description = isRecurring ? `${description} (Assinatura)` : description;
+                  t.amount = installmentAmount.toFixed(2);
+                  t.category = category;
+                  t.payMethod = payMethod;
+                  t.type = type;
+                  t.installmentTotal = isRecurring ? 12 : totalInstallments;
+                  t.isSubscription = isRecurring;
+                  if (type === 'CARD' || type === 'VEHICLE') {
+                    t.bankId = bankId;
+                  }
+                });
+              }
+            }
+          }
+
+          if (!updateLinked) {
+            tx.description = isRecurring ? `${description} (Assinatura)` : description;
+            tx.amount = installmentAmount.toFixed(2);
+            tx.category = category;
+            tx.date = dateStr;
+            tx.year = baseYear;
+            tx.month = baseMonth;
+            tx.status = status;
+            tx.payMethod = payMethod;
+            tx.type = type;
+            tx.installmentCurrent = startInstallment;
+            tx.installmentTotal = isRecurring ? 12 : totalInstallments;
+            tx.isSubscription = isRecurring;
+            if (type === 'CARD' || type === 'VEHICLE') {
+              tx.bankId = bankId;
+            }
           }
         }
       } else {
         // Novo Lançamento (Cartão, Conta da Casa ou Carro/Moto)
-        let instVal = document.getElementById('tx-installments').value;
-        const isRecurring = instVal === 'RECURRING';
-        let totalInstallments = isRecurring ? 12 : (instVal === 'CUSTOM' ? (parseInt(document.getElementById('tx-custom-installments').value, 10) || 1) : (parseInt(instVal, 10) || 1));
-        let startInstallment = isRecurring ? 1 : (parseInt(document.getElementById('tx-start-installment').value, 10) || 1);
-
-        if (startInstallment < 1) startInstallment = 1;
-        if (startInstallment > totalInstallments) startInstallment = totalInstallments;
-
-        // O valor digitado é replicado integralmente em todos os meses
-        const installmentAmount = enteredAmount;
-        const bankId = document.getElementById('tx-bank') ? document.getElementById('tx-bank').value : '';
         const groupId = `grp-${Date.now()}`;
 
         if (isRecurring || totalInstallments > 1) {
@@ -2735,6 +2767,29 @@
       }
       if (document.getElementById('tx-bank') && tx.bankId) {
         document.getElementById('tx-bank').value = tx.bankId;
+      }
+
+      // Preenche os campos de parcelamento no modal ao editar
+      if (document.getElementById('tx-installments')) {
+        const selectInst = document.getElementById('tx-installments');
+        if (tx.isSubscription) {
+          selectInst.value = 'RECURRING';
+        } else if (tx.installmentTotal > 1) {
+          if (tx.installmentTotal <= 12) {
+            selectInst.value = String(tx.installmentTotal);
+          } else {
+            selectInst.value = 'CUSTOM';
+            const customInput = document.getElementById('tx-custom-installments');
+            if (customInput) customInput.value = tx.installmentTotal;
+          }
+        } else {
+          selectInst.value = '1';
+        }
+        selectInst.dispatchEvent(new Event('change'));
+      }
+
+      if (document.getElementById('tx-start-installment') && tx.installmentCurrent) {
+        document.getElementById('tx-start-installment').value = tx.installmentCurrent;
       }
 
       document.getElementById('tx-modal-title').innerHTML = '<i data-lucide="edit-3"></i> Editar Lançamento';
