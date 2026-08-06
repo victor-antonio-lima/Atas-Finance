@@ -407,11 +407,7 @@
     .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
     .chart-container { position: relative; height: 260px; width: 100%; }
 
-    /* MASTER ADMIN DASHBOARD */
-    .master-panel { background: var(--bg-card); border: 1px solid var(--border-highlight); border-radius: var(--radius-lg); padding: 24px; margin-bottom: 24px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5); }
-    .master-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
-    .master-title { display: flex; align-items: center; gap: 10px; }
-    .master-title h2 { font-size: 1.3rem; font-weight: 800; color: var(--accent-gold); }
+
 
     /* MODALS & PAYWALL */
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.25s ease; padding: 16px; }
@@ -518,14 +514,7 @@
       </div>
     </header>
 
-    <!-- TRIAL BANNER -->
-    <div id="trial-banner" class="trial-banner" style="display: none;">
-      <div class="trial-info">
-        <i data-lucide="clock" style="color: var(--accent-gold);"></i>
-        <span id="trial-banner-text">Você está no período de teste gratuito. Restam 7 dias.</span>
-      </div>
-      <button id="btn-subscribe-now" class="btn btn-gold"><i data-lucide="zap"></i> Assinar Agora (R$ 29,90/mês)</button>
-    </div>
+
 
     <!-- MONTH NAVIGATION -->
     <nav class="month-nav">
@@ -942,7 +931,7 @@
 
   <script>
     /* ==========================================================================
-       ATLAS FINANCE ENGINE - MASTER AUTH & MULTI-USER CLOUD PLATFORM
+       ATLAS FINANCE ENGINE - PLANILHA & CONTROLE FINANCEIRO EM NUVEM
        ========================================================================== */
 
     // 2. Conexão Supabase Cloud
@@ -960,13 +949,27 @@
     const MONTH_NAMES = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
 
     const nowInit = new Date();
+
+    let initialUser = {
+      id: 'usr-default',
+      name: 'Victor',
+      email: 'victorantoniolima464@gmail.com',
+      role: 'CLIENTE'
+    };
+
+    try {
+      const storedVal = localStorage.getItem('usuario_logado') || localStorage.getItem('finansaas_active_user');
+      if (storedVal) {
+        if (typeof storedVal === 'string' && storedVal.startsWith('{')) {
+          initialUser = JSON.parse(storedVal);
+        } else if (typeof storedVal === 'string' && storedVal.includes('@')) {
+          initialUser.email = storedVal.trim().toLowerCase();
+        }
+      }
+    } catch(e) {}
+
     let saasState = {
-      currentUser: {
-        id: 'usr-default',
-        name: 'Victor',
-        email: 'victorantoniolima464@gmail.com',
-        role: 'CLIENTE'
-      },
+      currentUser: initialUser,
       year: nowInit.getFullYear(),
       currentMonth: nowInit.getMonth(),
       selectedView: 'all',
@@ -1077,58 +1080,7 @@
       }
     }
 
-    function updateUserHeaderBadge() {
-      const u = saasState.currentUser;
-      if (!u) return;
 
-      const nameElem = document.getElementById('user-display-name');
-      if (nameElem) nameElem.textContent = u.name;
-
-      const roleTag = document.getElementById('user-role-tag');
-      if (roleTag) {
-        if (u.role === 'MASTER') {
-          roleTag.textContent = 'ADMIN MASTER';
-          roleTag.className = 'role-tag role-master';
-        } else if (u.subscriptionStatus === 'VIP_LIFETIME') {
-          roleTag.textContent = 'VIP VITALÍCIO';
-          roleTag.className = 'role-tag role-master';
-        } else {
-          roleTag.textContent = u.subscriptionStatus === 'SUBSCRIBED' ? 'ASSINANTE' : 'TRIAL';
-          roleTag.className = `role-tag ${u.subscriptionStatus === 'SUBSCRIBED' ? 'role-user' : ''}`;
-        }
-      }
-
-      const btnMaster = document.getElementById('btn-master-panel');
-      if (btnMaster) btnMaster.style.display = u.role === 'MASTER' ? 'inline-flex' : 'none';
-    }
-
-    function checkTrialAndSubscriptionStatus() {
-      const u = saasState.currentUser;
-      if (!u || u.role === 'MASTER' || u.subscriptionStatus === 'VIP_LIFETIME') {
-        const tb = document.getElementById('trial-banner');
-        if (tb) tb.style.display = 'none';
-        return;
-      }
-
-      const trialBanner = document.getElementById('trial-banner');
-      const trialText = document.getElementById('trial-banner-text');
-
-      if (u.subscriptionStatus === 'SUBSCRIBED' || u.subscriptionStatus === 'SUBSCRIBED_MONTHLY' || u.subscriptionStatus === 'SUBSCRIBED_YEARLY') {
-        if (trialBanner) trialBanner.style.display = 'none';
-      } else {
-        const expTime = u.accessExpiresTimestamp || u.trialEndTimestamp || 0;
-        const msRemaining = expTime - Date.now();
-        const daysRemaining = Math.max(0, Math.ceil(msRemaining / (1000 * 60 * 60 * 24)));
-        if (msRemaining <= 0) {
-          u.subscriptionStatus = 'TRIAL_EXPIRED';
-          saveUsers();
-          if (trialBanner) trialBanner.style.display = 'none';
-        } else {
-          if (trialBanner) trialBanner.style.display = 'flex';
-          if (trialText) trialText.textContent = `Seu período de acesso expira em ${daysRemaining} dia(s).`;
-        }
-      }
-    }
 
     function setupAppListeners() {
       // Máscara Decimal BRL (Apenas Números + R$ 0,00) em TODOS os campos de valores
@@ -1158,37 +1110,7 @@
         });
       }
 
-      // Logout Button
-      const btnLogout = document.getElementById('btn-logout');
-      if (btnLogout) {
-        btnLogout.addEventListener('click', () => {
-          localStorage.removeItem('finansaas_active_user');
-          localStorage.removeItem('usuario_logado');
-          saasState.currentUser = null;
-          showAuthScreen();
-        });
-      }
 
-      // Master Panel Toggle
-      const btnMaster = document.getElementById('btn-master-panel');
-      if (btnMaster) {
-        btnMaster.addEventListener('click', () => {
-          const panel = document.getElementById('master-admin-section');
-          if (panel.style.display === 'block') {
-            panel.style.display = 'none';
-          } else {
-            renderMasterPanel();
-            panel.style.display = 'block';
-            panel.scrollIntoView({ behavior: 'smooth' });
-          }
-        });
-      }
-      const btnCloseMaster = document.getElementById('btn-close-master-panel');
-      if (btnCloseMaster) {
-        btnCloseMaster.addEventListener('click', () => {
-          document.getElementById('master-admin-section').style.display = 'none';
-        });
-      }
 
       // Seletor de Ano (< 2026 >)
       const prevYearBtn = document.getElementById('prev-year-btn');
@@ -2260,7 +2182,7 @@
     }
 
     async function carregarDadosSincronizados() {
-      if (!saasState.currentUser) {
+      if (!saasState.currentUser || !saasState.currentUser.email) {
         saasState.currentUser = {
           id: 'usr-default',
           name: 'Victor',
@@ -2268,6 +2190,15 @@
           role: 'CLIENTE'
         };
       }
+      try {
+        localStorage.setItem('usuario_logado', JSON.stringify(saasState.currentUser));
+        localStorage.setItem('finansaas_active_user', saasState.currentUser.email);
+      } catch(e) {}
+
+      // Renderiza imediatamente sem esperar pela rede
+      renderAll();
+
+      // Atualiza com os dados sincronizados do Supabase Cloud
       await fetchCloudUserData();
       renderAll();
     }
@@ -2279,6 +2210,9 @@
 
     // --- DOM CONTENT LOADED ---
     document.addEventListener('DOMContentLoaded', async () => {
+      // Garantia absoluta: NENHUM modal abre sozinho ao iniciar o app
+      document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
+
       detectDeviceAndApplyLayout();
       window.addEventListener('resize', detectDeviceAndApplyLayout);
 
