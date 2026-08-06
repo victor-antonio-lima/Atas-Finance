@@ -694,6 +694,20 @@
               <input type="radio" name="txType" value="VEHICLE">
               <span><i data-lucide="car"></i> Carro / Moto</span>
             </label>
+        </div>
+
+        <!-- PERGUNTA DE RECORRÊNCIA -->
+        <div class="form-group">
+          <label style="font-weight: 700;">Frequência do Lançamento *</label>
+          <div class="radio-toggle">
+            <label class="radio-option">
+              <input type="radio" name="txRecurrence" value="NO" checked>
+              <span>📌 Não Recorrente (Apenas neste mês)</span>
+            </label>
+            <label class="radio-option">
+              <input type="radio" name="txRecurrence" value="YES">
+              <span>🔄 Recorrente (Repete todo mês)</span>
+            </label>
           </div>
         </div>
 
@@ -1151,11 +1165,30 @@
 
           updateTxCategoryOptions(type);
 
+          const isRec = document.querySelector('input[name="txRecurrence"]:checked')?.value === 'YES';
+          const groupInst = document.getElementById('group-installments');
+          if (groupInst) groupInst.style.display = (!isRec && type === 'CARD') ? 'flex' : 'none';
+        });
+      });
+
+      document.querySelectorAll('input[name="txRecurrence"]').forEach(radio => {
+        radio.addEventListener('change', (e) => {
+          const isRec = e.target.value === 'YES';
           const subInfoGroup = document.getElementById('group-subscription-info');
-          if (subInfoGroup) subInfoGroup.style.display = 'none';
+          if (subInfoGroup) subInfoGroup.style.display = isRec ? 'block' : 'none';
 
           const groupInst = document.getElementById('group-installments');
-          if (groupInst) groupInst.style.display = 'flex';
+          const groupCustom = document.getElementById('group-custom-installments');
+          const groupStart = document.getElementById('group-start-installment');
+
+          if (isRec) {
+            if (groupInst) groupInst.style.display = 'none';
+            if (groupCustom) groupCustom.style.display = 'none';
+            if (groupStart) groupStart.style.display = 'none';
+          } else {
+            const currentType = document.querySelector('input[name="txType"]:checked')?.value || 'CARD';
+            if (groupInst) groupInst.style.display = currentType === 'CARD' ? 'flex' : 'none';
+          }
         });
       });
 
@@ -1823,6 +1856,9 @@
       const radioCard = document.querySelector('input[name="txType"][value="CARD"]');
       if (radioCard) radioCard.checked = true;
 
+      const radioRecNo = document.querySelector('input[name="txRecurrence"][value="NO"]');
+      if (radioRecNo) radioRecNo.checked = true;
+
       const groupBank = document.getElementById('group-bank');
       if (groupBank) groupBank.style.display = 'block';
 
@@ -1895,7 +1931,8 @@
       const txMonth = parseInt(dateParts[1]) - 1;
       const txDay = parseInt(dateParts[2]);
 
-      const isSubscription = category.includes('Assinatura');
+      const recurrenceVal = document.querySelector('input[name="txRecurrence"]:checked')?.value || 'NO';
+      const isSubscription = recurrenceVal === 'YES' || category.includes('Assinatura');
 
       let instTotal = 1;
       let startInstIdx = 0;
@@ -1990,6 +2027,12 @@
       document.getElementById('tx-date').value = tx.dateStr || '';
       document.getElementById('tx-bank').value = tx.bankId || '';
       document.getElementById('tx-status').value = tx.status || 'PENDING';
+
+      const recRadio = document.querySelector(`input[name="txRecurrence"][value="${tx.isSubscription ? 'YES' : 'NO'}"]`);
+      if (recRadio) {
+        recRadio.checked = true;
+        recRadio.dispatchEvent(new Event('change'));
+      }
 
       if (tx.isSubscription) {
         document.getElementById('tx-category').value = 'Assinatura / Recorrência Mensal 🔄';
