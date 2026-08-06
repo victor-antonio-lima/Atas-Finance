@@ -460,16 +460,16 @@
         <div class="metric-sub">Faturas do mês atual</div>
       </div>
 
-      <!-- Card 4: Contas & Boletos -->
+      <!-- Card 4: Contas de Casa & Boletos -->
       <div class="metric-card card-bills" style="border-color: rgba(236, 72, 153, 0.35);">
         <div class="metric-header">
-          <span>Contas Fixas & Boletos</span>
+          <span>Contas de Casa & Boletos</span>
           <div class="metric-icon-badge" style="background: rgba(236, 72, 153, 0.15); color: var(--accent-secondary);">
-            <i data-lucide="file-text" style="width: 18px;"></i>
+            <i data-lucide="home" style="width: 18px;"></i>
           </div>
         </div>
         <div class="metric-value" id="metric-bills-sum" style="color: var(--accent-secondary);">R$ 0,00</div>
-        <div class="metric-sub">Luz, Água, Internet...</div>
+        <div class="metric-sub">Luz, Água, Internet, Aluguel, Gás...</div>
       </div>
 
       <!-- Card 5: Veículo (Carro & Moto) -->
@@ -503,7 +503,7 @@
       <div class="view-tabs-bar">
         <button class="view-tab active" data-view="all"><i data-lucide="layers"></i> Todos os Lançamentos</button>
         <button class="view-tab" data-view="cards"><i data-lucide="credit-card"></i> Faturas de Cartão</button>
-        <button class="view-tab" data-view="bills"><i data-lucide="file-text"></i> Contas & Boletos</button>
+        <button class="view-tab" data-view="bills"><i data-lucide="home"></i> Contas de Casa & Boletos</button>
         <button class="view-tab" data-view="vehicle"><i data-lucide="car"></i> Carro & Moto</button>
         <button class="view-tab" data-view="limits"><i data-lucide="bar-chart-2"></i> Limites de Cartão</button>
         <button class="view-tab" data-view="analytics"><i data-lucide="pie-chart"></i> Gráficos Analytics</button>
@@ -600,8 +600,8 @@
     <section id="bills-section" class="content-section">
       <div class="section-header">
         <div class="section-title">
-          <i data-lucide="file-text" style="color: var(--accent-secondary);"></i>
-          <h2>Contas Fixas & Boletos</h2>
+          <i data-lucide="home" style="color: var(--accent-secondary);"></i>
+          <h2>Contas de Casa & Boletos Domésticos</h2>
         </div>
         <div class="section-badge" id="bills-table-badge">R$ 0,00</div>
       </div>
@@ -611,8 +611,8 @@
             <thead>
               <tr>
                 <th>#</th>
-                <th>Descrição / Conta</th>
-                <th>Categoria Boleto</th>
+                <th>Descrição / Conta de Casa</th>
+                <th>Categoria da Conta</th>
                 <th>Data Vencimento</th>
                 <th style="text-align: right;">Valor (R$)</th>
                 <th style="text-align: center;">Status</th>
@@ -688,7 +688,7 @@
             </label>
             <label class="radio-option">
               <input type="radio" name="txType" value="BILL">
-              <span><i data-lucide="file-text"></i> Conta / Boleto</span>
+              <span><i data-lucide="home"></i> Contas de Casa / Boletos</span>
             </label>
             <label class="radio-option">
               <input type="radio" name="txType" value="VEHICLE">
@@ -1757,15 +1757,17 @@
         'Outros 📦'
       ],
       BILL: [
-        'Energia / Luz ⚡',
+        'Energia / Luz de Casa ⚡',
         'Água / Saneamento 💧',
-        'Internet / Wi-Fi 🌐',
-        'Aluguel / Condomínio 🏢',
+        'Internet / Wi-Fi de Casa 🌐',
+        'Aluguel / Condomínio 🏠',
         'Gás de Cozinha 🔥',
         'Telefone / Celular 📱',
+        'IPTU / Taxas da Casa 📄',
+        'Manutenção / Reparo de Casa 🛠️',
+        'Supermercado / Compras de Casa 🛒',
         'Assinatura / Recorrência Mensal 🔄',
-        'Impostos / Taxas 📄',
-        'Outros Boletos 📑'
+        'Outros Boletos de Casa 📑'
       ],
       VEHICLE: [
         'Combustível / Gasolina ⛽',
