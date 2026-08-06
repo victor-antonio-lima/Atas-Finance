@@ -1081,44 +1081,7 @@
     </div>
   </div>
 
-  <!-- MODAL: MASTER ADD USER -->
-  <div class="modal-overlay" id="master-add-user-modal">
-    <div class="modal-card" style="max-width: 460px;">
-      <div class="modal-header">
-        <h3 style="display: flex; align-items: center; gap: 8px;"><i data-lucide="user-plus" style="color: var(--accent-gold);"></i> Cadastrar Novo Cliente</h3>
-        <button class="btn-close-modal" onclick="closeMasterAddUserModal()">&times;</button>
-      </div>
 
-      <form id="master-add-user-form">
-        <div class="form-group">
-          <label for="master-new-name">Nome Completo do Cliente *</label>
-          <input type="text" id="master-new-name" placeholder="Ex: João da Silva" required class="input-control">
-        </div>
-        <div class="form-group">
-          <label for="master-new-email">E-mail do Cliente *</label>
-          <input type="email" id="master-new-email" placeholder="cliente@email.com" required class="input-control">
-        </div>
-        <div class="form-group">
-          <label for="master-new-pass">Senha Inicial *</label>
-          <input type="text" id="master-new-pass" value="123456" required class="input-control font-mono">
-        </div>
-        <div class="form-group">
-          <label for="master-new-plan">Plano de Acesso Inicial *</label>
-          <select id="master-new-plan" class="select-control">
-            <option value="SUBSCRIBED_MONTHLY">💳 Assinante Mensal (Acesso Completo Liberto)</option>
-            <option value="TRIAL_ACTIVE">⏳ Teste Grátis (7 Dias)</option>
-            <option value="VIP_LIFETIME">👑 VIP Vitalício (Acesso Gratuito)</option>
-            <option value="BLOCKED">🚫 Acesso Suspenso</option>
-          </select>
-        </div>
-
-        <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
-          <button type="button" class="btn btn-ghost" onclick="closeMasterAddUserModal()">Cancelar</button>
-          <button type="submit" class="btn btn-gold"><i data-lucide="check-circle"></i> Cadastrar & Gerar Acesso</button>
-        </div>
-      </form>
-    </div>
-  </div>
 
   <!-- MODAL: MASTER CHANGE USER PLAN -->
   <div class="modal-overlay" id="master-change-plan-modal">
