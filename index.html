@@ -1192,20 +1192,6 @@
         });
       });
 
-      const catSelectElem = document.getElementById('tx-category');
-      if (catSelectElem) {
-        catSelectElem.addEventListener('change', (e) => {
-          const val = e.target.value || '';
-          const isRec = val.includes('Recorrente') || val.includes('🔄');
-          const targetRadioVal = isRec ? 'YES' : 'NO';
-          const radioToSelect = document.querySelector(`input[name="txRecurrence"][value="${targetRadioVal}"]`);
-          if (radioToSelect) {
-            radioToSelect.checked = true;
-            radioToSelect.dispatchEvent(new Event('change'));
-          }
-        });
-      }
-
       const instSelect = document.getElementById('tx-installments');
       if (instSelect) {
         instSelect.addEventListener('change', (e) => {
@@ -1796,35 +1782,35 @@
         'Transporte / Uber 🚗',
         'Saúde / Farmácia 💊',
         'Lazer / Entretenimento 🎬',
-        'Educação / Cursos 📚 (Recorrente 🔄)',
-        'Moradia / Aluguel / Casa 🏠 (Recorrente 🔄)',
+        'Educação / Cursos 📚',
+        'Moradia / Casa 🏠',
         'Vestuário / Compras 🛍️',
-        'Assinatura / Serviços Mensais 🔄 (Recorrente 🔄)',
-        'Serviços Digitais / Streaming 💻 (Recorrente 🔄)',
-        'Outros Cartão 📦'
+        'Assinatura / Recorrência Mensal 🔄',
+        'Serviços Digitais 💻',
+        'Outros 📦'
       ],
       BILL: [
-        'Energia / Luz de Casa ⚡ (Recorrente 🔄)',
-        'Água / Saneamento 💧 (Recorrente 🔄)',
-        'Internet / Wi-Fi de Casa 🌐 (Recorrente 🔄)',
-        'Aluguel / Condomínio 🏠 (Recorrente 🔄)',
-        'Gás de Cozinha 🔥 (Recorrente 🔄)',
-        'Telefone / Celular 📱 (Recorrente 🔄)',
-        'IPTU / Taxas da Casa 📄 (Recorrente 🔄)',
+        'Energia / Luz de Casa ⚡',
+        'Água / Saneamento 💧',
+        'Internet / Wi-Fi de Casa 🌐',
+        'Aluguel / Condomínio 🏠',
+        'Gás de Cozinha 🔥',
+        'Telefone / Celular 📱',
+        'IPTU / Taxas da Casa 📄',
         'Manutenção / Reparo de Casa 🛠️',
         'Supermercado / Compras de Casa 🛒',
-        'Assinatura Mensal de Casa 🔄 (Recorrente 🔄)',
+        'Assinatura / Recorrência Mensal 🔄',
         'Outros Boletos de Casa 📑'
       ],
       VEHICLE: [
         'Combustível / Gasolina ⛽',
-        'Seguro Veicular 🛡️ (Recorrente 🔄)',
-        'IPVA / Licenciamento 📄 (Recorrente 🔄)',
         'Manutenção / Oficina 🛠️',
         'Troca de Óleo 🛢️',
         'Lava-jato / Limpeza 🧼',
+        'Seguro Veicular 🛡️',
+        'IPVA / Licenciamento 📄',
         'Estacionamento / Pedágio 🅿️',
-        'Assinatura / Mensalidade Veículo 🔄 (Recorrente 🔄)',
+        'Assinatura / Recorrência Mensal 🔄',
         'Outros Veículo 🚗'
       ]
     };
