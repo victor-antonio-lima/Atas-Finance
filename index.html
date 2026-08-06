@@ -155,24 +155,48 @@
     .btn-icon { padding: 4px 8px; background: transparent; border: none; color: var(--text-muted); cursor: pointer; }
     .btn-icon:hover { color: var(--text-main); }
 
-    /* METRICS GRID */
+    /* METRICS GRID & EXECUTIVE DASHBOARD */
     .metrics-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
       gap: 16px;
-      margin-bottom: 20px;
+      margin-bottom: 24px;
     }
     .metric-card {
-      background: var(--bg-card);
+      background: linear-gradient(145deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.7));
       border: 1px solid var(--border-color);
       border-radius: var(--radius-lg);
-      padding: 18px 20px;
-      backdrop-filter: blur(12px);
-      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      padding: 20px;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+      position: relative;
+      overflow: hidden;
+      transition: all 0.25s ease;
     }
-    .metric-header { display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: var(--text-muted); font-weight: 600; margin-bottom: 8px; }
-    .metric-value { font-size: 1.45rem; font-weight: 800; font-family: var(--font-mono); letter-spacing: -0.5px; }
+    .metric-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+      border-color: rgba(255, 255, 255, 0.18);
+    }
+    .metric-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 3px;
+      background: linear-gradient(90deg, transparent, var(--border-highlight), transparent);
+      opacity: 0.7;
+    }
+    .metric-card.card-salary::before { background: linear-gradient(90deg, #06b6d4, #3b82f6); }
+    .metric-card.card-total::before { background: linear-gradient(90deg, #f43f5e, #ec4899); }
+    .metric-card.card-cards::before { background: linear-gradient(90deg, #6366f1, #8b5cf6); }
+    .metric-card.card-bills::before { background: linear-gradient(90deg, #ec4899, #f59e0b); }
+    .metric-card.card-vehicle::before { background: linear-gradient(90deg, #f59e0b, #10b981); }
+
+    .metric-header { display: flex; justify-content: space-between; align-items: center; font-size: 0.82rem; color: var(--text-muted); font-weight: 700; margin-bottom: 10px; }
+    .metric-icon-badge { width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+    .metric-value { font-size: 1.55rem; font-weight: 900; font-family: var(--font-mono); letter-spacing: -0.5px; margin: 4px 0; }
     .metric-sub { font-size: 0.72rem; color: var(--text-dim); margin-top: 4px; }
+    .metric-progress-bar { width: 100%; height: 5px; background: rgba(255,255,255,0.08); border-radius: 3px; margin: 8px 0 4px 0; overflow: hidden; }
+    .metric-progress-fill { height: 100%; border-radius: 3px; transition: width 0.4s ease; }
 
     /* MONTH SCROLL TABS */
     .month-nav { margin-bottom: 20px; }
@@ -543,56 +567,83 @@
       </div>
     </section>
 
-    <!-- METRICS OVERVIEW -->
+    <!-- METRICS OVERVIEW & EXECUTIVE DASHBOARD -->
     <section class="metrics-grid">
-      <!-- Card Salário e Saldo Livre -->
-      <div class="metric-card" style="border-color: rgba(6, 182, 212, 0.4);">
+      <!-- Card 1: Salário Mensal & Saldo Livre -->
+      <div class="metric-card card-salary" style="border-color: rgba(6, 182, 212, 0.35);">
         <div class="metric-header">
-          <span>Meu Salário Mensal</span>
-          <button id="btn-toggle-salary-lock" class="btn btn-ghost" style="padding: 2px 8px; font-size: 0.75rem; border-color: rgba(6, 182, 212, 0.3); color: var(--accent-cyan);">
+          <span style="display: flex; align-items: center; gap: 6px;">
+            <i data-lucide="wallet" style="color: var(--accent-cyan); width:18px;"></i>
+            Meu Salário Mensal
+          </span>
+          <button id="btn-toggle-salary-lock" class="btn btn-ghost" style="padding: 2px 8px; font-size: 0.72rem; border-color: rgba(6, 182, 212, 0.3); color: var(--accent-cyan);">
             ✏️ Editar
           </button>
         </div>
-        
-        <div id="salary-read-box" style="display: flex; align-items: baseline; gap: 6px; margin-bottom: 4px;">
+
+        <div id="salary-read-box" style="display: flex; align-items: baseline; gap: 6px;">
           <div class="metric-value" id="salary-display-value" style="color: var(--accent-cyan);">R$ 0,00</div>
         </div>
 
-        <div id="salary-edit-box" style="display: none; gap: 6px; margin-bottom: 4px;">
-          <input type="number" id="user-salary-input" placeholder="Ex: 5000" step="0.01" class="input-control" style="font-size: 1rem; font-weight: 800; padding: 4px 8px;">
+        <div id="salary-edit-box" style="display: none; gap: 6px; margin: 6px 0;">
+          <input type="number" id="user-salary-input" placeholder="Ex: 5000" step="0.01" class="input-control" style="font-size: 0.95rem; font-weight: 800; padding: 4px 8px;">
           <button id="btn-save-salary" class="btn btn-primary" style="padding: 4px 10px; font-size: 0.78rem;">Salvar</button>
         </div>
 
-        <div style="font-size: 0.76rem; color: var(--text-muted); display: flex; justify-content: space-between; margin-top: 4px;">
+        <div class="metric-progress-bar">
+          <div id="salary-progress-fill" class="metric-progress-fill" style="width: 0%; background: var(--accent-cyan);"></div>
+        </div>
+
+        <div style="font-size: 0.76rem; color: var(--text-muted); display: flex; justify-content: space-between; margin-top: 6px;">
           <span>Saldo Livre Restante:</span>
-          <strong id="salary-free-balance" style="color: var(--status-paid); font-family: var(--font-mono);">R$ 0,00</strong>
+          <strong id="salary-free-balance" style="color: var(--status-paid); font-family: var(--font-mono); font-size: 0.85rem;">R$ 0,00</strong>
         </div>
       </div>
 
-      <!-- Card Total Geral de Gastos -->
-      <div class="metric-card">
-        <div class="metric-header"><span>Total de Gastos (Mês)</span><i data-lucide="trending-down" style="color: #f43f5e;"></i></div>
+      <!-- Card 2: Total de Gastos -->
+      <div class="metric-card card-total" style="border-color: rgba(244, 63, 94, 0.35);">
+        <div class="metric-header">
+          <span>Total de Gastos (Mês)</span>
+          <div class="metric-icon-badge" style="background: rgba(244, 63, 94, 0.15); color: #f43f5e;">
+            <i data-lucide="trending-down" style="width: 18px;"></i>
+          </div>
+        </div>
         <div class="metric-value" id="metric-total-month" style="color: #f43f5e;">R$ 0,00</div>
         <div class="metric-sub">Soma de Cartões, Contas e Veículo</div>
       </div>
 
-      <!-- Card Cartões de Crédito -->
-      <div class="metric-card">
-        <div class="metric-header"><span>Cartões de Crédito</span><i data-lucide="credit-card" style="color: var(--accent-primary);"></i></div>
+      <!-- Card 3: Cartões de Crédito -->
+      <div class="metric-card card-cards" style="border-color: rgba(99, 102, 241, 0.35);">
+        <div class="metric-header">
+          <span>Cartões de Crédito</span>
+          <div class="metric-icon-badge" style="background: rgba(99, 102, 241, 0.15); color: var(--accent-primary);">
+            <i data-lucide="credit-card" style="width: 18px;"></i>
+          </div>
+        </div>
         <div class="metric-value" id="metric-cards-sum" style="color: var(--accent-primary);">R$ 0,00</div>
-        <div class="metric-sub">Faturas do mês</div>
+        <div class="metric-sub">Faturas do mês atual</div>
       </div>
 
-      <!-- Card Contas Fixas -->
-      <div class="metric-card">
-        <div class="metric-header"><span>Contas & Boletos</span><i data-lucide="file-text" style="color: var(--accent-secondary);"></i></div>
+      <!-- Card 4: Contas & Boletos -->
+      <div class="metric-card card-bills" style="border-color: rgba(236, 72, 153, 0.35);">
+        <div class="metric-header">
+          <span>Contas Fixas & Boletos</span>
+          <div class="metric-icon-badge" style="background: rgba(236, 72, 153, 0.15); color: var(--accent-secondary);">
+            <i data-lucide="file-text" style="width: 18px;"></i>
+          </div>
+        </div>
         <div class="metric-value" id="metric-bills-sum" style="color: var(--accent-secondary);">R$ 0,00</div>
         <div class="metric-sub">Luz, Água, Internet...</div>
       </div>
 
-      <!-- Card Veículo / Carro / Moto -->
-      <div class="metric-card">
-        <div class="metric-header"><span>Carro & Moto</span><i data-lucide="car" style="color: var(--accent-gold);"></i></div>
+      <!-- Card 5: Veículo (Carro & Moto) -->
+      <div class="metric-card card-vehicle" style="border-color: rgba(245, 158, 11, 0.35);">
+        <div class="metric-header">
+          <span>Carro & Moto</span>
+          <div class="metric-icon-badge" style="background: rgba(245, 158, 11, 0.15); color: var(--accent-gold);">
+            <i data-lucide="car" style="width: 18px;"></i>
+          </div>
+        </div>
         <div class="metric-value" id="metric-vehicle-sum" style="color: var(--accent-gold);">R$ 0,00</div>
         <div class="metric-sub">Combustível & Manutenção</div>
       </div>
@@ -1602,6 +1653,20 @@
       const bankForm = document.getElementById('add-bank-form');
       if (bankForm) bankForm.addEventListener('submit', handleAddBankSubmit);
 
+      // Troca de Tipo de Lançamento (Cartão, Conta, Veículo)
+      document.querySelectorAll('input[name="txType"]').forEach(radio => {
+        radio.addEventListener('change', (e) => {
+          const type = e.target.value;
+          const groupBank = document.getElementById('group-bank');
+          if (groupBank) groupBank.style.display = type === 'CARD' ? 'block' : 'none';
+
+          updateTxCategoryOptions(type);
+
+          const catSel = document.getElementById('tx-category');
+          if (catSel) catSel.dispatchEvent(new Event('change'));
+        });
+      });
+
       // Categoria Assinatura vs Parcelamento Toggle
       const categorySelect = document.getElementById('tx-category');
       if (categorySelect) {
@@ -1611,10 +1676,57 @@
           const groupInstallments = document.getElementById('group-installments');
           const subInfoGroup = document.getElementById('group-subscription-info');
           const startInstGroup = document.getElementById('group-start-installment');
+          const customInstGroup = document.getElementById('group-custom-installments');
 
           if (groupInstallments) groupInstallments.style.display = isSub ? 'none' : 'flex';
           if (subInfoGroup) subInfoGroup.style.display = isSub ? 'block' : 'none';
-          if (isSub && startInstGroup) startInstGroup.style.display = 'none';
+          if (isSub) {
+            if (startInstGroup) startInstGroup.style.display = 'none';
+            if (customInstGroup) customInstGroup.style.display = 'none';
+          } else {
+            const instSel = document.getElementById('tx-installments');
+            if (instSel) instSel.dispatchEvent(new Event('change'));
+          }
+        });
+      }
+
+      // Alteração no Select de Parcelamento & Parcela Inicial
+      const instSelect = document.getElementById('tx-installments');
+      if (instSelect) {
+        instSelect.addEventListener('change', (e) => {
+          const val = e.target.value;
+          const groupCustom = document.getElementById('group-custom-installments');
+          const groupStart = document.getElementById('group-start-installment');
+
+          let totalInst = 1;
+          if (val === 'CUSTOM') {
+            if (groupCustom) groupCustom.style.display = 'block';
+            totalInst = parseInt(document.getElementById('tx-custom-installments').value, 10) || 1;
+          } else {
+            if (groupCustom) groupCustom.style.display = 'none';
+            totalInst = parseInt(val, 10) || 1;
+          }
+
+          if (totalInst > 1) {
+            updateInstallmentStartOptions(totalInst);
+            if (groupStart) groupStart.style.display = 'block';
+          } else {
+            if (groupStart) groupStart.style.display = 'none';
+          }
+        });
+      }
+
+      const customInstInp = document.getElementById('tx-custom-installments');
+      if (customInstInp) {
+        customInstInp.addEventListener('input', (e) => {
+          const totalInst = parseInt(e.target.value, 10) || 1;
+          const groupStart = document.getElementById('group-start-installment');
+          if (totalInst > 1) {
+            updateInstallmentStartOptions(totalInst);
+            if (groupStart) groupStart.style.display = 'block';
+          } else {
+            if (groupStart) groupStart.style.display = 'none';
+          }
         });
       }
     }
@@ -1693,6 +1805,14 @@
       if (freeBalanceElem) {
         freeBalanceElem.textContent = formatCurrency(freeBalance);
         freeBalanceElem.style.color = freeBalance >= 0 ? 'var(--status-paid)' : '#f43f5e';
+      }
+
+      const salary = saasState.userSalary || 0;
+      const pctFree = salary > 0 ? Math.max(0, Math.min(100, Math.round((freeBalance / salary) * 100))) : 0;
+      const progressFill = document.getElementById('salary-progress-fill');
+      if (progressFill) {
+        progressFill.style.width = `${pctFree}%`;
+        progressFill.style.background = freeBalance >= 0 ? '#10b981' : '#f43f5e';
       }
 
       const totalElem = document.getElementById('metric-total-month');
@@ -2014,7 +2134,77 @@
       if (analyticsSec) analyticsSec.style.display = (view === 'analytics') ? 'block' : 'none';
     }
 
-    // --- TRANSACTIONS LOGIC & MODAL RESET ---
+    // --- CATEGORIAS POR TIPO DE LANÇAMENTO ---
+    const CATEGORIES_BY_TYPE = {
+      CARD: [
+        'Alimentação / Mercado 🛒',
+        'Restaurante / Lanchonete 🍔',
+        'Transporte / Uber 🚗',
+        'Saúde / Farmácia 💊',
+        'Lazer / Entretenimento 🎬',
+        'Educação / Cursos 📚',
+        'Moradia / Casa 🏠',
+        'Vestuário / Compras 🛍️',
+        'Assinatura / Recorrência Mensal 🔄',
+        'Serviços Digitais 💻',
+        'Outros 📦'
+      ],
+      BILL: [
+        'Energia / Luz ⚡',
+        'Água / Saneamento 💧',
+        'Internet / Wi-Fi 🌐',
+        'Aluguel / Condomínio 🏢',
+        'Gás de Cozinha 🔥',
+        'Telefone / Celular 📱',
+        'Assinatura / Recorrência Mensal 🔄',
+        'Impostos / Taxas 📄',
+        'Outros Boletos 📑'
+      ],
+      VEHICLE: [
+        'Combustível / Gasolina ⛽',
+        'Manutenção / Oficina 🛠️',
+        'Troca de Óleo 🛢️',
+        'Lava-jato / Limpeza 🧼',
+        'Seguro Veicular 🛡️',
+        'IPVA / Licenciamento 📄',
+        'Estacionamento / Pedágio 🅿️',
+        'Assinatura / Recorrência Mensal 🔄',
+        'Outros Veículo 🚗'
+      ]
+    };
+
+    function updateTxCategoryOptions(selectedType, defaultCategory = null) {
+      const catSelect = document.getElementById('tx-category');
+      if (!catSelect) return;
+      catSelect.innerHTML = '';
+
+      const list = CATEGORIES_BY_TYPE[selectedType] || CATEGORIES_BY_TYPE.CARD;
+      list.forEach(cat => {
+        const opt = document.createElement('option');
+        opt.value = cat;
+        opt.textContent = cat;
+        if (defaultCategory && cat === defaultCategory) {
+          opt.selected = true;
+        }
+        catSelect.appendChild(opt);
+      });
+    }
+
+    function updateInstallmentStartOptions(totalInst, defaultStart = 1) {
+      const startSelect = document.getElementById('tx-start-installment');
+      if (!startSelect) return;
+      startSelect.innerHTML = '';
+
+      for (let i = 1; i <= totalInst; i++) {
+        const opt = document.createElement('option');
+        opt.value = i;
+        opt.textContent = `Parcela ${i} de ${totalInst}`;
+        if (i === defaultStart) opt.selected = true;
+        startSelect.appendChild(opt);
+      }
+    }
+
+    // --- LOGICA DE LANÇAMENTOS & RESET DO MODAL DO ZERO ---
     function openTxModal() {
       const modal = document.getElementById('transaction-modal');
       const form = document.getElementById('transaction-form');
@@ -2023,12 +2213,35 @@
       document.getElementById('tx-edit-id').value = '';
       document.getElementById('tx-modal-title').innerHTML = '<i data-lucide="plus-circle"></i> Novo Lançamento Financeiro';
 
-      const categorySelect = document.getElementById('tx-category');
-      if (categorySelect) categorySelect.selectedIndex = 0;
-
+      // 1. Reset para tipo CARTÃO por padrão
       const radioCard = document.querySelector('input[name="txType"][value="CARD"]');
-      if (radioCard) { radioCard.checked = true; radioCard.dispatchEvent(new Event('change')); }
+      if (radioCard) {
+        radioCard.checked = true;
+      }
 
+      const groupBank = document.getElementById('group-bank');
+      if (groupBank) groupBank.style.display = 'block';
+
+      // 2. Popula categorias de Cartão e zera seleção
+      updateTxCategoryOptions('CARD');
+
+      // 3. Reset de parcelamento para 1x
+      const instSelect = document.getElementById('tx-installments');
+      if (instSelect) instSelect.value = '1';
+
+      const groupInstallments = document.getElementById('group-installments');
+      if (groupInstallments) groupInstallments.style.display = 'flex';
+
+      const groupCustom = document.getElementById('group-custom-installments');
+      if (groupCustom) groupCustom.style.display = 'none';
+
+      const groupStart = document.getElementById('group-start-installment');
+      if (groupStart) groupStart.style.display = 'none';
+
+      const subInfoGroup = document.getElementById('group-subscription-info');
+      if (subInfoGroup) subInfoGroup.style.display = 'none';
+
+      // 4. Data padrão = HOJE
       const dateInp = document.getElementById('tx-date');
       if (dateInp) {
         const today = new Date();
@@ -2118,13 +2331,14 @@
     function handleTxFormSubmit(e) {
       e.preventDefault();
       const editId = document.getElementById('tx-edit-id').value;
-      const type = document.querySelector('input[name="txType"]:checked').value;
+      const typeRadio = document.querySelector('input[name="txType"]:checked');
+      const type = typeRadio ? typeRadio.value : 'CARD';
       const description = document.getElementById('tx-description').value.trim();
       const amount = parseFloat(document.getElementById('tx-amount').value) || 0;
       const dateStr = document.getElementById('tx-date').value;
-      const category = document.getElementById('tx-category').value;
-      const bankId = document.getElementById('tx-bank').value;
-      const status = document.getElementById('tx-status').value;
+      const category = document.getElementById('tx-category').value || 'Geral';
+      const bankId = document.getElementById('tx-bank').value || '';
+      const status = document.getElementById('tx-status').value || 'PENDING';
 
       if (!description || !amount || !dateStr) return;
 
@@ -2144,6 +2358,9 @@
         }
       }
 
+      const startInst = parseInt(document.getElementById('tx-start-installment').value, 10) || 1;
+      const startInstIdx = Math.max(0, startInst - 1);
+
       if (editId) {
         saasState.userTransactions = saasState.userTransactions.filter(t => t.id !== editId && t.linkedGroupId !== editId);
       }
@@ -2151,7 +2368,7 @@
       const groupId = editId || `group-${Date.now()}`;
 
       if (isSub) {
-        // Assinatura: replica pelos 12 meses do ano
+        // Assinatura: replica pelos 12 meses do ano sem indicar parcelamento
         for (let m = 0; m < 12; m++) {
           const subTx = {
             id: `tx-${Date.now()}-${m}`,
@@ -2165,9 +2382,10 @@
           saasState.userTransactions.push(subTx);
         }
       } else if (instTotal > 1) {
-        // Parcelamento normal
-        for (let i = 0; i < instTotal; i++) {
-          let targetMonth = txMonth + i;
+        // Parcelamento normal com opção de parcela inicial
+        for (let i = startInstIdx; i < instTotal; i++) {
+          const offset = i - startInstIdx;
+          let targetMonth = txMonth + offset;
           let targetYear = txYear;
           while (targetMonth > 11) {
             targetMonth -= 12;
@@ -2179,7 +2397,7 @@
             type, description, amount,
             year: targetYear, month: targetMonth,
             dateStr: formatDateStr(targetYear, targetMonth, Math.min(txDay, 28)),
-            category, bankId, status: i === 0 ? status : 'PENDING',
+            category, bankId, status: offset === 0 ? status : 'PENDING',
             isSubscription: false, installmentTotal: instTotal, installmentCurrent: i + 1
           };
           saasState.userTransactions.push(instTx);
@@ -2215,19 +2433,29 @@
       document.getElementById('tx-modal-title').innerHTML = '<i data-lucide="edit-2"></i> Editar Lançamento Financeiro';
 
       const radio = document.querySelector(`input[name="txType"][value="${tx.type}"]`);
-      if (radio) { radio.checked = true; radio.dispatchEvent(new Event('change')); }
+      if (radio) {
+        radio.checked = true;
+      }
+
+      const groupBank = document.getElementById('group-bank');
+      if (groupBank) groupBank.style.display = tx.type === 'CARD' ? 'block' : 'none';
+
+      updateTxCategoryOptions(tx.type, tx.category);
 
       document.getElementById('tx-description').value = tx.description || '';
       document.getElementById('tx-amount').value = tx.amount || '';
       document.getElementById('tx-date').value = tx.dateStr || '';
       document.getElementById('tx-bank').value = tx.bankId || '';
-      document.getElementById('tx-category').value = tx.category || '';
       document.getElementById('tx-status').value = tx.status || 'PENDING';
 
       if (tx.isSubscription) {
         document.getElementById('tx-category').value = 'Assinatura / Recorrência Mensal 🔄';
       } else {
         document.getElementById('tx-installments').value = String(tx.installmentTotal || 1);
+        if (tx.installmentTotal > 1) {
+          updateInstallmentStartOptions(tx.installmentTotal, tx.installmentCurrent || 1);
+          document.getElementById('group-start-installment').style.display = 'block';
+        }
       }
       document.getElementById('tx-category').dispatchEvent(new Event('change'));
     }
