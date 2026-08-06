@@ -1968,16 +1968,32 @@
       renderAll();
     }
 
+    function findTxById(txId) {
+      if (!txId) return null;
+      let tx = saasState.userTransactions.find(t => String(t.id) === String(txId));
+      if (!tx) {
+        const baseId = String(txId).split('-202')[0];
+        tx = saasState.userTransactions.find(t => String(t.id) === String(baseId) || String(t.linkedGroupId) === String(baseId));
+      }
+      return tx;
+    }
+
     function editTx(txId) {
-      const tx = saasState.userTransactions.find(t => t.id === txId);
-      if (!tx) return;
+      const tx = findTxById(txId);
+      if (!tx) {
+        alert('Lançamento não localizado para edição.');
+        return;
+      }
 
       openTxModal();
       document.getElementById('tx-edit-id').value = tx.id;
       document.getElementById('tx-modal-title').innerHTML = '<i data-lucide="edit-2"></i> Editar Lançamento Financeiro';
 
       const radio = document.querySelector(`input[name="txType"][value="${tx.type}"]`);
-      if (radio) radio.checked = true;
+      if (radio) {
+        radio.checked = true;
+        radio.dispatchEvent(new Event('change'));
+      }
 
       const groupBank = document.getElementById('group-bank');
       if (groupBank) groupBank.style.display = tx.type === 'CARD' ? 'block' : 'none';
@@ -1999,11 +2015,10 @@
           document.getElementById('group-start-installment').style.display = 'block';
         }
       }
-      document.getElementById('tx-category').dispatchEvent(new Event('change'));
     }
 
     function deleteTx(txId) {
-      const tx = saasState.userTransactions.find(t => t.id === txId);
+      const tx = findTxById(txId);
       if (!tx) return;
 
       let option = '1';
@@ -2018,14 +2033,14 @@
       }
 
       if (option === '1') {
-        saasState.userTransactions = saasState.userTransactions.filter(t => t.id !== txId);
+        saasState.userTransactions = saasState.userTransactions.filter(t => String(t.id) !== String(tx.id));
       } else if (option === '2') {
         saasState.userTransactions = saasState.userTransactions.filter(t => {
           if (t.linkedGroupId !== tx.linkedGroupId) return true;
           return t.month < tx.month;
         });
       } else {
-        saasState.userTransactions = saasState.userTransactions.filter(t => t.linkedGroupId !== tx.linkedGroupId && t.id !== txId);
+        saasState.userTransactions = saasState.userTransactions.filter(t => t.linkedGroupId !== tx.linkedGroupId && String(t.id) !== String(tx.id));
       }
 
       saveUserData();
@@ -2033,7 +2048,7 @@
     }
 
     function toggleTxStatus(txId) {
-      const tx = saasState.userTransactions.find(t => t.id === txId);
+      const tx = findTxById(txId);
       if (!tx) return;
       tx.status = tx.status === 'PAID' ? 'PENDING' : 'PAID';
       saveUserData();
