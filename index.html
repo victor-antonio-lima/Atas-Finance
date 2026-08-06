@@ -1319,93 +1319,29 @@
       if (window.lucide) lucide.createIcons();
     }
 
-    // --- PERSISTÊNCIA DE USUÁRIOS E DADOS ---
-    function loadSaaSStore() {
-      let savedUsers = localStorage.getItem('finansaas_users');
-      if (!savedUsers) {
-        savedUsers = localStorage.getItem('finansaas_users_backup');
-      }
-
-      if (savedUsers) {
-        try {
-          saasState.users = JSON.parse(savedUsers);
-        } catch (err) {
-          saasState.users = [...PRESET_USERS];
-        }
-
-        saasState.users = saasState.users.filter(u => u && u.email && u.email.toLowerCase() !== 'victorantonio464@gmail.com');
-
-        let masterIdx = saasState.users.findIndex(u => u && u.email && u.email.toLowerCase() === MASTER_EMAIL.toLowerCase());
-        if (masterIdx === -1) {
-          saasState.users.push(PRESET_USERS[0]);
-        } else {
-          saasState.users[masterIdx].role = 'MASTER';
-          saasState.users[masterIdx].subscriptionStatus = 'SUBSCRIBED';
-          saasState.users[masterIdx].password = MASTER_SENHA;
-          saasState.users[masterIdx].name = 'Victor Antonio (Master)';
-        }
-      } else {
-        saasState.users = [...PRESET_USERS];
-      }
-
-      saveUsersLocally();
+    // --- PERSISTÊNCIA 100% NUVEM (SUPABASE TEMPO REAL) ---
+    async function loadSaaSStore() {
+      await fetchCloudUsers();
 
       const activeUserId = localStorage.getItem('finansaas_active_user');
       if (activeUserId) {
         saasState.currentUser = saasState.users.find(u => u && (String(u.id) === String(activeUserId) || String(u.email).toLowerCase() === String(activeUserId).toLowerCase())) || null;
       }
-      if (!saasState.currentUser) {
-        const rawLogado = localStorage.getItem('usuario_logado');
-        if (rawLogado) {
-          try {
-            const parsedLogado = typeof rawLogado === 'string' && rawLogado.startsWith('{') ? JSON.parse(rawLogado) : null;
-            if (parsedLogado && parsedLogado.email) {
-              saasState.currentUser = saasState.users.find(u => u && u.email && u.email.toLowerCase() === parsedLogado.email.toLowerCase()) || null;
-            }
-          } catch(e) {}
-        }
-      }
-    }
-
-    function saveUsersLocally() {
-      localStorage.setItem('finansaas_users', JSON.stringify(saasState.users));
-      localStorage.setItem('finansaas_users_backup', JSON.stringify(saasState.users));
     }
 
     function saveUsers(userToPush = null) {
-      saveUsersLocally();
       if (userToPush) {
         pushMasterUserToCloud(userToPush, 'upsert');
       }
     }
 
-    function loadUserDataLocally() {
-      if (!saasState.currentUser) return;
-      const uid = saasState.currentUser.id;
-      saasState.userBanks = JSON.parse(localStorage.getItem(`finansaas_banks_${uid}`) || '[]');
-      saasState.userTransactions = JSON.parse(localStorage.getItem(`finansaas_tx_${uid}`) || '[]');
-      saasState.userSalary = parseFloat(localStorage.getItem(`finansaas_salary_${uid}`)) || 0;
-      saasState.userSalaryLocked = localStorage.getItem(`finansaas_salary_locked_${uid}`) === 'true';
-    }
-
-    function saveUserDataLocally() {
-      if (!saasState.currentUser) return;
-      const uid = saasState.currentUser.id;
-      localStorage.setItem(`finansaas_banks_${uid}`, JSON.stringify(saasState.userBanks));
-      localStorage.setItem(`finansaas_tx_${uid}`, JSON.stringify(saasState.userTransactions));
-      localStorage.setItem(`finansaas_salary_${uid}`, saasState.userSalary || 0);
-      localStorage.setItem(`finansaas_salary_locked_${uid}`, saasState.userSalaryLocked ? 'true' : 'false');
-    }
-
     async function loadUserData() {
       if (!saasState.currentUser) return;
-      loadUserDataLocally();
       await fetchCloudUserData();
     }
 
     function saveUserData() {
       if (!saasState.currentUser) return;
-      saveUserDataLocally();
       pushUserDataToCloud();
     }
 
@@ -1479,16 +1415,12 @@
             saasState.userTransactions = Array.isArray(parsed.transactions) ? parsed.transactions : [];
             saasState.userSalary = parseFloat(parsed.salary) || 0;
             saasState.userSalaryLocked = parsed.salary_locked === true;
-
-            saveUserDataLocally();
             return;
           }
         }
       } catch(err) {
         console.warn("Supabase fetch user data:", err);
       }
-
-      loadUserDataLocally();
     }
 
     async function pushUserDataToCloud() {
@@ -1708,8 +1640,8 @@
 
         localStorage.setItem("usuario_logado", JSON.stringify(userObj));
         saasState.currentUser = userObj;
-        localStorage.setItem('finansaas_active_user', userObj.id);
-        loadUserData();
+        localStorage.setItem('finansaas_active_user', userObj.email);
+        await loadUserData();
 
         if (userObj.role === 'MASTER') {
           alert("🎉 Acesso Master Autorizado! Bem-vindo, Administrador Victor.");
