@@ -486,16 +486,16 @@
     </section>
 
     <!-- BANK SUMMARY CARDS ON HOME SCREEN -->
-    <div id="home-bank-summary-container" style="margin-bottom: 24px;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-        <h3 style="font-size: 0.95rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
-          <i data-lucide="credit-card" style="color: var(--accent-primary);"></i> Meus Cartões de Crédito Cadastrados
+    <div id="home-bank-summary-container" style="margin-bottom: 20px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+        <h3 style="font-size: 0.9rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
+          <i data-lucide="credit-card" style="color: var(--accent-primary);"></i> Cartões Cadastrados
         </h3>
-        <button onclick="openBankModal()" class="btn btn-ghost btn-sm" style="color: var(--accent-primary); border-color: rgba(99, 102, 241, 0.3);">
+        <button onclick="openBankModal()" class="btn btn-ghost btn-sm" style="font-size: 0.76rem; padding: 3px 10px; color: var(--accent-primary); border-color: rgba(99, 102, 241, 0.3);">
           + Gerenciar Cartões
         </button>
       </div>
-      <div id="home-bank-summary-grid" class="metrics-grid"></div>
+      <div id="home-bank-summary-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px;"></div>
     </div>
 
     <!-- TOOLBAR & FILTERS -->
@@ -1271,8 +1271,8 @@
 
       if (saasState.userBanks.length === 0) {
         grid.innerHTML = `
-          <div style="background: rgba(30, 41, 59, 0.4); border: 1px dashed var(--border-color); border-radius: var(--radius-lg); padding: 16px; text-align: center; color: var(--text-muted); font-size: 0.85rem; grid-column: 1 / -1;">
-            💳 Nenhum cartão cadastrado ainda. Clique em <strong>[+ Gerenciar Cartões]</strong> para cadastrar seus cartões (Nubank, Itaú, Bradesco...).
+          <div style="background: rgba(30, 41, 59, 0.3); border: 1px dashed var(--border-color); border-radius: var(--radius-md); padding: 12px 16px; text-align: center; color: var(--text-muted); font-size: 0.8rem; grid-column: 1 / -1;">
+            💳 Nenhum cartão cadastrado ainda. Clique em <strong>[+ Gerenciar Cartões]</strong> para adicionar.
           </div>
         `;
         return;
@@ -1284,45 +1284,54 @@
         const bankSpent = activeMonthTx.filter(t => String(t.bankId) === String(bank.id)).reduce((a, t) => a + (parseFloat(t.amount) || 0), 0);
         const limit = parseFloat(bank.limit) || 0;
         const available = limit - bankSpent;
-        const usedPct = limit > 0 ? Math.min(100, Math.max(0, (bankSpent / limit) * 100)) : 0;
+        const bankColor = bank.color || 'var(--accent-primary)';
+
+        const isSelected = String(saasState.selectedBankFilter) === String(bank.id);
 
         const card = document.createElement('div');
-        card.className = 'metric-card';
-        card.style.cssText = `border-color: ${bank.color || 'var(--accent-primary)'}; background: linear-gradient(145deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.7)); cursor: pointer;`;
+        card.style.cssText = `
+          background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.8));
+          border: 1px solid ${isSelected ? bankColor : 'var(--border-color)'};
+          border-left: 4px solid ${bankColor};
+          border-radius: var(--radius-md);
+          padding: 10px 14px;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+          box-shadow: ${isSelected ? `0 4px 14px ${bankColor}33` : '0 2px 8px rgba(0,0,0,0.2)'};
+        `;
+
         card.onclick = () => {
-          saasState.selectedBankFilter = String(bank.id);
+          saasState.selectedBankFilter = isSelected ? 'ALL' : String(bank.id);
           switchView('cards');
           renderAll();
         };
 
         card.innerHTML = `
-          <div class="metric-header" style="margin-bottom: 8px;">
-            <span class="bank-pill" style="background: ${bank.color || 'var(--accent-primary)'}; font-size: 0.82rem; font-weight: 800;">
-              💳 ${escapeHtml(bank.name)}
-            </span>
-            <span style="font-family: var(--font-mono); color: var(--text-muted); font-size: 0.75rem;">
-              Limite: ${formatCurrency(limit)}
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <strong style="font-size: 0.85rem; color: var(--text-main); display: flex; align-items: center; gap: 6px;">
+              <span style="width: 8px; height: 8px; border-radius: 50%; background: ${bankColor}; display: inline-block;"></span>
+              ${escapeHtml(bank.name)}
+            </strong>
+            <span style="font-size: 0.72rem; font-family: var(--font-mono); color: var(--text-dim);">
+              Lim: ${formatCurrency(limit)}
             </span>
           </div>
 
-          <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 8px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.78rem;">
             <div>
-              <div style="font-size: 0.7rem; color: var(--text-dim);">Fatura Atual:</div>
-              <div class="metric-value" style="font-size: 1.25rem; color: ${bank.color || 'var(--accent-primary)'};">${formatCurrency(bankSpent)}</div>
+              <span style="color: var(--text-muted); font-size: 0.7rem;">Fatura:</span>
+              <strong style="font-family: var(--font-mono); color: ${bankColor}; margin-left: 4px;">${formatCurrency(bankSpent)}</strong>
             </div>
             <div style="text-align: right;">
-              <div style="font-size: 0.7rem; color: var(--text-dim);">Disponível:</div>
-              <div style="font-size: 0.95rem; font-weight: 800; font-family: var(--font-mono); color: ${available >= 0 ? '#34d399' : '#f43f5e'};">${formatCurrency(available)}</div>
+              <span style="color: var(--text-muted); font-size: 0.7rem;">Livre:</span>
+              <strong style="font-family: var(--font-mono); color: ${available >= 0 ? '#34d399' : '#f43f5e'}; margin-left: 4px;">${formatCurrency(available)}</strong>
             </div>
           </div>
-
-          <div class="metric-progress-bar" style="margin-top: 10px;">
-            <div class="metric-progress-fill" style="width: ${usedPct}%; background: ${bank.color || 'var(--accent-primary)'};"></div>
-          </div>
-          <div style="font-size: 0.7rem; color: var(--text-dim); margin-top: 4px; text-align: right;">
-            ${usedPct.toFixed(1)}% utilizado
-          </div>
         `;
+
         grid.appendChild(card);
       });
     }
