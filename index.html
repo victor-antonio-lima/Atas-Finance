@@ -938,116 +938,12 @@
 
 
 
-  <!-- MODAL: MASTER CHANGE USER PLAN -->
-  <div class="modal-overlay" id="master-change-plan-modal">
-    <div class="modal-card" style="max-width: 440px;">
-      <div class="modal-header">
-        <h3 style="display: flex; align-items: center; gap: 8px;"><i data-lucide="award" style="color: var(--accent-gold);"></i> Alterar Plano do Cliente</h3>
-        <button class="btn-close-modal" onclick="closeMasterChangePlanModal()">&times;</button>
-      </div>
-      
-      <div style="margin-bottom: 16px; background: rgba(30, 41, 59, 0.5); padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
-        <strong id="plan-modal-client-name" style="color: #fff; font-size: 0.95rem; display: block;">Cliente</strong>
-        <span id="plan-modal-client-email" style="color: var(--accent-cyan); font-size: 0.8rem; font-family: var(--font-mono);">email@exemplo.com</span>
-        <p id="plan-modal-client-current" style="font-size: 0.78rem; color: var(--accent-gold); margin-top: 6px; font-weight: 700;">Plano Atual: -</p>
-      </div>
 
-      <div style="display: flex; flex-direction: column; gap: 10px;">
-        <button class="btn btn-ghost" style="justify-content: flex-start; padding: 12px; border-color: rgba(52, 211, 153, 0.4); color: #34d399;" onclick="masterApplyPlanFromModal('SUBSCRIBED_MONTHLY')">
-          <i data-lucide="credit-card"></i> 💳 Assinante Mensal (Libera Acesso Completo)
-        </button>
-        <button class="btn btn-ghost" style="justify-content: flex-start; padding: 12px; border-color: rgba(245, 158, 11, 0.4); color: #f59e0b;" onclick="masterApplyPlanFromModal('TRIAL_ACTIVE')">
-          <i data-lucide="clock"></i> ⏳ Teste Grátis (+7 Dias de Teste)
-        </button>
-        <button class="btn btn-ghost" style="justify-content: flex-start; padding: 12px; border-color: rgba(236, 72, 153, 0.4); color: var(--accent-secondary);" onclick="masterApplyPlanFromModal('VIP_LIFETIME')">
-          <i data-lucide="crown"></i> 👑 VIP Vitalício (Acesso Permanente)
-        </button>
-        <button class="btn btn-ghost" style="justify-content: flex-start; padding: 12px; border-color: rgba(6, 182, 212, 0.4); color: var(--accent-cyan);" onclick="masterApplyPlanFromModal('CUSTOM_DAYS')">
-          <i data-lucide="calendar"></i> 📅 Definir Dias Personalizados (Ex: +15 dias)
-        </button>
-        <button class="btn btn-ghost" style="justify-content: flex-start; padding: 12px; border-color: rgba(244, 63, 94, 0.4); color: #f43f5e; background: rgba(244, 63, 94, 0.08);" onclick="masterApplyPlanFromModal('BLOCKED')">
-          <i data-lucide="slash"></i> 🚫 Bloquear / Suspender Acesso
-        </button>
-      </div>
-
-      <div style="margin-top: 16px; text-align: right;">
-        <button class="btn btn-ghost" onclick="closeMasterChangePlanModal()">Cancelar</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- MODAL: SHOW CLIENT CREDENTIALS -->
-  <div class="modal-overlay" id="master-user-credentials-modal">
-    <div class="modal-card" style="max-width: 480px;">
-      <div class="modal-header">
-        <h3 style="display: flex; align-items: center; gap: 8px;"><i data-lucide="key" style="color: var(--accent-gold);"></i> Acesso do Cliente Gerado</h3>
-        <button class="btn-close-modal" onclick="document.getElementById('master-user-credentials-modal').classList.remove('active')">&times;</button>
-      </div>
-
-      <div style="background: rgba(30, 41, 59, 0.8); padding: 16px; border-radius: var(--radius-md); border: 1px solid var(--border-color); margin-bottom: 16px;">
-        <div style="margin-bottom: 10px;">
-          <span style="font-size: 0.75rem; color: var(--text-muted);">Nome do Cliente:</span>
-          <strong id="cred-display-name" style="display: block; color: #fff; font-size: 0.95rem;">-</strong>
-        </div>
-        <div style="margin-bottom: 10px;">
-          <span style="font-size: 0.75rem; color: var(--text-muted);">E-mail de Login:</span>
-          <strong id="cred-display-email" style="display: block; color: var(--accent-cyan); font-family: var(--font-mono); font-size: 0.95rem;">-</strong>
-        </div>
-        <div style="margin-bottom: 10px;">
-          <span style="font-size: 0.75rem; color: var(--text-muted);">Senha de Acesso:</span>
-          <strong id="cred-display-pass" style="display: block; color: var(--accent-gold); font-family: var(--font-mono); font-size: 1.1rem; background: rgba(245,158,11,0.15); padding: 4px 8px; border-radius: 6px; width: fit-content;">-</strong>
-        </div>
-        <div>
-          <span style="font-size: 0.75rem; color: var(--text-muted);">Plano Ativo:</span>
-          <strong id="cred-display-plan" style="display: block; color: #34d399; font-size: 0.88rem;">-</strong>
-        </div>
-      </div>
-
-      <div style="display: flex; flex-direction: column; gap: 10px;">
-        <button class="btn btn-gold btn-full" id="btn-copy-client-access">
-          <i data-lucide="copy"></i> Copiar Dados & Link de Acesso WhatsApp
-        </button>
-        <button class="btn btn-ghost btn-full" onclick="document.getElementById('master-user-credentials-modal').classList.remove('active')">
-          Fechar
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- MODAL: CHANGE LOGGED USER PASSWORD -->
-  <div class="modal-overlay" id="change-pass-modal">
-    <div class="modal-card" style="max-width: 420px;">
-      <div class="modal-header">
-        <h3 style="display: flex; align-items: center; gap: 8px;"><i data-lucide="key-round"></i> Alterar Minha Senha</h3>
-        <button class="btn-close-modal" id="btn-close-change-pass-modal">&times;</button>
-      </div>
-
-      <form id="change-my-pass-form">
-        <div class="form-group">
-          <label for="my-new-pass">Nova Senha *</label>
-          <input type="password" id="my-new-pass" placeholder="••••••••" required class="input-control font-mono">
-        </div>
-        <div class="form-group">
-          <label for="my-confirm-new-pass">Confirmar Nova Senha *</label>
-          <input type="password" id="my-confirm-new-pass" placeholder="••••••••" required class="input-control font-mono">
-        </div>
-
-        <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
-          <button type="button" class="btn btn-ghost" id="btn-cancel-change-pass">Cancelar</button>
-          <button type="submit" class="btn btn-primary"><i data-lucide="check-circle"></i> Atualizar Senha</button>
-        </div>
-      </form>
-    </div>
-  </div>
 
   <script>
     /* ==========================================================================
        ATLAS FINANCE ENGINE - MASTER AUTH & MULTI-USER CLOUD PLATFORM
        ========================================================================== */
-
-    // 1. Configuração Master Oficial
-    const MASTER_EMAIL = "victorantoniolima464@gmail.com";
-    const MASTER_SENHA = "051211"; // <-- Senha Master Oficial
 
     // 2. Conexão Supabase Cloud
     const SUPABASE_URL = "https://cdevrbqiupwaczgauszd.supabase.co";
@@ -1063,22 +959,8 @@
 
     const MONTH_NAMES = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
 
-    const PRESET_USERS = [
-      {
-        id: 'usr-master-victor',
-        name: 'Victor Antonio (Master)',
-        email: 'victorantoniolima464@gmail.com',
-        password: '051211',
-        role: 'MASTER',
-        registeredAt: '2026-01-01T00:00:00.000Z',
-        subscriptionStatus: 'SUBSCRIBED',
-        trialEndTimestamp: Date.now() + (365 * 86400000)
-      }
-    ];
-
     const nowInit = new Date();
     let saasState = {
-      users: [],
       currentUser: {
         id: 'usr-default',
         name: 'Victor',
@@ -1099,17 +981,6 @@
 
     let categoryPieChartInstance = null;
     let balanceBarChartInstance = null;
-
-    // --- RESET DE CACHÊ LOCAL ---
-    function resetLocalLoginCache() {
-      localStorage.removeItem('finansaas_active_user');
-      localStorage.removeItem('usuario_logado');
-      localStorage.removeItem('finansaas_users');
-      localStorage.removeItem('finansaas_users_backup');
-      alert("🧹 Cachê de login e dados locais limpos com sucesso! Faça login novamente com e-mail: victorantoniolima464@gmail.com e senha: 051211");
-      window.location.reload();
-    }
-    window.resetLocalLoginCache = resetLocalLoginCache;
 
     // --- DETECÇÃO DE DISPOSITIVO ---
     function detectDeviceAndApplyLayout() {
@@ -1142,22 +1013,6 @@
       if (window.lucide) lucide.createIcons();
     }
 
-    // --- PERSISTÊNCIA 100% NUVEM (SUPABASE TEMPO REAL) ---
-    async function loadSaaSStore() {
-      await fetchCloudUsers();
-
-      const activeUserId = localStorage.getItem('finansaas_active_user');
-      if (activeUserId) {
-        saasState.currentUser = saasState.users.find(u => u && (String(u.id) === String(activeUserId) || String(u.email).toLowerCase() === String(activeUserId).toLowerCase())) || null;
-      }
-    }
-
-    function saveUsers(userToPush = null) {
-      if (userToPush) {
-        pushMasterUserToCloud(userToPush, 'upsert');
-      }
-    }
-
     async function loadUserData() {
       if (!saasState.currentUser) return;
       await fetchCloudUserData();
@@ -1168,56 +1023,7 @@
       pushUserDataToCloud();
     }
 
-    // --- NÚCLEO DE SINCRONIZAÇÃO SUPABASE (NUVEM EM TEMPO REAL) ---
-    async function fetchCloudUsers() {
-      if (!supabaseClient) return;
-      try {
-        const { data, error } = await supabaseClient
-          .from('usuarios')
-          .select('*');
-
-        if (!error && Array.isArray(data)) {
-          data.forEach(cloudRow => {
-            const emailClean = String(cloudRow.email || '').trim().toLowerCase();
-            if (!emailClean) return;
-
-            let existing = saasState.users.find(u => u && u.email && u.email.trim().toLowerCase() === emailClean);
-
-            let finData = {};
-            if (cloudRow.dados_financeiros) {
-              try {
-                finData = typeof cloudRow.dados_financeiros === 'string' ? JSON.parse(cloudRow.dados_financeiros) : cloudRow.dados_financeiros;
-              } catch(e) {}
-            }
-
-            if (!existing) {
-              existing = {
-                id: cloudRow.id || `usr-${Date.now()}`,
-                name: cloudRow.nome || cloudRow.name || emailClean.split('@')[0],
-                email: emailClean,
-                password: cloudRow.senha || cloudRow.password || '123456',
-                role: (cloudRow.tipo_acesso === 'MASTER' || emailClean.includes('victor')) ? 'MASTER' : 'CLIENTE',
-                registeredAt: cloudRow.created_at || new Date().toISOString(),
-                subscriptionStatus: cloudRow.status || 'SUBSCRIBED',
-                trialEndTimestamp: Date.now() + (365 * 86400000),
-                cloudFinData: finData
-              };
-              saasState.users.push(existing);
-            } else {
-              existing.name = cloudRow.nome || cloudRow.name || existing.name;
-              existing.password = cloudRow.senha || cloudRow.password || existing.password;
-              existing.role = (cloudRow.tipo_acesso === 'MASTER' || emailClean.includes('victor')) ? 'MASTER' : (existing.role || 'CLIENTE');
-              existing.subscriptionStatus = cloudRow.status || existing.subscriptionStatus || 'SUBSCRIBED';
-              existing.cloudFinData = finData;
-            }
-          });
-          saveUsersLocally();
-        }
-      } catch(err) {
-        console.warn("Supabase fetch users:", err);
-      }
-    }
-
+    // --- NÚCLEO DE SINCRONIZAÇÃO DA PLANILHA NO SUPABASE ---
     async function fetchCloudUserData() {
       if (!saasState.currentUser || !supabaseClient) return;
       const u = saasState.currentUser;
@@ -1227,7 +1033,7 @@
       try {
         const { data, error } = await supabaseClient
           .from('usuarios')
-          .select('*')
+          .select('dados_financeiros')
           .eq('email', emailClean)
           .maybeSingle();
 
@@ -1238,7 +1044,6 @@
             saasState.userTransactions = Array.isArray(parsed.transactions) ? parsed.transactions : [];
             saasState.userSalary = parseFloat(parsed.salary) || 0;
             saasState.userSalaryLocked = parsed.salary_locked === true;
-            return;
           }
         }
       } catch(err) {
@@ -1260,275 +1065,15 @@
       };
 
       try {
-        const { error } = await supabaseClient
+        await supabaseClient
           .from('usuarios')
           .upsert({
             email: emailClean,
-            nome: u.name || emailClean.split('@')[0],
-            senha: u.password || '123456',
-            tipo_acesso: u.role || 'CLIENTE',
-            status: u.subscriptionStatus || 'SUBSCRIBED',
+            nome: u.name || 'Victor',
             dados_financeiros: JSON.stringify(payload)
           }, { onConflict: 'email' });
-
-        if (error) console.warn("Supabase push data error:", error);
       } catch(err) {
         console.warn("Supabase push user data:", err);
-      }
-    }
-
-    async function pushMasterUserToCloud(userObj, action = 'upsert') {
-      if (!supabaseClient || !userObj || !userObj.email) return;
-      const emailClean = userObj.email.trim().toLowerCase();
-
-      try {
-        if (action === 'delete') {
-          await supabaseClient.from('usuarios').delete().eq('email', emailClean);
-        } else {
-          const payload = userObj.cloudFinData || {
-            banks: [],
-            transactions: [],
-            salary: 0,
-            salary_locked: false
-          };
-
-          await supabaseClient.from('usuarios').upsert({
-            email: emailClean,
-            nome: userObj.name || emailClean.split('@')[0],
-            senha: userObj.password || '123456',
-            tipo_acesso: userObj.role || 'CLIENTE',
-            status: userObj.subscriptionStatus || 'SUBSCRIBED',
-            dados_financeiros: JSON.stringify(payload)
-          }, { onConflict: 'email' });
-        }
-      } catch(err) {
-        console.warn("Supabase master operation:", err);
-      }
-    }
-
-    // --- FUNÇÕES DE LOGIN & MASTER ---
-    function validarAcessoMaster(event, overrideEmail, overridePass) {
-      if (event && event.preventDefault) event.preventDefault();
-
-      const emailInput = document.getElementById('login-email');
-      const passInput = document.getElementById('login-password');
-
-      const emailDigitado = (overrideEmail || (emailInput ? emailInput.value : '')).trim().toLowerCase();
-      const senhaDigitada = (overridePass || (passInput ? passInput.value : '')).trim();
-
-      const isMasterEmail = (
-        emailDigitado === "victorantoniolima464@gmail.com" ||
-        emailDigitado === "victorantonio464@gmail.com" ||
-        emailDigitado.includes("victorantoniolima464") ||
-        emailDigitado.includes("victorantonio464") ||
-        emailDigitado.includes("victor")
-      );
-
-      const isMasterPass = (
-        senhaDigitada === "051211" ||
-        senhaDigitada === "16041997" ||
-        senhaDigitada === "1604" ||
-        senhaDigitada === MASTER_SENHA
-      );
-
-      if (isMasterEmail && isMasterPass) {
-        const masterUser = {
-          id: 'usr-master-victor',
-          name: 'Victor Antonio (Master)',
-          email: 'victorantoniolima464@gmail.com',
-          password: '051211',
-          role: 'MASTER',
-          registeredAt: '2026-01-01T00:00:00.000Z',
-          subscriptionStatus: 'SUBSCRIBED',
-          trialEndTimestamp: Date.now() + (365 * 86400000)
-        };
-
-        if (!saasState.users || !Array.isArray(saasState.users)) {
-          saasState.users = [];
-        }
-
-        const idx = saasState.users.findIndex(u => u && u.email && (
-          u.email.toLowerCase().includes('victorantoniolima464') || 
-          u.email.toLowerCase().includes('victorantonio464') ||
-          u.role === 'MASTER'
-        ));
-
-        if (idx === -1) {
-          saasState.users.push(masterUser);
-        } else {
-          saasState.users[idx] = masterUser;
-        }
-
-        saveUsers();
-        saasState.currentUser = masterUser;
-        localStorage.setItem('finansaas_active_user', masterUser.id);
-        localStorage.setItem("usuario_logado", JSON.stringify(masterUser));
-
-        alert("🎉 Acesso Master Autorizado! Bem-vindo, Administrador Victor.");
-        showAppScreen();
-
-        const masterSec = document.getElementById('master-admin-section');
-        if (masterSec) {
-          if (typeof renderMasterPanel === 'function') renderMasterPanel();
-          masterSec.style.display = 'block';
-        }
-        return true;
-      }
-      return false;
-    }
-    window.validarAcessoMaster = validarAcessoMaster;
-
-    async function fazerLogin(email, senha) {
-      if (!email || !senha) {
-        alert("Por favor, preencha o e-mail e a senha de acesso.");
-        return false;
-      }
-
-      const emailLimpo = email.trim().toLowerCase();
-      const senhaLimpa = senha.trim();
-
-      // Master Check
-      if (
-        emailLimpo === "victorantoniolima464@gmail.com" ||
-        emailLimpo === "victorantonio464@gmail.com" ||
-        emailLimpo.includes("victorantoniolima464") ||
-        emailLimpo.includes("victorantonio464") ||
-        emailLimpo.includes("victor")
-      ) {
-        if (
-          senhaLimpa === "051211" ||
-          senhaLimpa === "16041997" ||
-          senhaLimpa === "1604" ||
-          senhaLimpa === MASTER_SENHA
-        ) {
-          return validarAcessoMaster(null, emailLimpo, senhaLimpa);
-        }
-      }
-
-      // Supabase Query
-      let cloudUser = null;
-      if (typeof supabaseClient !== 'undefined' && supabaseClient) {
-        try {
-          const { data, error } = await supabaseClient
-            .from('usuarios')
-            .select('*')
-            .eq('email', emailLimpo)
-            .maybeSingle();
-
-          if (!error && data) {
-            const dbPass = String(data.senha || data.password || '').trim();
-            if (!dbPass || dbPass === senhaLimpa || senhaLimpa === '123456') {
-              cloudUser = data;
-            }
-          }
-        } catch(err) {
-          console.warn("Supabase fallback:", err);
-        }
-      }
-
-      loadSaaSStore();
-      let userObj = saasState.users.find(u => u && u.email && u.email.trim().toLowerCase() === emailLimpo);
-
-      if (cloudUser) {
-        if (!userObj) {
-          userObj = {
-            id: cloudUser.id || `usr-${Date.now()}`,
-            name: cloudUser.nome || emailLimpo.split('@')[0],
-            email: emailLimpo,
-            password: senhaLimpa,
-            role: cloudUser.tipo_acesso === 'MASTER' ? 'MASTER' : 'CLIENTE',
-            registeredAt: new Date().toISOString(),
-            subscriptionStatus: 'SUBSCRIBED',
-            trialEndTimestamp: Date.now() + (365 * 86400000)
-          };
-          saasState.users.push(userObj);
-          saveUsers();
-        } else {
-          userObj.password = senhaLimpa;
-          saveUsers();
-        }
-      }
-
-      if (userObj) {
-        const storedPass = String(userObj.password || '').trim();
-        if (storedPass !== senhaLimpa && !cloudUser && storedPass !== '123456' && senhaLimpa !== '123456') {
-          alert("❌ Senha incorreta! Verifique os dados digitados.");
-          return false;
-        }
-
-        if (userObj.subscriptionStatus === 'BLOCKED') {
-          alert("🚫 Sua conta foi suspensa ou bloqueada pelo Administrador Master.");
-          return false;
-        }
-
-        localStorage.setItem("usuario_logado", JSON.stringify(userObj));
-        saasState.currentUser = userObj;
-        localStorage.setItem('finansaas_active_user', userObj.email);
-        await loadUserData();
-
-        if (userObj.role === 'MASTER') {
-          alert("🎉 Acesso Master Autorizado! Bem-vindo, Administrador Victor.");
-          showAppScreen();
-          const masterSec = document.getElementById('master-admin-section');
-          if (masterSec) {
-            if (typeof renderMasterPanel === 'function') renderMasterPanel();
-            masterSec.style.display = 'block';
-          }
-        } else {
-          alert(`Bem-vindo, ${userObj.name || userObj.email}!`);
-          showAppScreen();
-        }
-        return true;
-      }
-
-      alert(`⚠️ O e-mail "${email}" não foi encontrado no cadastro. Solicite o cadastro ao Administrador Master.`);
-      return false;
-    }
-    window.fazerLogin = fazerLogin;
-
-    // --- LISTENERS ---
-    function setupAuthListeners() {
-      const loginForm = document.getElementById('login-form');
-      if (loginForm) {
-        loginForm.addEventListener('submit', async (e) => {
-          e.preventDefault();
-          
-          const emailInput = document.getElementById('login-email');
-          const passInput = document.getElementById('login-password');
-          const email = emailInput ? emailInput.value.trim().toLowerCase() : '';
-          const pass = passInput ? passInput.value.trim() : '';
-
-          if (!email || !pass) {
-            alert("Por favor, preencha o e-mail e a senha de acesso.");
-            return;
-          }
-
-          await fazerLogin(email, pass);
-        });
-      }
-    }
-
-    function showAuthScreen() {
-      document.getElementById('auth-screen').style.display = 'flex';
-      document.getElementById('app-screen').style.display = 'none';
-      const emailInput = document.getElementById('login-email');
-      const passInput = document.getElementById('login-password');
-      if (emailInput) { emailInput.value = ''; }
-      if (passInput) { passInput.value = ''; }
-    }
-
-    function showAppScreen() {
-      document.getElementById('auth-screen').style.display = 'none';
-      document.getElementById('app-screen').style.display = 'block';
-
-      loadUserData();
-      updateUserHeaderBadge();
-      checkTrialAndSubscriptionStatus();
-      renderAll();
-
-      const masterSec = document.getElementById('master-admin-section');
-      if (masterSec && (!saasState.currentUser || saasState.currentUser.role !== 'MASTER')) {
-        masterSec.style.display = 'none';
       }
     }
 
@@ -2712,188 +2257,6 @@
       tx.status = tx.status === 'PAID' ? 'PENDING' : 'PAID';
       saveUserData();
       renderAll();
-    }
-
-    // --- PAINEL MASTER ENGINE ---
-    function renderMasterPanel() {
-      let users = saasState.users || [];
-      const searchQueryPlans = (document.getElementById('master-search-plans-input')?.value || '').trim().toLowerCase();
-      const searchQueryUsers = (document.getElementById('master-search-users-input')?.value || '').trim().toLowerCase();
-      const query = searchQueryPlans || searchQueryUsers;
-
-      const clientUsers = users.filter(u => u && u.role !== 'MASTER');
-
-      const activeSubscribers = clientUsers.filter(u => u.subscriptionStatus === 'SUBSCRIBED' || u.subscriptionStatus === 'SUBSCRIBED_MONTHLY');
-      const trialUsers = clientUsers.filter(u => u.subscriptionStatus === 'TRIAL_ACTIVE');
-
-      const subscribersCount = activeSubscribers.length;
-      const trialCount = trialUsers.length;
-      const mrr = subscribersCount * 29.90;
-
-      const elemMRR = document.getElementById('master-metric-mrr');
-      if (elemMRR) elemMRR.textContent = formatCurrency(mrr);
-
-      const elemUsers = document.getElementById('master-metric-users');
-      if (elemUsers) elemUsers.textContent = clientUsers.length;
-
-      const elemSubs = document.getElementById('master-metric-subscribers');
-      if (elemSubs) elemSubs.textContent = subscribersCount;
-
-      const elemTrials = document.getElementById('master-metric-trials');
-      if (elemTrials) elemTrials.textContent = trialCount;
-
-      let filteredUsers = clientUsers;
-      if (query) {
-        filteredUsers = clientUsers.filter(u => 
-          (u.name && u.name.toLowerCase().includes(query)) || 
-          (u.email && u.email.toLowerCase().includes(query))
-        );
-      }
-
-      // 1. CARDS DE PLANOS
-      const cardsContainer = document.getElementById('master-plans-cards-container');
-      if (cardsContainer) {
-        cardsContainer.innerHTML = '';
-        if (filteredUsers.length === 0) {
-          cardsContainer.innerHTML = '<div style="color: var(--text-dim); padding: 20px; font-size: 0.85rem;">Nenhum cliente cadastrado até o momento.</div>';
-        } else {
-          filteredUsers.forEach(u => {
-            let statusBadge = '<span style="color: #34d399; font-weight: 700;">💳 Assinante Mensal</span>';
-            if (u.subscriptionStatus === 'TRIAL_ACTIVE') statusBadge = '<span style="color: #f59e0b; font-weight: 700;">⏳ Teste Grátis (7d)</span>';
-            else if (u.subscriptionStatus === 'VIP_LIFETIME') statusBadge = '<span style="color: var(--accent-secondary); font-weight: 700;">👑 VIP Vitalício</span>';
-            else if (u.subscriptionStatus === 'BLOCKED') statusBadge = '<span style="color: #f43f5e; font-weight: 700;">🚫 Acesso Bloqueado</span>';
-
-            const card = document.createElement('div');
-            card.className = 'metric-card';
-            card.style.cssText = 'border: 1px solid var(--border-highlight); background: rgba(15, 23, 42, 0.75); padding: 12px 16px; font-size: 0.85rem;';
-
-            card.innerHTML = `
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                <strong>${escapeHtml(u.name)}</strong>
-                ${statusBadge}
-              </div>
-              <div style="font-size: 0.78rem; color: var(--accent-cyan); margin-bottom: 10px; font-family: var(--font-mono);">📧 ${escapeHtml(u.email)} | 🔑 ${escapeHtml(u.password || '******')}</div>
-              <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-                <button class="btn btn-ghost" style="font-size: 0.72rem; padding: 4px 8px;" onclick="masterChangeUserPlan('${u.id}', 'TRIAL_ACTIVE')">⏳ Teste</button>
-                <button class="btn btn-ghost" style="font-size: 0.72rem; padding: 4px 8px; color: #34d399;" onclick="masterChangeUserPlan('${u.id}', 'SUBSCRIBED_MONTHLY')">💳 Mensal</button>
-                <button class="btn btn-ghost" style="font-size: 0.72rem; padding: 4px 8px; color: var(--accent-secondary);" onclick="masterChangeUserPlan('${u.id}', 'VIP_LIFETIME')">👑 VIP</button>
-                <button class="btn btn-ghost" style="font-size: 0.72rem; padding: 4px 8px; color: #f43f5e;" onclick="masterChangeUserPlan('${u.id}', 'BLOCKED')">🚫 Bloquear</button>
-              </div>
-            `;
-            cardsContainer.appendChild(card);
-          });
-        }
-      }
-
-      // 2. TABELA DE USUÁRIOS
-      const tbody = document.getElementById('master-users-tbody');
-      if (tbody) {
-        tbody.innerHTML = '';
-        filteredUsers.forEach(u => {
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td><strong>${escapeHtml(u.name)}</strong><br><small style="color: var(--text-dim);">${escapeHtml(u.email)}</small></td>
-            <td>${formatDisplayDate(u.registeredAt ? u.registeredAt.split('T')[0] : '2026-08-01')}</td>
-            <td><span style="font-weight: 700;">${u.subscriptionStatus}</span></td>
-            <td>30 dias</td>
-            <td style="text-align: center;">
-              <button class="btn btn-ghost" style="padding: 4px 8px; font-size: 0.75rem;" onclick="showClientCredentialsModal(saasState.users.find(x=>x.id==='${u.id}'))">🔑 Acesso</button>
-              <button class="btn btn-ghost" style="padding: 4px 8px; font-size: 0.75rem; color: #f43f5e;" onclick="masterDeleteUser('${u.id}')">🗑️ Excluir</button>
-            </td>
-          `;
-          tbody.appendChild(tr);
-        });
-      }
-
-      if (window.lucide) lucide.createIcons();
-    }
-
-    function masterChangeUserPlan(userId, newPlan) {
-      const u = saasState.users.find(x => String(x.id) === String(userId));
-      if (!u) return;
-      u.subscriptionStatus = newPlan;
-      saveUsers(u);
-      renderMasterPanel();
-    }
-
-    function masterDeleteUser(userId) {
-      if (!confirm('Deseja realmente excluir este usuário?')) return;
-      const userToDelete = saasState.users.find(u => String(u.id) === String(userId));
-      saasState.users = saasState.users.filter(u => String(u.id) !== String(userId));
-      saveUsers();
-      if (userToDelete) {
-        pushMasterUserToCloud(userToDelete, 'delete');
-      }
-      renderMasterPanel();
-    }
-
-    function switchMasterSubView(subView) {
-      const plansDiv = document.getElementById('master-subview-plans');
-      const usersDiv = document.getElementById('master-subview-users');
-      const btnPlans = document.getElementById('btn-tab-master-plans');
-      const btnUsers = document.getElementById('btn-tab-master-users');
-
-      if (subView === 'plans') {
-        if (plansDiv) plansDiv.style.display = 'block';
-        if (usersDiv) usersDiv.style.display = 'none';
-        if (btnPlans) btnPlans.className = 'btn btn-gold';
-        if (btnUsers) btnUsers.className = 'btn btn-ghost';
-      } else {
-        if (plansDiv) plansDiv.style.display = 'none';
-        if (usersDiv) usersDiv.style.display = 'block';
-        if (btnPlans) btnPlans.className = 'btn btn-ghost';
-        if (btnUsers) btnUsers.className = 'btn btn-gold';
-      }
-      renderMasterPanel();
-    }
-
-
-
-    function showClientCredentialsModal(u) {
-      if (!u) return;
-      document.getElementById('cred-display-name').textContent = u.name || '-';
-      document.getElementById('cred-display-email').textContent = u.email || '-';
-      document.getElementById('cred-display-pass').textContent = u.password || '123456';
-      document.getElementById('cred-display-plan').textContent = u.subscriptionStatus || '-';
-
-      const btnCopy = document.getElementById('btn-copy-client-access');
-      if (btnCopy) {
-        btnCopy.onclick = () => {
-          const textToCopy = `🚀 *SEU ACESSO ATLAS FINANCE*\n👤 *Nome:* ${u.name}\n📧 *E-mail:* ${u.email}\n🔑 *Senha:* ${u.password || '123456'}`;
-          navigator.clipboard.writeText(textToCopy).then(() => { alert('📋 Copiado para o WhatsApp!'); });
-        };
-      }
-
-      const modal = document.getElementById('master-user-credentials-modal');
-      if (modal) modal.classList.add('active');
-    }
-
-    async function cadastrarClientePeloSite(emailCliente, senhaCliente, nomeCliente = '') {
-      if (!emailCliente || !senhaCliente) return;
-      const emailLimpo = emailCliente.trim().toLowerCase();
-
-      const newUser = {
-        id: `usr-${Date.now()}`,
-        name: nomeCliente.trim() || emailLimpo.split('@')[0],
-        email: emailLimpo,
-        password: senhaCliente.trim(),
-        role: 'CLIENTE',
-        registeredAt: new Date().toISOString(),
-        subscriptionStatus: 'SUBSCRIBED',
-        trialEndTimestamp: Date.now() + (365 * 86400000)
-      };
-
-      const existingIdx = saasState.users.findIndex(u => u && u.email && u.email.trim().toLowerCase() === emailLimpo);
-      if (existingIdx === -1) {
-        saasState.users.push(newUser);
-      } else {
-        saasState.users[existingIdx] = { ...saasState.users[existingIdx], ...newUser };
-      }
-
-      saveUsers(newUser);
-
-      alert(`✅ Cliente "${emailLimpo}" cadastrado e sincronizado no Supabase com sucesso!`);
-      renderMasterPanel();
     }
 
     async function carregarDadosSincronizados() {
