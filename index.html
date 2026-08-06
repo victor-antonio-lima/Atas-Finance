@@ -396,6 +396,11 @@
         </div>
         <button type="submit" class="btn btn-primary btn-full"><i data-lucide="log-in"></i> Entrar na Plataforma</button>
       </form>
+      <div style="margin-top: 16px; text-align: center;">
+        <button type="button" id="btn-reset-login-cache" onclick="resetLocalLoginCache()" style="background: transparent; border: none; color: var(--text-muted); font-size: 0.78rem; cursor: pointer; text-decoration: underline;">
+          🔄 Limpar Cachê de Login / Destravar Acesso
+        </button>
+      </div>
     </div>
   </div>
 
@@ -1283,7 +1288,17 @@
 
     // Configuração da sua Conta Master Oficial
     const MASTER_EMAIL = "victorantoniolima464@gmail.com";
-    const MASTER_SENHA = "16041997"; // <-- Senha de Acesso Master Oficial
+    const MASTER_SENHA = "051211"; // <-- Nova Senha de Acesso Master Oficial
+
+    function resetLocalLoginCache() {
+      localStorage.removeItem('finansaas_active_user');
+      localStorage.removeItem('usuario_logado');
+      localStorage.removeItem('finansaas_users');
+      localStorage.removeItem('finansaas_users_backup');
+      alert("🧹 Cachê de login e dados locais limpos com sucesso! Faça login novamente com e-mail: victorantoniolima464@gmail.com e senha: 051211");
+      window.location.reload();
+    }
+    window.resetLocalLoginCache = resetLocalLoginCache;
 
     // Função para validar o login Master (Ultra Tolerante & Garantida)
     function validarAcessoMaster(event, overrideEmail, overridePass) {
@@ -1304,45 +1319,48 @@
         emailDigitado.includes("victor")
       );
       const isMasterPass = (
+        senhaDigitada === "051211" ||
         senhaDigitada === "16041997" ||
         senhaDigitada === "1604" ||
-        senhaDigitada === (typeof MASTER_SENHA !== 'undefined' ? MASTER_SENHA : "16041997")
+        senhaDigitada === MASTER_SENHA
       );
 
       // Verificação de segurança da Conta Master
       if (isMasterEmail && isMasterPass) {
-        loadSaaSStore();
-        
-        let masterUser = saasState.users.find(u => u && u.email && (
+        const masterUser = {
+          id: 'usr-master-victor',
+          name: 'Victor Antonio (Master)',
+          email: 'victorantoniolima464@gmail.com',
+          password: '051211',
+          role: 'MASTER',
+          registeredAt: '2026-01-01T00:00:00.000Z',
+          subscriptionStatus: 'SUBSCRIBED',
+          trialEndTimestamp: Date.now() + (365 * 86400000)
+        };
+
+        if (!saasState.users || !Array.isArray(saasState.users)) {
+          saasState.users = [];
+        }
+
+        const idx = saasState.users.findIndex(u => u && u.email && (
           u.email.toLowerCase().includes('victorantoniolima464') || 
-          u.email.toLowerCase().includes('victorantonio464')
+          u.email.toLowerCase().includes('victorantonio464') ||
+          u.role === 'MASTER'
         ));
-        if (!masterUser) {
-          masterUser = {
-            id: 'usr-master-victor',
-            name: 'Victor Antonio (Master)',
-            email: MASTER_EMAIL,
-            password: MASTER_SENHA,
-            role: 'MASTER',
-            registeredAt: '2026-01-01T00:00:00.000Z',
-            subscriptionStatus: 'SUBSCRIBED',
-            trialEndTimestamp: Date.now() + (365 * 86400000)
-          };
+
+        if (idx === -1) {
           saasState.users.push(masterUser);
         } else {
-          masterUser.email = MASTER_EMAIL;
-          masterUser.role = 'MASTER';
-          masterUser.subscriptionStatus = 'SUBSCRIBED';
-          masterUser.password = MASTER_SENHA;
-          masterUser.name = 'Victor Antonio (Master)';
+          saasState.users[idx] = masterUser;
         }
+
         saveUsers();
 
         saasState.currentUser = masterUser;
         localStorage.setItem('finansaas_active_user', masterUser.id);
         localStorage.setItem("usuario_logado", JSON.stringify(masterUser));
 
-        alert("Acesso Master autorizado! Bem-vindo, Administrador Victor.");
+        alert("🎉 Acesso Master Autorizado! Bem-vindo, Administrador Victor.");
         showAppScreen();
 
         // Abre o Painel Master automaticamente ao logar como Master
@@ -1365,7 +1383,7 @@
         id: 'usr-master-victor',
         name: 'Victor Antonio (Master)',
         email: 'victorantoniolima464@gmail.com',
-        password: '16041997',
+        password: '051211',
         role: 'MASTER',
         registeredAt: '2026-01-01T00:00:00.000Z',
         subscriptionStatus: 'SUBSCRIBED',
@@ -3600,7 +3618,7 @@
         emailLimpo.includes("victorantonio464") ||
         emailLimpo.includes("victor")
       ) {
-        if (senhaLimpa === "16041997" || senhaLimpa === "1604" || (typeof MASTER_SENHA !== 'undefined' && senhaLimpa === MASTER_SENHA)) {
+        if (senhaLimpa === "051211" || senhaLimpa === "16041997" || senhaLimpa === "1604" || (typeof MASTER_SENHA !== 'undefined' && senhaLimpa === MASTER_SENHA)) {
           return validarAcessoMaster(null, emailLimpo, senhaLimpa);
         }
       }
