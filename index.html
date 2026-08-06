@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Atlas Finance - Gestão Financeira & Inteligência de Crédito</title>
+  <title>Atlas Finance - Planilha de Controle de Crédito, Contas & Despesas</title>
 
   <!-- Google Fonts: Inter & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -58,44 +58,13 @@
       padding-bottom: 80px;
     }
 
-    /* AUTH & LAYOUT CONTAINERS */
-    .auth-container {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      padding: 20px;
-    }
-    .auth-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-highlight);
-      border-radius: var(--radius-lg);
-      padding: 36px 28px;
-      width: 100%;
-      max-width: 420px;
-      backdrop-filter: blur(16px);
-      box-shadow: 0 20px 50px rgba(0,0,0,0.6);
-    }
-    .auth-header { text-align: center; margin-bottom: 24px; }
-    .auth-logo {
-      width: 56px; height: 56px;
-      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-      border-radius: 16px;
-      display: inline-flex; align-items: center; justify-content: center;
-      margin-bottom: 12px;
-      box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
-    }
-    .brand-dollar-sign { font-size: 1.8rem; font-weight: 900; color: #fff; }
-    .auth-title { font-size: 1.5rem; font-weight: 800; color: var(--text-main); }
-    .auth-subtitle { font-size: 0.82rem; color: var(--text-muted); margin-top: 4px; }
-
     .app-container {
       max-width: 1380px;
       margin: 0 auto;
       padding: 20px;
     }
 
-    /* HEADER APP - ALINHAMENTO EXECUTIVO PERFEITO */
+    /* HEADER APP */
     .app-header {
       display: flex;
       justify-content: space-between;
@@ -124,20 +93,14 @@
       display: flex; align-items: center; justify-content: center;
       box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
     }
+    .brand-dollar-sign { font-size: 1.5rem; font-weight: 900; color: #fff; }
     .brand-text h1 { font-size: 1.35rem; font-weight: 900; letter-spacing: -0.5px; }
     .brand-subtitle { font-size: 0.76rem; color: var(--text-muted); display: flex; align-items: center; gap: 8px; }
 
-    .user-badge {
-      display: inline-flex; align-items: center; gap: 8px;
-      background: rgba(30, 41, 59, 0.8); padding: 5px 12px;
-      border-radius: 30px; border: 1px solid var(--border-color);
-      font-size: 0.8rem; font-weight: 600; width: fit-content;
+    .device-mode-pill {
+      font-size: 0.68rem; padding: 2px 8px; border-radius: 10px; font-weight: 800;
+      border: 1px solid var(--border-color); background: rgba(30, 41, 59, 0.6); display: inline-flex; align-items: center; gap: 4px;
     }
-    .role-tag {
-      font-size: 0.68rem; padding: 2px 8px; border-radius: 10px; font-weight: 800; text-transform: uppercase;
-    }
-    .role-master { background: rgba(245, 158, 11, 0.2); color: var(--accent-gold); border: 1px solid rgba(245, 158, 11, 0.4); }
-    .role-user { background: rgba(99, 102, 241, 0.2); color: var(--accent-primary); border: 1px solid rgba(99, 102, 241, 0.4); }
 
     .header-right {
       display: flex;
@@ -146,23 +109,8 @@
       gap: 10px;
     }
 
-    .header-top-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .header-utils {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .header-actions-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+    .header-top-row { display: flex; align-items: center; gap: 12px; }
+    .header-actions-row { display: flex; align-items: center; gap: 10px; }
 
     .year-selector {
       display: flex; align-items: center; gap: 8px;
@@ -189,64 +137,58 @@
     .btn-hero:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(168, 85, 247, 0.6); }
     .btn-secondary { background: var(--bg-input); color: var(--text-main); border: 1px solid var(--border-color); }
     .btn-secondary:hover { background: var(--bg-hover); }
-    .btn-gold { background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; box-shadow: 0 4px 14px rgba(245, 158, 11, 0.3); font-weight: 800; }
-    .btn-gold:hover { opacity: 0.92; transform: translateY(-1px); }
     .btn-ghost { background: transparent; color: var(--text-muted); border: 1px solid var(--border-color); }
     .btn-ghost:hover { color: var(--text-main); background: var(--bg-hover); }
-    .btn-sm { padding: 6px 12px; font-size: 0.78rem; }
     .btn-icon { padding: 4px 8px; background: transparent; border: none; color: var(--text-muted); cursor: pointer; }
     .btn-icon:hover { color: var(--text-main); }
 
-    /* METRICS GRID & EXECUTIVE DASHBOARD */
+    /* METRICS GRID */
     .metrics-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
       gap: 16px;
       margin-bottom: 24px;
     }
+
     .metric-card {
-      background: linear-gradient(145deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.7));
+      background: var(--bg-card);
       border: 1px solid var(--border-color);
       border-radius: var(--radius-lg);
       padding: 20px;
-      backdrop-filter: blur(16px);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-      position: relative;
-      overflow: hidden;
-      transition: all 0.25s ease;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      transition: transform 0.2s ease, border-color 0.2s ease;
     }
-    .metric-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
-      border-color: rgba(255, 255, 255, 0.18);
-    }
-    .metric-card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; width: 100%; height: 3px;
-      background: linear-gradient(90deg, transparent, var(--border-highlight), transparent);
-      opacity: 0.7;
-    }
-    .metric-card.card-salary::before { background: linear-gradient(90deg, #06b6d4, #3b82f6); }
-    .metric-card.card-total::before { background: linear-gradient(90deg, #f43f5e, #ec4899); }
-    .metric-card.card-cards::before { background: linear-gradient(90deg, #6366f1, #8b5cf6); }
-    .metric-card.card-bills::before { background: linear-gradient(90deg, #ec4899, #f59e0b); }
-    .metric-card.card-vehicle::before { background: linear-gradient(90deg, #f59e0b, #10b981); }
+    .metric-card:hover { transform: translateY(-2px); }
 
-    .metric-header { display: flex; justify-content: space-between; align-items: center; font-size: 0.82rem; color: var(--text-muted); font-weight: 700; margin-bottom: 10px; }
-    .metric-icon-badge { width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
-    .metric-value { font-size: 1.55rem; font-weight: 900; font-family: var(--font-mono); letter-spacing: -0.5px; margin: 4px 0; }
-    .metric-sub { font-size: 0.72rem; color: var(--text-dim); margin-top: 4px; }
-    .metric-progress-bar { width: 100%; height: 5px; background: rgba(255,255,255,0.08); border-radius: 3px; margin: 8px 0 4px 0; overflow: hidden; }
-    .metric-progress-fill { height: 100%; border-radius: 3px; transition: width 0.4s ease; }
-
-    /* MONTH SCROLL TABS */
-    .month-nav { margin-bottom: 20px; }
-    .month-scroll {
-      display: flex; gap: 8px; overflow-x: auto; padding: 6px;
-      background: var(--bg-card); border-radius: var(--radius-lg);
-      border: 1px solid var(--border-color); scrollbar-width: none;
+    .metric-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 12px; font-size: 0.82rem; font-weight: 700; color: var(--text-muted);
     }
+    .metric-icon-badge {
+      width: 32px; height: 32px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .metric-value {
+      font-size: 1.65rem; font-weight: 900; font-family: var(--font-mono);
+      margin-bottom: 4px; letter-spacing: -0.5px;
+    }
+    .metric-sub { font-size: 0.75rem; color: var(--text-dim); }
+
+    .metric-progress-bar {
+      width: 100%; height: 6px; background: var(--bg-input);
+      border-radius: 10px; overflow: hidden; margin-top: 10px;
+    }
+    .metric-progress-fill { height: 100%; border-radius: 10px; transition: width 0.4s ease; }
+
+    /* MONTH NAVIGATION */
+    .month-nav {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg); padding: 8px; margin-bottom: 24px;
+      backdrop-filter: blur(12px); box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+    .month-scroll { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; }
     .month-scroll::-webkit-scrollbar { display: none; }
     .month-tab {
       flex: 1; min-width: 95px; padding: 10px 12px; border-radius: var(--radius-md);
@@ -261,100 +203,50 @@
     .month-tab .month-total { display: block; font-size: 0.7rem; color: var(--text-dim); margin-top: 2px; font-family: var(--font-mono); }
     .month-tab.active .month-total { color: var(--text-main); }
 
-    /* SECTION NAVIGATION & FILTERS BAR */
+    /* SECTION TOOLBAR */
     .section-toolbar {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      margin-bottom: 24px;
+      display: flex; flex-direction: column; gap: 14px; margin-bottom: 24px;
     }
-
     .view-tabs-bar {
-      display: flex;
-      gap: 6px;
-      background: linear-gradient(145deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.8));
-      padding: 6px;
-      border-radius: var(--radius-lg);
-      border: 1px solid var(--border-color);
-      overflow-x: auto;
-      scrollbar-width: none;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+      display: flex; gap: 6px; background: linear-gradient(145deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.8));
+      padding: 6px; border-radius: var(--radius-lg); border: 1px solid var(--border-color);
+      overflow-x: auto; scrollbar-width: none; box-shadow: 0 4px 16px rgba(0,0,0,0.2);
     }
     .view-tabs-bar::-webkit-scrollbar { display: none; }
 
     .view-tab {
-      flex: 1;
-      min-width: 135px;
-      padding: 10px 14px;
-      border-radius: var(--radius-md);
-      border: 1px solid transparent;
-      background: transparent;
-      color: var(--text-muted);
-      font-size: 0.82rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      white-space: nowrap;
+      flex: 1; min-width: 135px; padding: 10px 14px; border-radius: var(--radius-md);
+      border: 1px solid transparent; background: transparent; color: var(--text-muted);
+      font-size: 0.82rem; font-weight: 700; cursor: pointer; transition: all 0.2s ease;
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px; white-space: nowrap;
     }
-    .view-tab:hover {
-      color: var(--text-main);
-      background: var(--bg-hover);
-    }
+    .view-tab:hover { color: var(--text-main); background: var(--bg-hover); }
     .view-tab.active {
       background: linear-gradient(135deg, var(--accent-primary), #4f46e5);
-      color: #fff;
-      box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+      color: #fff; box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
     }
 
-    .filter-controls-row {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      width: 100%;
-    }
+    .filter-controls-row { display: flex; gap: 12px; align-items: center; width: 100%; }
 
     .search-box {
-      flex: 1;
-      position: relative;
-      display: flex;
-      align-items: center;
-      background: var(--bg-input);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-md);
-      padding: 0 14px;
-      transition: border-color 0.2s ease;
+      flex: 1; position: relative; display: flex; align-items: center;
+      background: var(--bg-input); border: 1px solid var(--border-color);
+      border-radius: var(--radius-md); padding: 0 14px; transition: border-color 0.2s ease;
     }
-    .search-box:focus-within {
-      border-color: var(--accent-primary);
-    }
+    .search-box:focus-within { border-color: var(--accent-primary); }
     .search-box i { color: var(--text-dim); width: 18px; height: 18px; }
     .search-box input {
-      background: transparent;
-      border: none;
-      outline: none;
-      color: var(--text-main);
-      padding: 11px 10px;
-      font-size: 0.88rem;
-      width: 100%;
+      background: transparent; border: none; outline: none; color: var(--text-main);
+      padding: 11px 10px; font-size: 0.88rem; width: 100%;
     }
 
     .select-input {
-      background: var(--bg-input);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-md);
-      color: var(--text-main);
-      padding: 11px 16px;
-      font-size: 0.88rem;
-      outline: none;
-      font-weight: 700;
-      cursor: pointer;
-      min-width: 220px;
+      background: var(--bg-input); border: 1px solid var(--border-color);
+      border-radius: var(--radius-md); color: var(--text-main); padding: 11px 16px;
+      font-size: 0.88rem; outline: none; font-weight: 700; cursor: pointer; min-width: 220px;
     }
 
+    /* TABLES & CARDS */
     .table-card {
       background: var(--bg-card); border: 1px solid var(--border-color);
       border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 24px;
@@ -407,15 +299,13 @@
     .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
     .chart-container { position: relative; height: 260px; width: 100%; }
 
-
-
-    /* MODALS & PAYWALL */
+    /* MODALS */
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.25s ease; padding: 16px; }
     .modal-overlay.active { opacity: 1; pointer-events: all; }
     .modal-card { background: #0f172a; border: 1px solid var(--border-highlight); border-radius: var(--radius-lg); width: 100%; max-width: 550px; max-height: 90vh; overflow-y: auto; padding: 24px; box-shadow: 0 25px 50px rgba(0,0,0,0.9); }
     .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; }
     .btn-close-modal { background: transparent; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer; }
-    
+
     .form-group { margin-bottom: 14px; }
     .form-group label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; }
     .form-row { display: flex; gap: 12px; }
@@ -427,7 +317,7 @@
     .radio-option span { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 12px; border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 600; color: var(--text-muted); }
     .radio-option input:checked + span { background: var(--accent-primary); color: #fff; }
 
-    /* MOBILE NAVIGATION BOTTOM BAR */
+    /* MOBILE NAVIGATION */
     .mobile-bottom-bar {
       display: none; position: fixed; bottom: 0; left: 0; width: 100%;
       background: rgba(15, 23, 42, 0.96); backdrop-filter: blur(20px);
@@ -445,27 +335,24 @@
     .mobile-nav-item i { width: 20px; height: 20px; }
 
     .mobile-fab-btn {
-      display: none; position: fixed; bottom: 75px; right: 20px;
+      display: none; position: fixed; bottom: 70px; right: 20px;
       width: 56px; height: 56px; border-radius: 50%;
-      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-      color: #fff; border: none; box-shadow: 0 8px 24px rgba(99, 102, 241, 0.5);
-      align-items: center; justify-content: center; z-index: 998; cursor: pointer;
+      background: linear-gradient(135deg, #6366f1, #a855f7); color: #fff;
+      border: none; box-shadow: 0 8px 25px rgba(99, 102, 241, 0.6);
+      z-index: 998; align-items: center; justify-content: center; cursor: pointer;
     }
 
     @media (max-width: 768px) {
-      body.is-mobile .mobile-bottom-bar { display: flex; }
-      body.is-mobile .mobile-fab-btn { display: flex; }
-      .app-container { padding: 12px 10px; }
-      .app-header { padding: 12px 14px; flex-direction: column; align-items: stretch; gap: 10px; border-radius: var(--radius-md); }
-      .brand { justify-content: space-between; width: 100%; }
-      .header-controls { justify-content: space-between; width: 100%; gap: 6px; }
-      .header-controls #btn-open-transaction-modal { display: none !important; }
-      .metrics-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-bottom: 14px; }
-      .section-toolbar { flex-direction: column; align-items: stretch; gap: 10px; }
-      .view-tabs { display: none; }
-      .filter-group { width: 100%; flex-direction: column; align-items: stretch; gap: 8px; }
+      .app-container { padding: 12px; }
+      .app-header { flex-direction: column; align-items: flex-start; gap: 14px; padding: 16px; }
+      .header-right { width: 100%; align-items: stretch; }
+      .header-actions-row { width: 100%; justify-content: space-between; }
+      .header-actions-row .btn { flex: 1; }
+      .mobile-bottom-bar { display: flex; }
+      .mobile-fab-btn { display: flex; }
+      .metrics-grid { grid-template-columns: 1fr; }
+      .filter-controls-row { flex-direction: column; align-items: stretch; gap: 8px; }
       .search-box { width: 100%; }
-      .search-box input { width: 100% !important; }
       .select-input { width: 100%; }
       .data-table th, .data-table td { padding: 10px 8px; font-size: 0.78rem; }
       .modal-overlay { padding: 8px; }
@@ -476,7 +363,7 @@
 </head>
 <body>
 
-  <!-- ==================== MAIN PLATFORM SPREADSHEET APP ==================== -->
+  <!-- ==================== MAIN PLANILHA APP ==================== -->
   <div id="app-screen" class="app-container" style="display: block;">
 
     <!-- APP HEADER -->
@@ -514,14 +401,10 @@
       </div>
     </header>
 
-
-
     <!-- MONTH NAVIGATION -->
     <nav class="month-nav">
       <div class="month-scroll" id="month-tabs-container"></div>
     </nav>
-
-
 
     <!-- METRICS OVERVIEW & EXECUTIVE DASHBOARD -->
     <section class="metrics-grid">
@@ -602,9 +485,8 @@
       </div>
     </section>
 
-    <!-- SECTION NAVIGATION & FILTERS BAR -->
+    <!-- TOOLBAR & FILTERS -->
     <div class="section-toolbar">
-      <!-- Row 1: View Navigation Tabs -->
       <div class="view-tabs-bar">
         <button class="view-tab active" data-view="all"><i data-lucide="layers"></i> Todos os Lançamentos</button>
         <button class="view-tab" data-view="cards"><i data-lucide="credit-card"></i> Faturas de Cartão</button>
@@ -614,7 +496,6 @@
         <button class="view-tab" data-view="analytics"><i data-lucide="pie-chart"></i> Gráficos Analytics</button>
       </div>
 
-      <!-- Row 2: Search & Bank Filter Row -->
       <div class="filter-controls-row">
         <div class="search-box">
           <i data-lucide="search"></i>
@@ -677,9 +558,6 @@
         </div>
         <div class="section-badge" id="cards-table-badge">R$ 0,00</div>
       </div>
-      
-      <div class="bank-pills-container" id="bank-pills-filter"></div>
-
       <div class="table-card">
         <div class="table-responsive">
           <table class="data-table">
@@ -690,8 +568,8 @@
                 <th>Cartão</th>
                 <th>Categoria</th>
                 <th>Data</th>
-                <th>Parcela</th>
                 <th style="text-align: right;">Valor (R$)</th>
+                <th style="text-align: center;">Parcela</th>
                 <th style="text-align: center;">Status</th>
                 <th style="text-align: center;">Ações</th>
               </tr>
@@ -707,7 +585,7 @@
       <div class="section-header">
         <div class="section-title">
           <i data-lucide="file-text" style="color: var(--accent-secondary);"></i>
-          <h2>Contas Fixas & Boletos Mensais</h2>
+          <h2>Contas Fixas & Boletos</h2>
         </div>
         <div class="section-badge" id="bills-table-badge">R$ 0,00</div>
       </div>
@@ -717,9 +595,9 @@
             <thead>
               <tr>
                 <th>#</th>
-                <th>Descrição da Conta</th>
-                <th>Categoria</th>
-                <th>Vencimento</th>
+                <th>Descrição / Conta</th>
+                <th>Categoria Boleto</th>
+                <th>Data Vencimento</th>
                 <th style="text-align: right;">Valor (R$)</th>
                 <th style="text-align: center;">Status</th>
                 <th style="text-align: center;">Ações</th>
@@ -731,12 +609,12 @@
       </div>
     </section>
 
-    <!-- VEHICLE EXPENSES TABLE -->
+    <!-- VEHICLE TRANSACTIONS TABLE -->
     <section id="vehicle-section" class="content-section">
       <div class="section-header">
         <div class="section-title">
           <i data-lucide="car" style="color: var(--accent-gold);"></i>
-          <h2>Despesas de Veículo (Carro & Moto)</h2>
+          <h2>Despesas com Veículo (Carro & Moto)</h2>
         </div>
         <div class="section-badge" id="vehicle-table-badge">R$ 0,00</div>
       </div>
@@ -925,16 +803,11 @@
     </div>
   </div>
 
-
-
-
-
   <script>
     /* ==========================================================================
        ATLAS FINANCE ENGINE - PLANILHA & CONTROLE FINANCEIRO EM NUVEM
        ========================================================================== */
 
-    // 2. Conexão Supabase Cloud
     const SUPABASE_URL = "https://cdevrbqiupwaczgauszd.supabase.co";
     const SUPABASE_KEY = "sb_publishable_evKYmLK_8Rn5pMlnrF8u3w_GkNCf8xi";
     let supabaseClient = null;
@@ -1080,16 +953,46 @@
       }
     }
 
+    // --- MÁSCARA CURRENCY BRL ---
+    function formatCurrencyInputValue(value) {
+      if (value === undefined || value === null || isNaN(value)) return '0,00';
+      const num = parseFloat(value);
+      return num.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
 
+    function parseCurrencyInputValue(str) {
+      if (!str) return 0;
+      const cleanDigits = String(str).replace(/\D/g, '');
+      if (!cleanDigits) return 0;
+      return parseFloat(cleanDigits) / 100;
+    }
+
+    function attachCurrencyMask(inputElem) {
+      if (!inputElem) return;
+
+      inputElem.addEventListener('input', (e) => {
+        let digits = e.target.value.replace(/\D/g, '');
+        if (!digits) {
+          e.target.value = '';
+          return;
+        }
+        let val = parseFloat(digits) / 100;
+        e.target.value = val.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      });
+
+      inputElem.addEventListener('blur', (e) => {
+        if (!e.target.value || e.target.value === '0' || e.target.value === '0,00') {
+          e.target.value = '0,00';
+        }
+      });
+    }
 
     function setupAppListeners() {
-      // Máscara Decimal BRL (Apenas Números + R$ 0,00) em TODOS os campos de valores
       ['tx-amount', 'user-salary-input', 'bank-limit'].forEach(id => {
         const inp = document.getElementById(id);
         if (inp) attachCurrencyMask(inp);
       });
 
-      // Toggle Edição Salário
       const lockBtn = document.getElementById('btn-toggle-salary-lock');
       if (lockBtn) {
         lockBtn.addEventListener('click', () => {
@@ -1110,9 +1013,6 @@
         });
       }
 
-
-
-      // Seletor de Ano (< 2026 >)
       const prevYearBtn = document.getElementById('prev-year-btn');
       if (prevYearBtn) {
         prevYearBtn.addEventListener('click', () => {
@@ -1129,7 +1029,30 @@
         });
       }
 
-      // Search Box
+      const btnOpenTx = document.getElementById('btn-open-transaction-modal');
+      if (btnOpenTx) btnOpenTx.addEventListener('click', openTxModal);
+
+      const fabBtn = document.getElementById('mobile-fab-btn');
+      if (fabBtn) fabBtn.addEventListener('click', openTxModal);
+
+      const btnCloseTx = document.getElementById('btn-close-tx-modal');
+      if (btnCloseTx) btnCloseTx.addEventListener('click', closeTxModal);
+
+      const btnCancelTx = document.getElementById('btn-cancel-tx');
+      if (btnCancelTx) btnCancelTx.addEventListener('click', closeTxModal);
+
+      const btnOpenBank = document.getElementById('btn-open-bank-modal');
+      if (btnOpenBank) btnOpenBank.addEventListener('click', openBankModal);
+
+      const btnCloseBank = document.getElementById('btn-close-bank-modal');
+      if (btnCloseBank) btnCloseBank.addEventListener('click', closeBankModal);
+
+      const txForm = document.getElementById('transaction-form');
+      if (txForm) txForm.addEventListener('submit', handleTxFormSubmit);
+
+      const bankForm = document.getElementById('add-bank-form');
+      if (bankForm) bankForm.addEventListener('submit', handleBankFormSubmit);
+
       const searchInp = document.getElementById('search-input');
       if (searchInp) {
         searchInp.addEventListener('input', (e) => {
@@ -1138,63 +1061,28 @@
         });
       }
 
-      // View Tabs
-      function switchView(viewName) {
-        saasState.selectedView = viewName;
-        document.querySelectorAll('.view-tab').forEach(t => {
-          t.classList.toggle('active', t.dataset.view === viewName);
-        });
-        document.querySelectorAll('.mobile-nav-item').forEach(m => {
-          m.classList.toggle('active', m.dataset.view === viewName);
-        });
-        updateViewVisibility();
-      }
-
-      document.querySelectorAll('.view-tab').forEach(t => {
-        t.addEventListener('click', (e) => switchView(e.currentTarget.dataset.view));
-      });
-
-      document.querySelectorAll('.mobile-nav-item').forEach(m => {
-        m.addEventListener('click', (e) => switchView(e.currentTarget.dataset.view));
-      });
-
-      // Open Modals
-      const openTxBtn = document.getElementById('btn-open-transaction-modal');
-      if (openTxBtn) openTxBtn.addEventListener('click', openTxModal);
-      const closeTxBtn = document.getElementById('btn-close-tx-modal');
-      if (closeTxBtn) closeTxBtn.addEventListener('click', closeTxModal);
-      const cancelTxBtn = document.getElementById('btn-cancel-tx');
-      if (cancelTxBtn) cancelTxBtn.addEventListener('click', closeTxModal);
-
-      const openBankBtn = document.getElementById('btn-open-bank-modal');
-      if (openBankBtn) openBankBtn.addEventListener('click', openBankModal);
-      const closeBankBtn = document.getElementById('btn-close-bank-modal');
-      if (closeBankBtn) closeBankBtn.addEventListener('click', closeBankModal);
-
-      // Submit Forms
-      const txForm = document.getElementById('transaction-form');
-      if (txForm) txForm.addEventListener('submit', handleTxFormSubmit);
-      const bankForm = document.getElementById('add-bank-form');
-      if (bankForm) bankForm.addEventListener('submit', handleAddBankSubmit);
-
-      // Auto-máscara decimal BRL para o Limite do Cartão (Ex: 5.000,00)
-      const bankLimitInput = document.getElementById('bank-limit');
-      if (bankLimitInput) {
-        bankLimitInput.addEventListener('input', (e) => {
-          let value = e.target.value.replace(/\D/g, ''); // Apenas dígitos
-          if (!value) {
-            e.target.value = '';
-            return;
-          }
-          const num = parseFloat(value) / 100;
-          e.target.value = num.toLocaleString('pt-BR', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-          });
+      const bankFilterSelect = document.getElementById('bank-filter');
+      if (bankFilterSelect) {
+        bankFilterSelect.addEventListener('change', (e) => {
+          saasState.selectedBankFilter = e.target.value;
+          renderTables();
         });
       }
 
-      // Troca de Tipo de Lançamento (Cartão, Conta, Veículo)
+      document.querySelectorAll('.view-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          const view = tab.getAttribute('data-view');
+          switchView(view);
+        });
+      });
+
+      document.querySelectorAll('.mobile-nav-item').forEach(item => {
+        item.addEventListener('click', () => {
+          const view = item.getAttribute('data-view');
+          switchView(view);
+        });
+      });
+
       document.querySelectorAll('input[name="txType"]').forEach(radio => {
         radio.addEventListener('change', (e) => {
           const type = e.target.value;
@@ -1203,100 +1091,95 @@
 
           updateTxCategoryOptions(type);
 
-          const catSel = document.getElementById('tx-category');
-          if (catSel) catSel.dispatchEvent(new Event('change'));
+          const subInfoGroup = document.getElementById('group-subscription-info');
+          if (subInfoGroup) subInfoGroup.style.display = 'none';
+
+          const groupInst = document.getElementById('group-installments');
+          if (groupInst) groupInst.style.display = 'flex';
         });
       });
 
-      // Categoria Assinatura vs Parcelamento Toggle
-      const categorySelect = document.getElementById('tx-category');
-      if (categorySelect) {
-        categorySelect.addEventListener('change', (e) => {
-          const val = e.target.value || '';
-          const isSub = val.includes('Assinatura') || val.includes('Recorrência');
-          const groupInstallments = document.getElementById('group-installments');
-          const subInfoGroup = document.getElementById('group-subscription-info');
-          const startInstGroup = document.getElementById('group-start-installment');
-          const customInstGroup = document.getElementById('group-custom-installments');
-
-          if (groupInstallments) groupInstallments.style.display = isSub ? 'none' : 'flex';
-          if (subInfoGroup) subInfoGroup.style.display = isSub ? 'block' : 'none';
-          if (isSub) {
-            if (startInstGroup) startInstGroup.style.display = 'none';
-            if (customInstGroup) customInstGroup.style.display = 'none';
-          } else {
-            const instSel = document.getElementById('tx-installments');
-            if (instSel) instSel.dispatchEvent(new Event('change'));
-          }
-        });
-      }
-
-      // Alteração no Select de Parcelamento & Parcela Inicial
       const instSelect = document.getElementById('tx-installments');
       if (instSelect) {
         instSelect.addEventListener('change', (e) => {
           const val = e.target.value;
-          const groupCustom = document.getElementById('group-custom-installments');
-          const groupStart = document.getElementById('group-start-installment');
+          const customGroup = document.getElementById('group-custom-installments');
+          const startGroup = document.getElementById('group-start-installment');
 
-          let totalInst = 1;
           if (val === 'CUSTOM') {
-            if (groupCustom) groupCustom.style.display = 'block';
-            totalInst = parseInt(document.getElementById('tx-custom-installments').value, 10) || 1;
+            if (customGroup) customGroup.style.display = 'block';
+            if (startGroup) startGroup.style.display = 'none';
           } else {
-            if (groupCustom) groupCustom.style.display = 'none';
-            totalInst = parseInt(val, 10) || 1;
-          }
-
-          if (totalInst > 1) {
-            updateInstallmentStartOptions(totalInst);
-            if (groupStart) groupStart.style.display = 'block';
-          } else {
-            if (groupStart) groupStart.style.display = 'none';
+            if (customGroup) customGroup.style.display = 'none';
+            const count = parseInt(val) || 1;
+            if (count > 1) {
+              updateInstallmentStartOptions(count);
+              if (startGroup) startGroup.style.display = 'block';
+            } else {
+              if (startGroup) startGroup.style.display = 'none';
+            }
           }
         });
       }
 
-      const customInstInp = document.getElementById('tx-custom-installments');
-      if (customInstInp) {
-        customInstInp.addEventListener('input', (e) => {
-          const totalInst = parseInt(e.target.value, 10) || 1;
-          const groupStart = document.getElementById('group-start-installment');
-          if (totalInst > 1) {
-            updateInstallmentStartOptions(totalInst);
-            if (groupStart) groupStart.style.display = 'block';
+      const customInstInput = document.getElementById('tx-custom-installments');
+      if (customInstInput) {
+        customInstInput.addEventListener('input', (e) => {
+          const count = parseInt(e.target.value) || 1;
+          const startGroup = document.getElementById('group-start-installment');
+          if (count > 1) {
+            updateInstallmentStartOptions(count);
+            if (startGroup) startGroup.style.display = 'block';
           } else {
-            if (groupStart) groupStart.style.display = 'none';
+            if (startGroup) startGroup.style.display = 'none';
+          }
+        });
+      }
+
+      const catSelect = document.getElementById('tx-category');
+      if (catSelect) {
+        catSelect.addEventListener('change', (e) => {
+          const val = e.target.value;
+          const isSubscription = val.includes('Assinatura');
+          const subInfoGroup = document.getElementById('group-subscription-info');
+          const instGroup = document.getElementById('group-installments');
+          const customGroup = document.getElementById('group-custom-installments');
+          const startGroup = document.getElementById('group-start-installment');
+
+          if (isSubscription) {
+            if (subInfoGroup) subInfoGroup.style.display = 'block';
+            if (instGroup) instGroup.style.display = 'none';
+            if (customGroup) customGroup.style.display = 'none';
+            if (startGroup) startGroup.style.display = 'none';
+          } else {
+            if (subInfoGroup) subInfoGroup.style.display = 'none';
+            if (instGroup) instGroup.style.display = 'flex';
           }
         });
       }
     }
 
-    // --- RENDER ENGINE & PROJEÇÃO DE ASSINATURAS ILIMITADAS ---
+    // --- REPLICADOR DE ASSINATURAS E PROJEÇÃO MENSAL ---
     function getTransactionsForMonthYear(targetYear, targetMonth) {
-      const targetIndex = targetYear * 12 + targetMonth;
+      const allTx = saasState.userTransactions || [];
       const result = [];
-      const seenGroupIds = new Set();
 
-      saasState.userTransactions.forEach(tx => {
-        const txIndex = tx.year * 12 + tx.month;
+      allTx.forEach(tx => {
+        if (tx.isSubscription) {
+          const txYear = tx.year || targetYear;
+          const txMonth = tx.month !== undefined ? tx.month : targetMonth;
 
-        if (tx.isSubscription || (tx.category && (tx.category.includes('Assinatura') || tx.category.includes('Recorrência')))) {
-          // ASSINATURA: Aparece em todos os meses futuros sem limite!
-          const gId = tx.linkedGroupId || tx.id;
-          if (txIndex <= targetIndex && !seenGroupIds.has(gId)) {
-            seenGroupIds.add(gId);
-            const day = parseInt(tx.dateStr ? tx.dateStr.split('-')[2] : '1', 10) || 1;
-            const currentSubTx = {
+          if (txYear * 12 + txMonth <= targetYear * 12 + targetMonth) {
+            const projectedDate = formatDateStr(targetYear, targetMonth, Math.min(parseInt((tx.dateStr || '').split('-')[2]) || 1, 28));
+            result.push({
               ...tx,
+              id: `${tx.id}-${targetYear}-${targetMonth}`,
               year: targetYear,
               month: targetMonth,
-              dateStr: formatDateStr(targetYear, targetMonth, Math.min(day, 28))
-            };
-            result.push(currentSubTx);
+              dateStr: projectedDate
+            });
           }
         } else {
-          // Lançamento normal / parcelado por mês e ano exatos
           if (tx.year === targetYear && tx.month === targetMonth) {
             result.push(tx);
           }
@@ -1306,18 +1189,17 @@
       return result;
     }
 
+    // --- RENDERIZADORES ---
     function renderAll() {
-      const yearDisp = document.getElementById('current-year-display');
-      if (yearDisp) yearDisp.textContent = saasState.year;
+      const curYearDisp = document.getElementById('current-year-display');
+      if (curYearDisp) curYearDisp.textContent = saasState.year;
 
       renderMonthTabs();
       renderMetrics();
-      renderBankFilterSelect();
-      renderBankPills();
       renderTables();
-      renderBankLimitsGrid();
+      renderBankSelectOptions();
       renderCharts();
-      updateViewVisibility();
+      renderBankLimitsGrid();
     }
 
     function renderMonthTabs() {
@@ -1326,380 +1208,330 @@
       container.innerHTML = '';
 
       MONTH_NAMES.forEach((mName, idx) => {
-        const btn = document.createElement('button');
-        btn.className = `month-tab ${idx === saasState.currentMonth ? 'active' : ''}`;
+        const monthTx = getTransactionsForMonthYear(saasState.year, idx);
+        const monthTotal = monthTx.reduce((acc, t) => acc + (parseFloat(t.amount) || 0), 0);
 
-        let monthSum = 0;
-        const monthlyTx = getTransactionsForMonthYear(saasState.year, idx);
-        monthlyTx.forEach(tx => {
-          monthSum += Number(tx.amount);
-        });
-
-        btn.innerHTML = `
-          <span>${mName.substring(0, 3)}</span>
-          <span class="month-total">${monthSum > 0 ? formatCurrency(monthSum) : 'R$ 0,00'}</span>
+        const tab = document.createElement('button');
+        tab.className = `month-tab ${idx === saasState.currentMonth ? 'active' : ''}`;
+        tab.innerHTML = `
+          <span>${mName}</span>
+          <span class="month-total">${formatCurrency(monthTotal)}</span>
         `;
-        btn.addEventListener('click', () => {
+        tab.onclick = () => {
           saasState.currentMonth = idx;
           renderAll();
-        });
-        container.appendChild(btn);
+        };
+        container.appendChild(tab);
       });
     }
 
     function renderMetrics() {
-      const year = saasState.year;
-      const month = saasState.currentMonth;
+      const activeMonthTx = getTransactionsForMonthYear(saasState.year, saasState.currentMonth);
 
-      const monthlyTx = getTransactionsForMonthYear(year, month);
-      
-      const cardTx = monthlyTx.filter(tx => tx.type === 'CARD');
-      const billTx = monthlyTx.filter(tx => tx.type === 'BILL');
-      const vehicleTx = monthlyTx.filter(tx => tx.type === 'VEHICLE');
+      const cardsSum = activeMonthTx.filter(t => t.type === 'CARD').reduce((a, t) => a + (parseFloat(t.amount) || 0), 0);
+      const billsSum = activeMonthTx.filter(t => t.type === 'BILL').reduce((a, t) => a + (parseFloat(t.amount) || 0), 0);
+      const vehicleSum = activeMonthTx.filter(t => t.type === 'VEHICLE').reduce((a, t) => a + (parseFloat(t.amount) || 0), 0);
 
-      const cardsSum = cardTx.reduce((sum, t) => sum + Number(t.amount), 0);
-      const billsSum = billTx.reduce((sum, t) => sum + Number(t.amount), 0);
-      const vehicleSum = vehicleTx.reduce((sum, t) => sum + Number(t.amount), 0);
-      const grandSum = cardsSum + billsSum + vehicleSum;
+      const totalSpent = cardsSum + billsSum + vehicleSum;
 
-      const salaryDisplay = document.getElementById('salary-display-value');
+      const totalSpentElem = document.getElementById('metric-total-month');
+      if (totalSpentElem) totalSpentElem.textContent = formatCurrency(totalSpent);
+
+      const cardsSumElem = document.getElementById('metric-cards-sum');
+      if (cardsSumElem) cardsSumElem.textContent = formatCurrency(cardsSum);
+
+      const billsSumElem = document.getElementById('metric-bills-sum');
+      if (billsSumElem) billsSumElem.textContent = formatCurrency(billsSum);
+
+      const vehicleSumElem = document.getElementById('metric-vehicle-sum');
+      if (vehicleSumElem) vehicleSumElem.textContent = formatCurrency(vehicleSum);
+
       const salaryReadBox = document.getElementById('salary-read-box');
       const salaryEditBox = document.getElementById('salary-edit-box');
-      const lockBtn = document.getElementById('btn-toggle-salary-lock');
-      
+      const salaryDisplayVal = document.getElementById('salary-display-value');
+
       if (saasState.userSalaryLocked) {
-        if (salaryReadBox) salaryReadBox.style.display = 'flex';
+        if (salaryReadBox) salaryReadBox.style.display = 'block';
         if (salaryEditBox) salaryEditBox.style.display = 'none';
-        if (lockBtn) lockBtn.innerHTML = '✏️ Editar';
-        if (salaryDisplay) salaryDisplay.textContent = formatCurrency(saasState.userSalary);
+        if (salaryDisplayVal) salaryDisplayVal.textContent = formatCurrency(saasState.userSalary);
       } else {
         if (salaryReadBox) salaryReadBox.style.display = 'none';
         if (salaryEditBox) salaryEditBox.style.display = 'flex';
-        if (lockBtn) lockBtn.innerHTML = '🔒 Travar';
-        const inputSal = document.getElementById('user-salary-input');
-        if (inputSal) inputSal.value = formatCurrencyInputValue(saasState.userSalary);
+        const inp = document.getElementById('user-salary-input');
+        if (inp) inp.value = formatCurrencyInputValue(saasState.userSalary);
       }
 
-      const freeBalance = saasState.userSalary - grandSum;
+      const freeBalance = (saasState.userSalary || 0) - totalSpent;
       const freeBalanceElem = document.getElementById('salary-free-balance');
       if (freeBalanceElem) {
         freeBalanceElem.textContent = formatCurrency(freeBalance);
         freeBalanceElem.style.color = freeBalance >= 0 ? 'var(--status-paid)' : '#f43f5e';
       }
 
-      const salary = saasState.userSalary || 0;
-      const pctFree = salary > 0 ? Math.max(0, Math.min(100, Math.round((freeBalance / salary) * 100))) : 0;
       const progressFill = document.getElementById('salary-progress-fill');
       if (progressFill) {
-        progressFill.style.width = `${pctFree}%`;
-        progressFill.style.background = freeBalance >= 0 ? '#10b981' : '#f43f5e';
+        const pct = saasState.userSalary > 0 ? Math.min(100, Math.max(0, (totalSpent / saasState.userSalary) * 100)) : 0;
+        progressFill.style.width = `${pct}%`;
+        progressFill.style.background = pct > 90 ? '#f43f5e' : (pct > 70 ? 'var(--accent-gold)' : 'var(--accent-cyan)');
       }
-
-      const totalElem = document.getElementById('metric-total-month');
-      if (totalElem) totalElem.textContent = formatCurrency(grandSum);
-
-      const cardsElem = document.getElementById('metric-cards-sum');
-      if (cardsElem) cardsElem.textContent = formatCurrency(cardsSum);
-
-      const billsElem = document.getElementById('metric-bills-sum');
-      if (billsElem) billsElem.textContent = formatCurrency(billsSum);
-
-      const vehicleElem = document.getElementById('metric-vehicle-sum');
-      if (vehicleElem) vehicleElem.textContent = formatCurrency(vehicleSum);
-    }
-
-    function renderBankFilterSelect() {
-      const select = document.getElementById('bank-filter');
-      if (!select) return;
-
-      select.innerHTML = '<option value="ALL">💳 Todos os Cartões</option>';
-      saasState.userBanks.forEach(b => {
-        const opt = document.createElement('option');
-        opt.value = b.id;
-        opt.textContent = `${b.name} (R$ ${Number(b.limit).toLocaleString('pt-BR')})`;
-        select.appendChild(opt);
-      });
-      select.value = saasState.selectedBankFilter;
-    }
-
-    function renderBankPills() {
-      const container = document.getElementById('bank-pills-filter');
-      if (!container) return;
-      container.innerHTML = '';
-
-      const allPill = document.createElement('div');
-      allPill.className = `status-tag ${saasState.selectedBankFilter === 'ALL' ? 'paid' : ''}`;
-      allPill.textContent = 'Todos os Cartões';
-      allPill.addEventListener('click', () => {
-        saasState.selectedBankFilter = 'ALL';
-        renderAll();
-      });
-      container.appendChild(allPill);
-
-      saasState.userBanks.forEach(b => {
-        const pill = document.createElement('div');
-        pill.className = 'status-tag';
-        pill.style.cssText = `background: ${b.color}22; color: ${b.color}; border: 1px solid ${b.color}55; cursor: pointer;`;
-        if (saasState.selectedBankFilter === b.id) {
-          pill.style.boxShadow = `0 0 10px ${b.color}`;
-          pill.style.fontWeight = '800';
-        }
-        pill.textContent = b.name;
-        pill.addEventListener('click', () => {
-          saasState.selectedBankFilter = b.id;
-          renderAll();
-        });
-        container.appendChild(pill);
-      });
     }
 
     function renderTables() {
-      const year = saasState.year;
-      const month = saasState.currentMonth;
-      const filterBank = saasState.selectedBankFilter;
-      const query = saasState.searchQuery;
+      const activeMonthTx = getTransactionsForMonthYear(saasState.year, saasState.currentMonth);
+      const query = saasState.searchQuery || '';
+      const bankFilter = saasState.selectedBankFilter || 'ALL';
 
-      let monthlyTx = getTransactionsForMonthYear(year, month);
-
-      if (filterBank !== 'ALL') {
-        monthlyTx = monthlyTx.filter(tx => tx.bankId === filterBank || tx.type !== 'CARD');
-      }
-
+      let filtered = activeMonthTx;
       if (query) {
-        monthlyTx = monthlyTx.filter(tx => 
-          (tx.description && tx.description.toLowerCase().includes(query)) ||
-          (tx.category && tx.category.toLowerCase().includes(query))
+        filtered = filtered.filter(t => 
+          (t.description && t.description.toLowerCase().includes(query)) ||
+          (t.category && t.category.toLowerCase().includes(query))
         );
       }
+      if (bankFilter !== 'ALL') {
+        filtered = filtered.filter(t => t.type !== 'CARD' || String(t.bankId) === String(bankFilter));
+      }
 
-      renderCardsTable(monthlyTx.filter(t => t.type === 'CARD'));
-      renderBillsTable(monthlyTx.filter(t => t.type === 'BILL'));
-      renderVehicleTable(monthlyTx.filter(t => t.type === 'VEHICLE'));
+      const cardsTx = filtered.filter(t => t.type === 'CARD');
+      const billsTx = filtered.filter(t => t.type === 'BILL');
+      const vehicleTx = filtered.filter(t => t.type === 'VEHICLE');
+
+      renderTableTbody('cards-tbody', cardsTx, 'CARD');
+      renderTableTbody('bills-tbody', billsTx, 'BILL');
+      renderTableTbody('vehicle-tbody', vehicleTx, 'VEHICLE');
+
+      const cardsBadge = document.getElementById('cards-table-badge');
+      if (cardsBadge) cardsBadge.textContent = formatCurrency(cardsTx.reduce((a, t) => a + (parseFloat(t.amount) || 0), 0));
+
+      const billsBadge = document.getElementById('bills-table-badge');
+      if (billsBadge) billsBadge.textContent = formatCurrency(billsTx.reduce((a, t) => a + (parseFloat(t.amount) || 0), 0));
+
+      const vehicleBadge = document.getElementById('vehicle-table-badge');
+      if (vehicleBadge) vehicleBadge.textContent = formatCurrency(vehicleTx.reduce((a, t) => a + (parseFloat(t.amount) || 0), 0));
+
+      if (window.lucide) lucide.createIcons();
     }
 
-    function renderCardsTable(txList) {
-      const tbody = document.getElementById('cards-tbody');
-      const badge = document.getElementById('cards-table-badge');
+    function renderTableTbody(tbodyId, list, type) {
+      const tbody = document.getElementById(tbodyId);
       if (!tbody) return;
-
       tbody.innerHTML = '';
-      const total = txList.reduce((sum, t) => sum + Number(t.amount), 0);
-      if (badge) badge.textContent = formatCurrency(total);
 
-      if (txList.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; color: var(--text-dim); padding: 20px;">Nenhum lançamento de cartão neste mês.</td></tr>';
+      if (list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; color: var(--text-dim); padding: 24px;">Nenhum lançamento encontrado para este mês.</td></tr>`;
         return;
       }
 
-      txList.forEach((tx, idx) => {
+      list.forEach((t, idx) => {
         const tr = document.createElement('tr');
-        const bank = saasState.userBanks.find(b => b.id === tx.bankId);
-        const bankTag = bank ? `<span class="bank-pill" style="background: ${bank.color}">${escapeHtml(bank.name)}</span>` : '<span style="color:var(--text-dim);">-</span>';
-        
-        let instBadge = '';
-        if (tx.isSubscription || (tx.category && tx.category.includes('Assinatura'))) {
-          instBadge = '<span class="badge-installment-green">🔄 Assinatura</span>';
-        } else {
-          instBadge = `<span class="badge-installment">${tx.installmentCurrent || 1}/${tx.installmentTotal || 1}</span>`;
+
+        let statusClass = t.status === 'PAID' ? 'paid' : 'pending';
+        let statusText = t.status === 'PAID' ? '✅ Pago' : '⏳ Pendente';
+
+        let bankInfo = '-';
+        if (type === 'CARD' && t.bankId) {
+          const bankObj = saasState.userBanks.find(b => String(b.id) === String(t.bankId));
+          if (bankObj) {
+            bankInfo = `<span class="bank-pill" style="background: ${bankObj.color || 'var(--accent-primary)'};">${escapeHtml(bankObj.name)}</span>`;
+          }
         }
 
-        tr.innerHTML = `
-          <td>${idx + 1}</td>
-          <td><strong>${escapeHtml(tx.description)}</strong></td>
-          <td>${bankTag}</td>
-          <td>${escapeHtml(tx.category || 'Geral')}</td>
-          <td>${formatDisplayDate(tx.dateStr)}</td>
-          <td>${instBadge}</td>
-          <td style="text-align: right; font-family: var(--font-mono); font-weight: 700;">${formatCurrency(tx.amount)}</td>
-          <td style="text-align: center;">
-            <span class="status-tag ${tx.status === 'PAID' ? 'paid' : 'pending'}" onclick="toggleTxStatus('${tx.id}')">
-              ${tx.status === 'PAID' ? '✅ Pago' : '⏳ Pendente'}
-            </span>
-          </td>
-          <td style="text-align: center;">
-            <button class="btn-table-action" onclick="editTx('${tx.id}')" title="Editar"><i data-lucide="edit-2"></i></button>
-            <button class="btn-table-action" onclick="deleteTx('${tx.id}')" title="Excluir"><i data-lucide="trash-2"></i></button>
-          </td>
-        `;
+        let installmentBadge = `<span class="badge-installment">1x</span>`;
+        if (t.isSubscription) {
+          installmentBadge = `<span class="badge-installment-green">🔄 Assinatura</span>`;
+        } else if (t.installmentTotal > 1) {
+          installmentBadge = `<span class="badge-installment">${t.installmentCurrent || 1}/${t.installmentTotal}x</span>`;
+        }
+
+        let rowHTML = '';
+        if (type === 'CARD') {
+          rowHTML = `
+            <td>${idx + 1}</td>
+            <td><strong>${escapeHtml(t.description)}</strong></td>
+            <td>${bankInfo}</td>
+            <td>${escapeHtml(t.category)}</td>
+            <td>${formatDisplayDate(t.dateStr)}</td>
+            <td style="text-align: right; font-weight: 800; font-family: var(--font-mono);">${formatCurrency(t.amount)}</td>
+            <td style="text-align: center;">${installmentBadge}</td>
+            <td style="text-align: center;"><span class="status-tag ${statusClass}" onclick="toggleTxStatus('${t.id}')">${statusText}</span></td>
+            <td style="text-align: center;">
+              <button class="btn-table-action" onclick="editTx('${t.id}')" title="Editar"><i data-lucide="edit-2"></i></button>
+              <button class="btn-table-action" onclick="deleteTx('${t.id}')" title="Excluir"><i data-lucide="trash-2"></i></button>
+            </td>
+          `;
+        } else {
+          rowHTML = `
+            <td>${idx + 1}</td>
+            <td><strong>${escapeHtml(t.description)}</strong></td>
+            <td>${escapeHtml(t.category)}</td>
+            <td>${formatDisplayDate(t.dateStr)}</td>
+            <td style="text-align: right; font-weight: 800; font-family: var(--font-mono);">${formatCurrency(t.amount)}</td>
+            <td style="text-align: center;"><span class="status-tag ${statusClass}" onclick="toggleTxStatus('${t.id}')">${statusText}</span></td>
+            <td style="text-align: center;">
+              <button class="btn-table-action" onclick="editTx('${t.id}')" title="Editar"><i data-lucide="edit-2"></i></button>
+              <button class="btn-table-action" onclick="deleteTx('${t.id}')" title="Excluir"><i data-lucide="trash-2"></i></button>
+            </td>
+          `;
+        }
+
+        tr.innerHTML = rowHTML;
         tbody.appendChild(tr);
       });
-
-      if (window.lucide) lucide.createIcons();
     }
 
-    function renderBillsTable(txList) {
-      const tbody = document.getElementById('bills-tbody');
-      const badge = document.getElementById('bills-table-badge');
-      if (!tbody) return;
+    function renderBankSelectOptions() {
+      const bankSelect = document.getElementById('tx-bank');
+      const bankFilter = document.getElementById('bank-filter');
 
-      tbody.innerHTML = '';
-      const total = txList.reduce((sum, t) => sum + Number(t.amount), 0);
-      if (badge) badge.textContent = formatCurrency(total);
-
-      if (txList.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-dim); padding: 20px;">Nenhuma conta fixa neste mês.</td></tr>';
-        return;
+      if (bankSelect) {
+        bankSelect.innerHTML = '';
+        saasState.userBanks.forEach(b => {
+          const opt = document.createElement('option');
+          opt.value = b.id;
+          opt.textContent = b.name;
+          bankSelect.appendChild(opt);
+        });
       }
 
-      txList.forEach((tx, idx) => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${idx + 1}</td>
-          <td><strong>${escapeHtml(tx.description)}</strong></td>
-          <td>${escapeHtml(tx.category || 'Contas Fixas')}</td>
-          <td>${formatDisplayDate(tx.dateStr)}</td>
-          <td style="text-align: right; font-family: var(--font-mono); font-weight: 700;">${formatCurrency(tx.amount)}</td>
-          <td style="text-align: center;">
-            <span class="status-tag ${tx.status === 'PAID' ? 'paid' : 'pending'}" onclick="toggleTxStatus('${tx.id}')">
-              ${tx.status === 'PAID' ? '✅ Pago' : '⏳ Pendente'}
-            </span>
-          </td>
-          <td style="text-align: center;">
-            <button class="btn-table-action" onclick="editTx('${tx.id}')" title="Editar"><i data-lucide="edit-2"></i></button>
-            <button class="btn-table-action" onclick="deleteTx('${tx.id}')" title="Excluir"><i data-lucide="trash-2"></i></button>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
-
-      if (window.lucide) lucide.createIcons();
-    }
-
-    function renderVehicleTable(txList) {
-      const tbody = document.getElementById('vehicle-tbody');
-      const badge = document.getElementById('vehicle-table-badge');
-      if (!tbody) return;
-
-      tbody.innerHTML = '';
-      const total = txList.reduce((sum, t) => sum + Number(t.amount), 0);
-      if (badge) badge.textContent = formatCurrency(total);
-
-      if (txList.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-dim); padding: 20px;">Nenhuma despesa de veículo neste mês.</td></tr>';
-        return;
+      if (bankFilter) {
+        const curVal = bankFilter.value;
+        bankFilter.innerHTML = '<option value="ALL">💳 Todos os Cartões</option>';
+        saasState.userBanks.forEach(b => {
+          const opt = document.createElement('option');
+          opt.value = b.id;
+          opt.textContent = `💳 ${b.name}`;
+          bankFilter.appendChild(opt);
+        });
+        bankFilter.value = curVal || 'ALL';
       }
-
-      txList.forEach((tx, idx) => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${idx + 1}</td>
-          <td><strong>${escapeHtml(tx.description)}</strong></td>
-          <td>${escapeHtml(tx.category || 'Veículo')}</td>
-          <td>${formatDisplayDate(tx.dateStr)}</td>
-          <td style="text-align: right; font-family: var(--font-mono); font-weight: 700;">${formatCurrency(tx.amount)}</td>
-          <td style="text-align: center;">
-            <span class="status-tag ${tx.status === 'PAID' ? 'paid' : 'pending'}" onclick="toggleTxStatus('${tx.id}')">
-              ${tx.status === 'PAID' ? '✅ Pago' : '⏳ Pendente'}
-            </span>
-          </td>
-          <td style="text-align: center;">
-            <button class="btn-table-action" onclick="editTx('${tx.id}')" title="Editar"><i data-lucide="edit-2"></i></button>
-            <button class="btn-table-action" onclick="deleteTx('${tx.id}')" title="Excluir"><i data-lucide="trash-2"></i></button>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
-
-      if (window.lucide) lucide.createIcons();
     }
 
     function renderBankLimitsGrid() {
-      const container = document.getElementById('bank-limits-grid');
-      if (!container) return;
+      const grid = document.getElementById('bank-limits-grid');
+      if (!grid) return;
+      grid.innerHTML = '';
 
-      container.innerHTML = '';
       if (saasState.userBanks.length === 0) {
-        container.innerHTML = '<div style="color: var(--text-dim); padding: 20px; font-size: 0.85rem;">Nenhum cartão de crédito cadastrado. Clique no botão "Cartões" para adicionar.</div>';
+        grid.innerHTML = '<div style="color: var(--text-dim); padding: 20px; font-size: 0.85rem;">Nenhum cartão cadastrado. Clique no botão [💳 Cartões] acima para adicionar.</div>';
         return;
       }
 
-      saasState.userBanks.forEach(b => {
-        const totalUsed = saasState.userTransactions
-          .filter(t => t.type === 'CARD' && t.bankId === b.id && t.status === 'PENDING')
-          .reduce((sum, t) => sum + Number(t.amount), 0);
+      const activeMonthTx = getTransactionsForMonthYear(saasState.year, saasState.currentMonth).filter(t => t.type === 'CARD');
 
-        const limit = Number(b.limit) || 0;
-        const available = Math.max(0, limit - totalUsed);
-        const usagePct = limit > 0 ? Math.min(100, Math.round((totalUsed / limit) * 100)) : 0;
+      saasState.userBanks.forEach(bank => {
+        const bankSpent = activeMonthTx.filter(t => String(t.bankId) === String(bank.id)).reduce((a, t) => a + (parseFloat(t.amount) || 0), 0);
+        const limit = parseFloat(bank.limit) || 0;
+        const available = limit - bankSpent;
+        const usedPct = limit > 0 ? Math.min(100, Math.max(0, (bankSpent / limit) * 100)) : 0;
 
         const card = document.createElement('div');
         card.className = 'metric-card';
-        card.style.borderColor = `${b.color}55`;
+        card.style.borderColor = bank.color || 'var(--accent-primary)';
 
         card.innerHTML = `
-          <div class="metric-header" style="color: ${b.color}">
-            <span style="font-weight: 800; font-size: 0.95rem;">${escapeHtml(b.name)}</span>
-            <span style="font-size: 0.75rem; font-family: var(--font-mono);">${usagePct}% Usado</span>
+          <div class="metric-header">
+            <span class="bank-pill" style="background: ${bank.color || 'var(--accent-primary)'}; font-size: 0.85rem;">${escapeHtml(bank.name)}</span>
+            <span style="font-family: var(--font-mono); color: var(--text-muted); font-size: 0.78rem;">Limite: ${formatCurrency(limit)}</span>
           </div>
-          <div style="margin: 10px 0;">
-            <div style="height: 6px; background: var(--bg-input); border-radius: 3px; overflow: hidden;">
-              <div style="width: ${usagePct}%; height: 100%; background: ${b.color}; border-radius: 3px;"></div>
+          <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 10px;">
+            <div>
+              <div style="font-size: 0.72rem; color: var(--text-dim);">Fatura Atual:</div>
+              <div class="metric-value" style="font-size: 1.25rem; color: ${bank.color || 'var(--accent-primary)'};">${formatCurrency(bankSpent)}</div>
+            </div>
+            <div style="text-align: right;">
+              <div style="font-size: 0.72rem; color: var(--text-dim);">Limite Disponível:</div>
+              <div style="font-size: 1rem; font-weight: 800; font-family: var(--font-mono); color: ${available >= 0 ? '#34d399' : '#f43f5e'};">${formatCurrency(available)}</div>
             </div>
           </div>
-          <div style="display: flex; justify-content: space-between; font-size: 0.78rem;">
-            <span>Usado: <strong style="color: #f43f5e;">${formatCurrency(totalUsed)}</strong></span>
-            <span>Disponível: <strong style="color: #34d399;">${formatCurrency(available)}</strong></span>
+          <div class="metric-progress-bar" style="margin-top: 12px;">
+            <div class="metric-progress-fill" style="width: ${usedPct}%; background: ${bank.color || 'var(--accent-primary)'};"></div>
+          </div>
+          <div style="font-size: 0.72rem; color: var(--text-dim); margin-top: 6px; text-align: right;">
+            ${usedPct.toFixed(1)}% do limite utilizado
           </div>
         `;
-        container.appendChild(card);
+        grid.appendChild(card);
       });
     }
 
     function renderCharts() {
       if (typeof Chart === 'undefined') return;
 
-      const pieCtx = document.getElementById('categoryPieChart');
-      const barCtx = document.getElementById('balanceBarChart');
-      if (!pieCtx || !barCtx) return;
+      const activeMonthTx = getTransactionsForMonthYear(saasState.year, saasState.currentMonth);
 
-      const monthlyTx = saasState.userTransactions.filter(tx => tx.year === saasState.year && tx.month === saasState.currentMonth);
-
-      const categoryTotals = {};
-      monthlyTx.forEach(t => {
+      // 1. Chart Por Categoria
+      const catTotals = {};
+      activeMonthTx.forEach(t => {
         const cat = t.category || 'Outros';
-        categoryTotals[cat] = (categoryTotals[cat] || 0) + Number(t.amount);
+        catTotals[cat] = (catTotals[cat] || 0) + (parseFloat(t.amount) || 0);
       });
 
-      const pieLabels = Object.keys(categoryTotals);
-      const pieData = Object.values(categoryTotals);
+      const catLabels = Object.keys(catTotals);
+      const catValues = Object.values(catTotals);
 
-      if (categoryPieChartInstance) categoryPieChartInstance.destroy();
-      categoryPieChartInstance = new Chart(pieCtx, {
-        type: 'doughnut',
-        data: {
-          labels: pieLabels.length ? pieLabels : ['Sem Lançamentos'],
-          datasets: [{
-            data: pieData.length ? pieData : [1],
-            backgroundColor: ['#6366f1', '#ec4899', '#06b6d4', '#f59e0b', '#10b981', '#8b5cf6', '#3b82f6', '#64748b']
-          }]
-        },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8', font: { size: 11 } } } } }
-      });
+      const ctxPie = document.getElementById('categoryPieChart')?.getContext('2d');
+      if (ctxPie) {
+        if (categoryPieChartInstance) categoryPieChartInstance.destroy();
+        categoryPieChartInstance = new Chart(ctxPie, {
+          type: 'doughnut',
+          data: {
+            labels: catLabels.length ? catLabels : ['Sem Despesas'],
+            datasets: [{
+              data: catValues.length ? catValues : [1],
+              backgroundColor: ['#6366f1', '#ec4899', '#06b6d4', '#f59e0b', '#10b981', '#a855f7', '#3b82f6', '#f43f5e']
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { position: 'bottom', labels: { color: '#94a3b8', font: { family: 'Inter', size: 11 } } }
+            }
+          }
+        });
+      }
 
-      const grandSum = monthlyTx.reduce((sum, t) => sum + Number(t.amount), 0);
+      // 2. Chart Salário vs Gastos vs Saldo
+      const totalSpent = activeMonthTx.reduce((a, t) => a + (parseFloat(t.amount) || 0), 0);
       const salary = saasState.userSalary || 0;
-      const balance = salary - grandSum;
+      const balance = salary - totalSpent;
 
-      if (balanceBarChartInstance) balanceBarChartInstance.destroy();
-      balanceBarChartInstance = new Chart(barCtx, {
-        type: 'bar',
-        data: {
-          labels: ['Salário Mensal', 'Total Gastos', 'Saldo Livre'],
-          datasets: [{
-            data: [salary, grandSum, balance],
-            backgroundColor: ['#06b6d4', '#f43f5e', balance >= 0 ? '#10b981' : '#f43f5e']
-          }]
-        },
-        options: {
-          responsive: true, maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
-          scales: { y: { ticks: { color: '#94a3b8' } }, x: { ticks: { color: '#94a3b8' } } }
-        }
-      });
+      const ctxBar = document.getElementById('balanceBarChart')?.getContext('2d');
+      if (ctxBar) {
+        if (balanceBarChartInstance) balanceBarChartInstance.destroy();
+        balanceBarChartInstance = new Chart(ctxBar, {
+          type: 'bar',
+          data: {
+            labels: ['Meu Salário', 'Total Gastos', 'Saldo Livre'],
+            datasets: [{
+              label: 'Valores em R$',
+              data: [salary, totalSpent, Math.max(0, balance)],
+              backgroundColor: ['#06b6d4', '#f43f5e', '#10b981']
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              y: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+              x: { ticks: { color: '#94a3b8' }, grid: { display: false } }
+            }
+          }
+        });
+      }
     }
 
-    function updateViewVisibility() {
-      const view = saasState.selectedView;
+    function switchView(view) {
+      saasState.selectedView = view;
+
+      document.querySelectorAll('.view-tab').forEach(tab => {
+        tab.classList.toggle('active', tab.getAttribute('data-view') === view);
+      });
+
+      document.querySelectorAll('.mobile-nav-item').forEach(item => {
+        item.classList.toggle('active', item.getAttribute('data-view') === view);
+      });
 
       const cardsSec = document.getElementById('cards-section');
       const billsSec = document.getElementById('bills-section');
@@ -1714,7 +1546,7 @@
       if (analyticsSec) analyticsSec.style.display = (view === 'analytics') ? 'block' : 'none';
     }
 
-    // --- CATEGORIAS POR TIPO DE LANÇAMENTO ---
+    // --- CATEGORIAS POR TIPO ---
     const CATEGORIES_BY_TYPE = {
       CARD: [
         'Alimentação / Mercado 🛒',
@@ -1763,9 +1595,7 @@
         const opt = document.createElement('option');
         opt.value = cat;
         opt.textContent = cat;
-        if (defaultCategory && cat === defaultCategory) {
-          opt.selected = true;
-        }
+        if (defaultCategory && cat === defaultCategory) opt.selected = true;
         catSelect.appendChild(opt);
       });
     }
@@ -1784,7 +1614,7 @@
       }
     }
 
-    // --- LOGICA DE LANÇAMENTOS & RESET DO MODAL DO ZERO ---
+    // --- MANIPULADORES DE FORMULÁRIOS & MODAIS ---
     function openTxModal() {
       const modal = document.getElementById('transaction-modal');
       const form = document.getElementById('transaction-form');
@@ -1793,19 +1623,14 @@
       document.getElementById('tx-edit-id').value = '';
       document.getElementById('tx-modal-title').innerHTML = '<i data-lucide="plus-circle"></i> Novo Lançamento Financeiro';
 
-      // 1. Reset para tipo CARTÃO por padrão
       const radioCard = document.querySelector('input[name="txType"][value="CARD"]');
-      if (radioCard) {
-        radioCard.checked = true;
-      }
+      if (radioCard) radioCard.checked = true;
 
       const groupBank = document.getElementById('group-bank');
       if (groupBank) groupBank.style.display = 'block';
 
-      // 2. Popula categorias de Cartão e zera seleção
       updateTxCategoryOptions('CARD');
 
-      // 3. Reset de parcelamento para 1x
       const instSelect = document.getElementById('tx-installments');
       if (instSelect) instSelect.value = '1';
 
@@ -1821,7 +1646,6 @@
       const subInfoGroup = document.getElementById('group-subscription-info');
       if (subInfoGroup) subInfoGroup.style.display = 'none';
 
-      // 4. Data padrão = Ano e Mês selecionados na tela
       const dateInp = document.getElementById('tx-date');
       if (dateInp) {
         const today = new Date();
@@ -1831,7 +1655,7 @@
         dateInp.value = formatDateStr(activeYear, activeMonth, day);
       }
 
-      populateBankSelect();
+      renderBankSelectOptions();
       if (modal) modal.classList.add('active');
       if (window.lucide) lucide.createIcons();
     }
@@ -1852,220 +1676,63 @@
       if (modal) modal.classList.remove('active');
     }
 
-    function populateBankSelect() {
-      const select = document.getElementById('tx-bank');
-      if (!select) return;
-      select.innerHTML = '';
-      saasState.userBanks.forEach(b => {
-        const opt = document.createElement('option');
-        opt.value = b.id;
-        opt.textContent = b.name;
-        select.appendChild(opt);
-      });
-    }
-
-    function formatCurrencyInputValue(num) {
-      if (isNaN(num) || num === null || num === undefined) return '';
-      return Number(num).toLocaleString('pt-BR', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      });
-    }
-
-    function parseCurrencyInputValue(valStr) {
-      if (!valStr) return 0;
-      const clean = String(valStr).replace(/\./g, '').replace(',', '.');
-      return parseFloat(clean) || 0;
-    }
-
-    function attachCurrencyMask(inputElem) {
-      if (!inputElem) return;
-      inputElem.setAttribute('type', 'text');
-      inputElem.setAttribute('inputmode', 'numeric');
-
-      inputElem.addEventListener('input', (e) => {
-        let value = e.target.value.replace(/\D/g, ''); // Digits only
-        if (!value) {
-          e.target.value = '';
-          return;
-        }
-        const numberValue = parseFloat(value) / 100;
-        e.target.value = numberValue.toLocaleString('pt-BR', {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2
-        });
-      });
-    }
-
-    function editBank(bankId) {
-      const bank = saasState.userBanks.find(b => b.id === bankId);
-      if (!bank) return;
-
-      document.getElementById('bank-edit-id').value = bank.id;
-      document.getElementById('bank-name').value = bank.name;
-      document.getElementById('bank-limit').value = formatCurrencyInputValue(bank.limit);
-      document.getElementById('bank-color').value = bank.color || '#6366f1';
-
-      const btnSubmit = document.getElementById('btn-save-bank-submit');
-      if (btnSubmit) {
-        btnSubmit.innerHTML = '<i data-lucide="check-circle"></i> Salvar Alterações';
-        btnSubmit.className = 'btn btn-primary';
-      }
-
-      const btnCancel = document.getElementById('btn-cancel-edit-bank');
-      if (btnCancel) btnCancel.style.display = 'inline-flex';
-
-      if (window.lucide) lucide.createIcons();
-    }
-
-    function cancelEditBank() {
-      const form = document.getElementById('add-bank-form');
-      if (form) form.reset();
-      document.getElementById('bank-edit-id').value = '';
-
-      const btnSubmit = document.getElementById('btn-save-bank-submit');
-      if (btnSubmit) {
-        btnSubmit.innerHTML = '<i data-lucide="plus-circle"></i> Adicionar Cartão';
-        btnSubmit.className = 'btn btn-primary';
-      }
-
-      const btnCancel = document.getElementById('btn-cancel-edit-bank');
-      if (btnCancel) btnCancel.style.display = 'none';
-
-      if (window.lucide) lucide.createIcons();
-    }
-
-    function handleAddBankSubmit(e) {
-      e.preventDefault();
-      const editId = document.getElementById('bank-edit-id').value;
-      const name = document.getElementById('bank-name').value.trim();
-      const limitRaw = document.getElementById('bank-limit').value;
-      const limit = parseCurrencyInputValue(limitRaw);
-      const color = document.getElementById('bank-color').value || '#6366f1';
-
-      if (!name) return;
-
-      if (editId) {
-        // Editar cartão existente
-        const bankIdx = saasState.userBanks.findIndex(b => b.id === editId);
-        if (bankIdx !== -1) {
-          saasState.userBanks[bankIdx].name = name;
-          saasState.userBanks[bankIdx].limit = limit;
-          saasState.userBanks[bankIdx].color = color;
-        }
-      } else {
-        // Criar novo cartão
-        const newBank = { id: `bank-${Date.now()}`, name, limit, color };
-        saasState.userBanks.push(newBank);
-      }
-
-      saveUserData();
-      cancelEditBank();
-      renderBankListModal();
-      renderAll();
-    }
-
-    function renderBankListModal() {
-      const container = document.getElementById('bank-list-container');
-      const badge = document.getElementById('bank-count-badge');
-      if (!container) return;
-
-      container.innerHTML = '';
-      if (badge) badge.textContent = `${saasState.userBanks.length} Cartõe${saasState.userBanks.length === 1 ? 'o' : 's'}`;
-
-      if (saasState.userBanks.length === 0) {
-        container.innerHTML = '<div style="text-align: center; color: var(--text-dim); padding: 16px; font-size: 0.84rem;">Nenhum cartão de crédito cadastrado.</div>';
-        return;
-      }
-
-      saasState.userBanks.forEach(b => {
-        const item = document.createElement('div');
-        item.style.cssText = 'display: flex; justify-content: space-between; align-items: center; background: rgba(30, 41, 59, 0.6); padding: 10px 14px; border-radius: var(--radius-md); border: 1px solid var(--border-color); margin-bottom: 8px; transition: all 0.2s ease;';
-        item.innerHTML = `
-          <div style="display: flex; align-items: center; gap: 10px;">
-            <span style="width: 14px; height: 14px; border-radius: 50%; background: ${b.color}; display: inline-block; box-shadow: 0 0 8px ${b.color};"></span>
-            <div>
-              <strong style="color: var(--text-main); font-size: 0.9rem; display: block;">${escapeHtml(b.name)}</strong>
-              <div style="font-size: 0.76rem; color: var(--text-muted); font-family: var(--font-mono);">
-                Limite: <span style="color: var(--accent-cyan); font-weight: 700;">${formatCurrency(b.limit)}</span>
-              </div>
-            </div>
-          </div>
-          <div style="display: flex; gap: 6px;">
-            <button type="button" class="btn-table-action" onclick="editBank('${b.id}')" title="Editar dados do cartão" style="color: var(--accent-gold);">
-              <i data-lucide="edit-2"></i>
-            </button>
-            <button type="button" class="btn-table-action" onclick="deleteBank('${b.id}')" title="Excluir cartão" style="color: #f43f5e;">
-              <i data-lucide="trash-2"></i>
-            </button>
-          </div>
-        `;
-        container.appendChild(item);
-      });
-
-      if (window.lucide) lucide.createIcons();
-    }
-
-    function deleteBank(bankId) {
-      if (!confirm('Deseja realmente remover este cartão?')) return;
-      saasState.userBanks = saasState.userBanks.filter(b => b.id !== bankId);
-      saveUserData();
-      renderBankListModal();
-      renderAll();
-    }
-
     function handleTxFormSubmit(e) {
       e.preventDefault();
+
       const editId = document.getElementById('tx-edit-id').value;
-      const typeRadio = document.querySelector('input[name="txType"]:checked');
-      const type = typeRadio ? typeRadio.value : 'CARD';
+      const type = document.querySelector('input[name="txType"]:checked')?.value || 'CARD';
       const description = document.getElementById('tx-description').value.trim();
       const amount = parseCurrencyInputValue(document.getElementById('tx-amount').value);
       const dateStr = document.getElementById('tx-date').value;
-      const category = document.getElementById('tx-category').value || 'Geral';
-      const bankId = document.getElementById('tx-bank').value || '';
+      const bankId = document.getElementById('tx-bank').value;
+      const category = document.getElementById('tx-category').value;
       const status = document.getElementById('tx-status').value || 'PENDING';
 
-      if (!description || !amount || !dateStr) return;
-
-      const dateParts = dateStr.split('-');
-      const txYear = parseInt(dateParts[0], 10);
-      const txMonth = parseInt(dateParts[1], 10) - 1;
-      const txDay = parseInt(dateParts[2], 10);
-
-      const isSub = category.includes('Assinatura') || category.includes('Recorrência');
-      const instVal = document.getElementById('tx-installments').value;
-      let instTotal = 1;
-      if (!isSub) {
-        if (instVal === 'CUSTOM') {
-          instTotal = parseInt(document.getElementById('tx-custom-installments').value, 10) || 1;
-        } else {
-          instTotal = parseInt(instVal, 10) || 1;
-        }
+      if (!description || amount <= 0 || !dateStr) {
+        alert('Por favor, preencha todos os campos obrigatórios com valores válidos.');
+        return;
       }
 
-      const startInst = parseInt(document.getElementById('tx-start-installment').value, 10) || 1;
-      const startInstIdx = Math.max(0, startInst - 1);
+      const dateParts = dateStr.split('-');
+      const txYear = parseInt(dateParts[0]);
+      const txMonth = parseInt(dateParts[1]) - 1;
+      const txDay = parseInt(dateParts[2]);
+
+      const isSubscription = category.includes('Assinatura');
+
+      let instTotal = 1;
+      let startInstIdx = 0;
+
+      if (!isSubscription) {
+        const rawInst = document.getElementById('tx-installments').value;
+        if (rawInst === 'CUSTOM') {
+          instTotal = parseInt(document.getElementById('tx-custom-installments').value) || 1;
+        } else {
+          instTotal = parseInt(rawInst) || 1;
+        }
+        if (instTotal > 1) {
+          const startVal = parseInt(document.getElementById('tx-start-installment').value) || 1;
+          startInstIdx = startVal - 1;
+        }
+      }
 
       if (editId) {
         saasState.userTransactions = saasState.userTransactions.filter(t => t.id !== editId && t.linkedGroupId !== editId);
       }
 
-      const groupId = editId || `group-${Date.now()}`;
+      const groupId = editId || `grp-${Date.now()}`;
 
-      if (isSub) {
-        // Assinatura Recorrente: cria registro único que é projetado para todos os meses futuros sem limite!
+      if (isSubscription) {
         const subTx = {
           id: groupId,
           linkedGroupId: groupId,
           type, description, amount,
-          year: txYear, month: txMonth,
-          dateStr, category, bankId, status,
+          year: txYear, month: txMonth, dateStr,
+          category, bankId, status,
           isSubscription: true, installmentTotal: 1, installmentCurrent: 1
         };
         saasState.userTransactions.push(subTx);
       } else if (instTotal > 1) {
-        // Parcelamento normal com opção de parcela inicial
         for (let i = startInstIdx; i < instTotal; i++) {
           const offset = i - startInstIdx;
           let targetMonth = txMonth + offset;
@@ -2086,7 +1753,6 @@
           saasState.userTransactions.push(instTx);
         }
       } else {
-        // Lançamento à vista
         const singleTx = {
           id: groupId,
           linkedGroupId: groupId,
@@ -2100,8 +1766,7 @@
 
       saveUserData();
       closeTxModal();
-      
-      // Ajusta o mês ativo para o mês do lançamento criado/editado
+
       saasState.year = txYear;
       saasState.currentMonth = txMonth;
       renderAll();
@@ -2116,9 +1781,7 @@
       document.getElementById('tx-modal-title').innerHTML = '<i data-lucide="edit-2"></i> Editar Lançamento Financeiro';
 
       const radio = document.querySelector(`input[name="txType"][value="${tx.type}"]`);
-      if (radio) {
-        radio.checked = true;
-      }
+      if (radio) radio.checked = true;
 
       const groupBank = document.getElementById('group-bank');
       if (groupBank) groupBank.style.display = tx.type === 'CARD' ? 'block' : 'none';
@@ -2181,6 +1844,98 @@
       renderAll();
     }
 
+    // --- GERENCIAMENTO DE BANCOS / CARTÕES ---
+    function handleBankFormSubmit(e) {
+      e.preventDefault();
+
+      const editId = document.getElementById('bank-edit-id').value;
+      const name = document.getElementById('bank-name').value.trim();
+      const limit = parseCurrencyInputValue(document.getElementById('bank-limit').value);
+      const color = document.getElementById('bank-color').value || '#6366f1';
+
+      if (!name) return;
+
+      if (editId) {
+        const bank = saasState.userBanks.find(b => String(b.id) === String(editId));
+        if (bank) {
+          bank.name = name;
+          bank.limit = limit;
+          bank.color = color;
+        }
+      } else {
+        const newBank = {
+          id: `bnk-${Date.now()}`,
+          name, limit, color
+        };
+        saasState.userBanks.push(newBank);
+      }
+
+      saveUserData();
+      cancelEditBank();
+      renderBankListModal();
+      renderAll();
+    }
+
+    function renderBankListModal() {
+      const container = document.getElementById('bank-list-container');
+      const badge = document.getElementById('bank-count-badge');
+      if (!container) return;
+
+      container.innerHTML = '';
+      if (badge) badge.textContent = `${saasState.userBanks.length} Cartões`;
+
+      if (saasState.userBanks.length === 0) {
+        container.innerHTML = '<div style="color: var(--text-dim); padding: 12px; font-size: 0.8rem;">Nenhum cartão cadastrado ainda.</div>';
+        return;
+      }
+
+      saasState.userBanks.forEach(b => {
+        const div = document.createElement('div');
+        div.style.cssText = 'display: flex; justify-content: space-between; align-items: center; background: rgba(30, 41, 59, 0.6); padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 8px; font-size: 0.85rem;';
+        div.innerHTML = `
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="width: 12px; height: 12px; border-radius: 50%; background: ${b.color};"></span>
+            <strong>${escapeHtml(b.name)}</strong>
+            <span style="font-family: var(--font-mono); color: var(--text-muted); font-size: 0.78rem;">(${formatCurrency(b.limit)})</span>
+          </div>
+          <div style="display: flex; gap: 4px;">
+            <button type="button" class="btn-table-action" onclick="startEditBank('${b.id}')"><i data-lucide="edit-2"></i></button>
+            <button type="button" class="btn-table-action" onclick="deleteBank('${b.id}')"><i data-lucide="trash-2"></i></button>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function startEditBank(bankId) {
+      const b = saasState.userBanks.find(x => String(x.id) === String(bankId));
+      if (!b) return;
+
+      document.getElementById('bank-edit-id').value = b.id;
+      document.getElementById('bank-name').value = b.name;
+      document.getElementById('bank-limit').value = formatCurrencyInputValue(b.limit);
+      document.getElementById('bank-color').value = b.color || '#6366f1';
+
+      document.getElementById('btn-save-bank-submit').innerHTML = '<i data-lucide="check-circle"></i> Salvar Cartão';
+      document.getElementById('btn-cancel-edit-bank').style.display = 'inline-flex';
+    }
+
+    function cancelEditBank() {
+      document.getElementById('bank-edit-id').value = '';
+      document.getElementById('add-bank-form').reset();
+      document.getElementById('btn-save-bank-submit').innerHTML = '<i data-lucide="plus-circle"></i> Adicionar Cartão';
+      document.getElementById('btn-cancel-edit-bank').style.display = 'none';
+    }
+
+    function deleteBank(bankId) {
+      if (!confirm('Deseja excluir este cartão?')) return;
+      saasState.userBanks = saasState.userBanks.filter(b => String(b.id) !== String(bankId));
+      saveUserData();
+      renderBankListModal();
+      renderAll();
+    }
+
     async function carregarDadosSincronizados() {
       if (!saasState.currentUser || !saasState.currentUser.email) {
         saasState.currentUser = {
@@ -2195,10 +1950,7 @@
         localStorage.setItem('finansaas_active_user', saasState.currentUser.email);
       } catch(e) {}
 
-      // Renderiza imediatamente sem esperar pela rede
       renderAll();
-
-      // Atualiza com os dados sincronizados do Supabase Cloud
       await fetchCloudUserData();
       renderAll();
     }
@@ -2210,20 +1962,16 @@
 
     // --- DOM CONTENT LOADED ---
     document.addEventListener('DOMContentLoaded', async () => {
-      // Garantia absoluta: NENHUM modal abre sozinho ao iniciar o app
       document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
 
       detectDeviceAndApplyLayout();
       window.addEventListener('resize', detectDeviceAndApplyLayout);
 
       setupAppListeners();
-
-      // Busca inicial na nuvem (Supabase) para carregar a planilha de despesas atualizada
       await carregarDadosSincronizados();
 
       if (window.lucide) lucide.createIcons();
 
-      // Tecla ESC fecha modals
       document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
           document.querySelectorAll('.modal-overlay.active').forEach(m => m.classList.remove('active'));
