@@ -1192,6 +1192,20 @@
         });
       });
 
+      const catSelectElem = document.getElementById('tx-category');
+      if (catSelectElem) {
+        catSelectElem.addEventListener('change', (e) => {
+          const val = e.target.value || '';
+          const isRec = val.includes('Recorrente') || val.includes('🔄');
+          const targetRadioVal = isRec ? 'YES' : 'NO';
+          const radioToSelect = document.querySelector(`input[name="txRecurrence"][value="${targetRadioVal}"]`);
+          if (radioToSelect) {
+            radioToSelect.checked = true;
+            radioToSelect.dispatchEvent(new Event('change'));
+          }
+        });
+      }
+
       const instSelect = document.getElementById('tx-installments');
       if (instSelect) {
         instSelect.addEventListener('change', (e) => {
@@ -1777,41 +1791,41 @@
     // --- CATEGORIAS POR TIPO ---
     const CATEGORIES_BY_TYPE = {
       CARD: [
-        'Alimentação / Mercado 🛒',
-        'Restaurante / Lanchonete 🍔',
-        'Transporte / Uber 🚗',
-        'Saúde / Farmácia 💊',
-        'Lazer / Entretenimento 🎬',
-        'Educação / Cursos 📚',
-        'Moradia / Casa 🏠',
-        'Vestuário / Compras 🛍️',
-        'Assinatura / Recorrência Mensal 🔄',
-        'Serviços Digitais 💻',
-        'Outros 📦'
+        'Alimentação / Mercado 🛒 (Não Recorrente 📌)',
+        'Restaurante / Lanchonete 🍔 (Não Recorrente 📌)',
+        'Transporte / Uber 🚗 (Não Recorrente 📌)',
+        'Saúde / Farmácia 💊 (Não Recorrente 📌)',
+        'Lazer / Entretenimento 🎬 (Não Recorrente 📌)',
+        'Educação / Cursos 📚 (Recorrente 🔄)',
+        'Moradia / Aluguel / Casa 🏠 (Recorrente 🔄)',
+        'Vestuário / Compras 🛍️ (Não Recorrente 📌)',
+        'Assinatura / Serviços Mensais 🔄 (Recorrente 🔄)',
+        'Serviços Digitais / Streaming 💻 (Recorrente 🔄)',
+        'Outros Cartão 📦 (Não Recorrente 📌)'
       ],
       BILL: [
-        'Energia / Luz de Casa ⚡',
-        'Água / Saneamento 💧',
-        'Internet / Wi-Fi de Casa 🌐',
-        'Aluguel / Condomínio 🏠',
-        'Gás de Cozinha 🔥',
-        'Telefone / Celular 📱',
-        'IPTU / Taxas da Casa 📄',
-        'Manutenção / Reparo de Casa 🛠️',
-        'Supermercado / Compras de Casa 🛒',
-        'Assinatura / Recorrência Mensal 🔄',
-        'Outros Boletos de Casa 📑'
+        'Energia / Luz de Casa ⚡ (Recorrente 🔄)',
+        'Água / Saneamento 💧 (Recorrente 🔄)',
+        'Internet / Wi-Fi de Casa 🌐 (Recorrente 🔄)',
+        'Aluguel / Condomínio 🏠 (Recorrente 🔄)',
+        'Gás de Cozinha 🔥 (Recorrente 🔄)',
+        'Telefone / Celular 📱 (Recorrente 🔄)',
+        'IPTU / Taxas da Casa 📄 (Recorrente 🔄)',
+        'Manutenção / Reparo de Casa 🛠️ (Não Recorrente 📌)',
+        'Supermercado / Compras de Casa 🛒 (Não Recorrente 📌)',
+        'Assinatura Mensal de Casa 🔄 (Recorrente 🔄)',
+        'Outros Boletos de Casa 📑 (Não Recorrente 📌)'
       ],
       VEHICLE: [
-        'Combustível / Gasolina ⛽',
-        'Manutenção / Oficina 🛠️',
-        'Troca de Óleo 🛢️',
-        'Lava-jato / Limpeza 🧼',
-        'Seguro Veicular 🛡️',
-        'IPVA / Licenciamento 📄',
-        'Estacionamento / Pedágio 🅿️',
-        'Assinatura / Recorrência Mensal 🔄',
-        'Outros Veículo 🚗'
+        'Combustível / Gasolina ⛽ (Não Recorrente 📌)',
+        'Seguro Veicular 🛡️ (Recorrente 🔄)',
+        'IPVA / Licenciamento 📄 (Recorrente 🔄)',
+        'Manutenção / Oficina 🛠️ (Não Recorrente 📌)',
+        'Troca de Óleo 🛢️ (Não Recorrente 📌)',
+        'Lava-jato / Limpeza 🧼 (Não Recorrente 📌)',
+        'Estacionamento / Pedágio 🅿️ (Não Recorrente 📌)',
+        'Assinatura / Mensalidade Veículo 🔄 (Recorrente 🔄)',
+        'Outros Veículo 🚗 (Não Recorrente 📌)'
       ]
     };
 
