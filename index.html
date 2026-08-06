@@ -698,7 +698,7 @@
         </div>
 
         <div id="salary-edit-box" style="display: none; gap: 6px; margin: 6px 0;">
-          <input type="number" id="user-salary-input" placeholder="Ex: 5000" step="0.01" class="input-control" style="font-size: 0.95rem; font-weight: 800; padding: 4px 8px;">
+          <input type="text" id="user-salary-input" placeholder="0,00" inputmode="numeric" class="input-control font-mono" style="font-size: 0.95rem; font-weight: 800; padding: 4px 8px;">
           <button id="btn-save-salary" class="btn btn-primary" style="padding: 4px 10px; font-size: 0.78rem;">Salvar</button>
         </div>
 
@@ -970,7 +970,7 @@
         <div class="form-row">
           <div class="form-group flex-1">
             <label for="tx-amount">Valor (R$) *</label>
-            <input type="number" id="tx-amount" placeholder="0,00" step="0.01" required class="input-control font-mono">
+            <input type="text" id="tx-amount" placeholder="0,00" inputmode="numeric" required class="input-control font-mono">
           </div>
           <div class="form-group flex-1">
             <label for="tx-date">Data do Lançamento *</label>
@@ -1834,6 +1834,12 @@
     }
 
     function setupAppListeners() {
+      // Máscara Decimal BRL (Apenas Números + R$ 0,00) em TODOS os campos de valores
+      ['tx-amount', 'user-salary-input', 'bank-limit'].forEach(id => {
+        const inp = document.getElementById(id);
+        if (inp) attachCurrencyMask(inp);
+      });
+
       // Toggle Edição Salário
       const lockBtn = document.getElementById('btn-toggle-salary-lock');
       if (lockBtn) {
@@ -1847,7 +1853,7 @@
       const saveSalaryBtn = document.getElementById('btn-save-salary');
       if (saveSalaryBtn) {
         saveSalaryBtn.addEventListener('click', () => {
-          const val = parseFloat(document.getElementById('user-salary-input').value) || 0;
+          const val = parseCurrencyInputValue(document.getElementById('user-salary-input').value);
           saasState.userSalary = val;
           saasState.userSalaryLocked = true;
           saveUserData();
@@ -2097,6 +2103,8 @@
         if (salaryReadBox) salaryReadBox.style.display = 'none';
         if (salaryEditBox) salaryEditBox.style.display = 'flex';
         if (lockBtn) lockBtn.innerHTML = '🔒 Travar';
+        const inputSal = document.getElementById('user-salary-input');
+        if (inputSal) inputSal.value = formatCurrencyInputValue(saasState.userSalary);
       }
 
       const freeBalance = saasState.userSalary - grandSum;
@@ -2594,6 +2602,25 @@
       return parseFloat(clean) || 0;
     }
 
+    function attachCurrencyMask(inputElem) {
+      if (!inputElem) return;
+      inputElem.setAttribute('type', 'text');
+      inputElem.setAttribute('inputmode', 'numeric');
+
+      inputElem.addEventListener('input', (e) => {
+        let value = e.target.value.replace(/\D/g, ''); // Digits only
+        if (!value) {
+          e.target.value = '';
+          return;
+        }
+        const numberValue = parseFloat(value) / 100;
+        e.target.value = numberValue.toLocaleString('pt-BR', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        });
+      });
+    }
+
     function editBank(bankId) {
       const bank = saasState.userBanks.find(b => b.id === bankId);
       if (!bank) return;
@@ -2717,7 +2744,7 @@
       const typeRadio = document.querySelector('input[name="txType"]:checked');
       const type = typeRadio ? typeRadio.value : 'CARD';
       const description = document.getElementById('tx-description').value.trim();
-      const amount = parseFloat(document.getElementById('tx-amount').value) || 0;
+      const amount = parseCurrencyInputValue(document.getElementById('tx-amount').value);
       const dateStr = document.getElementById('tx-date').value;
       const category = document.getElementById('tx-category').value || 'Geral';
       const bankId = document.getElementById('tx-bank').value || '';
@@ -2826,7 +2853,7 @@
       updateTxCategoryOptions(tx.type, tx.category);
 
       document.getElementById('tx-description').value = tx.description || '';
-      document.getElementById('tx-amount').value = tx.amount || '';
+      document.getElementById('tx-amount').value = formatCurrencyInputValue(tx.amount);
       document.getElementById('tx-date').value = tx.dateStr || '';
       document.getElementById('tx-bank').value = tx.bankId || '';
       document.getElementById('tx-status').value = tx.status || 'PENDING';
