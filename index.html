@@ -2599,11 +2599,14 @@
       const subInfoGroup = document.getElementById('group-subscription-info');
       if (subInfoGroup) subInfoGroup.style.display = 'none';
 
-      // 4. Data padrão = HOJE
+      // 4. Data padrão = Ano e Mês selecionados na tela
       const dateInp = document.getElementById('tx-date');
       if (dateInp) {
         const today = new Date();
-        dateInp.value = formatDateStr(today.getFullYear(), today.getMonth(), today.getDate());
+        const activeYear = saasState.year || today.getFullYear();
+        const activeMonth = saasState.currentMonth !== undefined ? saasState.currentMonth : today.getMonth();
+        const day = Math.min(today.getDate(), 28);
+        dateInp.value = formatDateStr(activeYear, activeMonth, day);
       }
 
       populateBankSelect();
