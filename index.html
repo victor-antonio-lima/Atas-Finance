@@ -480,37 +480,8 @@
 </head>
 <body>
 
-  <!-- ==================== AUTH CONTAINER (LOGIN EXCLUSIVO) ==================== -->
-  <div id="auth-screen" class="auth-container">
-    <div class="auth-card">
-      <div class="auth-header">
-        <div class="auth-logo"><span class="brand-dollar-sign">$</span></div>
-        <h2 class="auth-title">Atlas Finance</h2>
-        <p class="auth-subtitle">Gestão de Cartões, Contas & Inteligência Financeira</p>
-      </div>
-
-      <!-- Form Login -->
-      <form id="login-form" style="margin-top: 20px;" autocomplete="off">
-        <div class="form-group">
-          <label for="login-email">E-mail de Acesso</label>
-          <input type="email" id="login-email" name="user_email_access" placeholder="seuemail@exemplo.com" value="" autocomplete="off" required class="input-control">
-        </div>
-        <div class="form-group">
-          <label for="login-password">Senha de Acesso</label>
-          <input type="password" id="login-password" name="user_pass_access" placeholder="••••••••" value="" autocomplete="new-password" required class="input-control">
-        </div>
-        <button type="submit" id="btn-submit-login" class="btn btn-primary btn-full"><i data-lucide="log-in"></i> Entrar na Plataforma</button>
-      </form>
-      <div style="margin-top: 16px; text-align: center;">
-        <button type="button" id="btn-reset-login-cache" onclick="resetLocalLoginCache()" style="background: transparent; border: none; color: var(--text-muted); font-size: 0.78rem; cursor: pointer; text-decoration: underline;">
-          🔄 Limpar Cachê de Login / Destravar Acesso
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ==================== MAIN PLATFORM APP ==================== -->
-  <div id="app-screen" class="app-container" style="display: none;">
+  <!-- ==================== MAIN PLATFORM SPREADSHEET APP ==================== -->
+  <div id="app-screen" class="app-container" style="display: block;">
 
     <!-- APP HEADER -->
     <header class="app-header">
@@ -520,16 +491,10 @@
           <div class="brand-text">
             <h1>Atlas Finance</h1>
             <p class="brand-subtitle">
-              Controle de Crédito, Contas & Orçamento
+              Planilha de Controle de Crédito, Contas & Despesas
               <span id="device-mode-badge" class="device-mode-pill"><i data-lucide="monitor" style="width:12px;"></i> Desktop Mode</span>
             </p>
           </div>
-        </div>
-
-        <div class="user-badge">
-          <i data-lucide="user"></i>
-          <span id="user-display-name">Usuário</span>
-          <span id="user-role-tag" class="role-tag role-user">TRIAL</span>
         </div>
       </div>
 
@@ -539,15 +504,6 @@
             <button id="prev-year-btn" class="btn-icon"><i data-lucide="chevron-left"></i></button>
             <span id="current-year-display">2026</span>
             <button id="next-year-btn" class="btn-icon"><i data-lucide="chevron-right"></i></button>
-          </div>
-
-          <div class="header-utils">
-            <button id="btn-open-change-my-pass" class="btn btn-ghost btn-sm" title="Alterar Senha de Acesso">
-              <i data-lucide="key-round"></i> Senha
-            </button>
-            <button id="btn-logout" class="btn btn-ghost btn-sm" title="Sair da Conta">
-              <i data-lucide="log-out"></i> Sair
-            </button>
           </div>
         </div>
 
@@ -1123,7 +1079,12 @@
     const nowInit = new Date();
     let saasState = {
       users: [],
-      currentUser: null,
+      currentUser: {
+        id: 'usr-default',
+        name: 'Victor',
+        email: 'victorantoniolima464@gmail.com',
+        role: 'CLIENTE'
+      },
       year: nowInit.getFullYear(),
       currentMonth: nowInit.getMonth(),
       selectedView: 'all',
@@ -2936,11 +2897,16 @@
     }
 
     async function carregarDadosSincronizados() {
-      await fetchCloudUsers();
-      if (saasState.currentUser) {
-        await fetchCloudUserData();
-        renderAll();
+      if (!saasState.currentUser) {
+        saasState.currentUser = {
+          id: 'usr-default',
+          name: 'Victor',
+          email: 'victorantoniolima464@gmail.com',
+          role: 'CLIENTE'
+        };
       }
+      await fetchCloudUserData();
+      renderAll();
     }
 
     function formatCurrency(val) { return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val || 0); }
@@ -2953,18 +2919,10 @@
       detectDeviceAndApplyLayout();
       window.addEventListener('resize', detectDeviceAndApplyLayout);
 
-      loadSaaSStore();
-      setupAuthListeners();
       setupAppListeners();
 
-      // Busca inicial na nuvem (Supabase) para carregar informacoes atualizadas
+      // Busca inicial na nuvem (Supabase) para carregar a planilha de despesas atualizada
       await carregarDadosSincronizados();
-
-      if (saasState.currentUser) {
-        showAppScreen();
-      } else {
-        showAuthScreen();
-      }
 
       if (window.lucide) lucide.createIcons();
 
