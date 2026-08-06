@@ -552,9 +552,6 @@
         </div>
 
         <div class="header-actions-row">
-          <button id="btn-master-panel" class="btn btn-gold" style="display: none;">
-            <i data-lucide="shield"></i> Painel Master
-          </button>
           <button id="btn-open-bank-modal" class="btn btn-secondary">
             <i data-lucide="credit-card"></i> Cartões
           </button>
@@ -1893,6 +1890,23 @@
         });
       }
 
+      // Seletor de Ano (< 2026 >)
+      const prevYearBtn = document.getElementById('prev-year-btn');
+      if (prevYearBtn) {
+        prevYearBtn.addEventListener('click', () => {
+          saasState.year -= 1;
+          renderAll();
+        });
+      }
+
+      const nextYearBtn = document.getElementById('next-year-btn');
+      if (nextYearBtn) {
+        nextYearBtn.addEventListener('click', () => {
+          saasState.year += 1;
+          renderAll();
+        });
+      }
+
       // Search Box
       const searchInp = document.getElementById('search-input');
       if (searchInp) {
@@ -2036,8 +2050,44 @@
       }
     }
 
-    // --- RENDER ENGINE ---
+    // --- RENDER ENGINE & PROJEÇÃO DE ASSINATURAS ILIMITADAS ---
+    function getTransactionsForMonthYear(targetYear, targetMonth) {
+      const targetIndex = targetYear * 12 + targetMonth;
+      const result = [];
+      const seenGroupIds = new Set();
+
+      saasState.userTransactions.forEach(tx => {
+        const txIndex = tx.year * 12 + tx.month;
+
+        if (tx.isSubscription || (tx.category && (tx.category.includes('Assinatura') || tx.category.includes('Recorrência')))) {
+          // ASSINATURA: Aparece em todos os meses futuros sem limite!
+          const gId = tx.linkedGroupId || tx.id;
+          if (txIndex <= targetIndex && !seenGroupIds.has(gId)) {
+            seenGroupIds.add(gId);
+            const day = parseInt(tx.dateStr ? tx.dateStr.split('-')[2] : '1', 10) || 1;
+            const currentSubTx = {
+              ...tx,
+              year: targetYear,
+              month: targetMonth,
+              dateStr: formatDateStr(targetYear, targetMonth, Math.min(day, 28))
+            };
+            result.push(currentSubTx);
+          }
+        } else {
+          // Lançamento normal / parcelado por mês e ano exatos
+          if (tx.year === targetYear && tx.month === targetMonth) {
+            result.push(tx);
+          }
+        }
+      });
+
+      return result;
+    }
+
     function renderAll() {
+      const yearDisp = document.getElementById('current-year-display');
+      if (yearDisp) yearDisp.textContent = saasState.year;
+
       renderMonthTabs();
       renderMetrics();
       renderBankFilterSelect();
@@ -2058,7 +2108,8 @@
         btn.className = `month-tab ${idx === saasState.currentMonth ? 'active' : ''}`;
 
         let monthSum = 0;
-        saasState.userTransactions.filter(tx => tx.year === saasState.year && tx.month === idx).forEach(tx => {
+        const monthlyTx = getTransactionsForMonthYear(saasState.year, idx);
+        monthlyTx.forEach(tx => {
           monthSum += Number(tx.amount);
         });
 
@@ -2078,7 +2129,7 @@
       const year = saasState.year;
       const month = saasState.currentMonth;
 
-      const monthlyTx = saasState.userTransactions.filter(tx => tx.year === year && tx.month === month);
+      const monthlyTx = getTransactionsForMonthYear(year, month);
       
       const cardTx = monthlyTx.filter(tx => tx.type === 'CARD');
       const billTx = monthlyTx.filter(tx => tx.type === 'BILL');
@@ -2186,7 +2237,7 @@
       const filterBank = saasState.selectedBankFilter;
       const query = saasState.searchQuery;
 
-      let monthlyTx = saasState.userTransactions.filter(tx => tx.year === year && tx.month === month);
+      let monthlyTx = getTransactionsForMonthYear(year, month);
 
       if (filterBank !== 'ALL') {
         monthlyTx = monthlyTx.filter(tx => tx.bankId === filterBank || tx.type !== 'CARD');
@@ -2778,19 +2829,16 @@
       const groupId = editId || `group-${Date.now()}`;
 
       if (isSub) {
-        // Assinatura: replica pelos 12 meses do ano sem indicar parcelamento
-        for (let m = 0; m < 12; m++) {
-          const subTx = {
-            id: `tx-${Date.now()}-${m}`,
-            linkedGroupId: groupId,
-            type, description, amount,
-            year: txYear, month: m,
-            dateStr: formatDateStr(txYear, m, Math.min(txDay, 28)),
-            category, bankId, status: m <= txMonth ? status : 'PENDING',
-            isSubscription: true, installmentTotal: 1, installmentCurrent: 1
-          };
-          saasState.userTransactions.push(subTx);
-        }
+        // Assinatura Recorrente: cria registro único que é projetado para todos os meses futuros sem limite!
+        const subTx = {
+          id: groupId,
+          linkedGroupId: groupId,
+          type, description, amount,
+          year: txYear, month: txMonth,
+          dateStr, category, bankId, status,
+          isSubscription: true, installmentTotal: 1, installmentCurrent: 1
+        };
+        saasState.userTransactions.push(subTx);
       } else if (instTotal > 1) {
         // Parcelamento normal com opção de parcela inicial
         for (let i = startInstIdx; i < instTotal; i++) {
