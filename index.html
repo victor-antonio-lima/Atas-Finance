@@ -588,13 +588,10 @@
                 <i data-lucide="cloud"></i> Nuvem Conectada
               </span>
             </h2>
-            <p>Cadastro de novos clientes, gerenciamento de acessos, senhas e controle completo</p>
+            <p>Gerenciamento de acessos, senhas e controle de planos da plataforma</p>
           </div>
         </div>
         <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-          <button class="btn btn-gold" id="btn-open-master-add-user" onclick="openMasterAddUserModal()">
-            <i data-lucide="user-plus"></i> Cadastrar Novo Usuário
-          </button>
           <button class="btn btn-ghost" id="btn-close-master-panel">&times; Fechar Painel Admin</button>
         </div>
       </div>
@@ -2987,17 +2984,7 @@
       renderMasterPanel();
     }
 
-    function openMasterAddUserModal() {
-      const form = document.getElementById('master-add-user-form');
-      if (form) form.reset();
-      const modal = document.getElementById('master-add-user-modal');
-      if (modal) modal.classList.add('active');
-    }
 
-    function closeMasterAddUserModal() {
-      const modal = document.getElementById('master-add-user-modal');
-      if (modal) modal.classList.remove('active');
-    }
 
     function showClientCredentialsModal(u) {
       if (!u) return;
