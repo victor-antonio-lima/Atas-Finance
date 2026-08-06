@@ -1351,7 +1351,7 @@
         saasState.users = [...PRESET_USERS];
       }
 
-      saveUsers();
+      saveUsersLocally();
 
       const activeUserId = localStorage.getItem('finansaas_active_user');
       if (activeUserId) {
@@ -1370,12 +1370,19 @@
       }
     }
 
-    function saveUsers() {
+    function saveUsersLocally() {
       localStorage.setItem('finansaas_users', JSON.stringify(saasState.users));
       localStorage.setItem('finansaas_users_backup', JSON.stringify(saasState.users));
     }
 
-    function loadUserData() {
+    function saveUsers(userToPush = null) {
+      saveUsersLocally();
+      if (userToPush) {
+        pushMasterUserToCloud(userToPush, 'upsert');
+      }
+    }
+
+    function loadUserDataLocally() {
       if (!saasState.currentUser) return;
       const uid = saasState.currentUser.id;
       saasState.userBanks = JSON.parse(localStorage.getItem(`finansaas_banks_${uid}`) || '[]');
@@ -1384,13 +1391,167 @@
       saasState.userSalaryLocked = localStorage.getItem(`finansaas_salary_locked_${uid}`) === 'true';
     }
 
-    function saveUserData() {
+    function saveUserDataLocally() {
       if (!saasState.currentUser) return;
       const uid = saasState.currentUser.id;
       localStorage.setItem(`finansaas_banks_${uid}`, JSON.stringify(saasState.userBanks));
       localStorage.setItem(`finansaas_tx_${uid}`, JSON.stringify(saasState.userTransactions));
       localStorage.setItem(`finansaas_salary_${uid}`, saasState.userSalary || 0);
       localStorage.setItem(`finansaas_salary_locked_${uid}`, saasState.userSalaryLocked ? 'true' : 'false');
+    }
+
+    async function loadUserData() {
+      if (!saasState.currentUser) return;
+      loadUserDataLocally();
+      await fetchCloudUserData();
+    }
+
+    function saveUserData() {
+      if (!saasState.currentUser) return;
+      saveUserDataLocally();
+      pushUserDataToCloud();
+    }
+
+    // --- NÚCLEO DE SINCRONIZAÇÃO SUPABASE (NUVEM EM TEMPO REAL) ---
+    async function fetchCloudUsers() {
+      if (!supabaseClient) return;
+      try {
+        const { data, error } = await supabaseClient
+          .from('usuarios')
+          .select('*');
+
+        if (!error && Array.isArray(data)) {
+          data.forEach(cloudRow => {
+            const emailClean = String(cloudRow.email || '').trim().toLowerCase();
+            if (!emailClean) return;
+
+            let existing = saasState.users.find(u => u && u.email && u.email.trim().toLowerCase() === emailClean);
+
+            let finData = {};
+            if (cloudRow.dados_financeiros) {
+              try {
+                finData = typeof cloudRow.dados_financeiros === 'string' ? JSON.parse(cloudRow.dados_financeiros) : cloudRow.dados_financeiros;
+              } catch(e) {}
+            }
+
+            if (!existing) {
+              existing = {
+                id: cloudRow.id || `usr-${Date.now()}`,
+                name: cloudRow.nome || cloudRow.name || emailClean.split('@')[0],
+                email: emailClean,
+                password: cloudRow.senha || cloudRow.password || '123456',
+                role: (cloudRow.tipo_acesso === 'MASTER' || emailClean.includes('victor')) ? 'MASTER' : 'CLIENTE',
+                registeredAt: cloudRow.created_at || new Date().toISOString(),
+                subscriptionStatus: cloudRow.status || 'SUBSCRIBED',
+                trialEndTimestamp: Date.now() + (365 * 86400000),
+                cloudFinData: finData
+              };
+              saasState.users.push(existing);
+            } else {
+              existing.name = cloudRow.nome || cloudRow.name || existing.name;
+              existing.password = cloudRow.senha || cloudRow.password || existing.password;
+              existing.role = (cloudRow.tipo_acesso === 'MASTER' || emailClean.includes('victor')) ? 'MASTER' : (existing.role || 'CLIENTE');
+              existing.subscriptionStatus = cloudRow.status || existing.subscriptionStatus || 'SUBSCRIBED';
+              existing.cloudFinData = finData;
+            }
+          });
+          saveUsersLocally();
+        }
+      } catch(err) {
+        console.warn("Supabase fetch users:", err);
+      }
+    }
+
+    async function fetchCloudUserData() {
+      if (!saasState.currentUser || !supabaseClient) return;
+      const u = saasState.currentUser;
+      const emailClean = u.email ? u.email.trim().toLowerCase() : '';
+      if (!emailClean) return;
+
+      try {
+        const { data, error } = await supabaseClient
+          .from('usuarios')
+          .select('*')
+          .eq('email', emailClean)
+          .maybeSingle();
+
+        if (!error && data && data.dados_financeiros) {
+          let parsed = typeof data.dados_financeiros === 'string' ? JSON.parse(data.dados_financeiros) : data.dados_financeiros;
+          if (parsed) {
+            saasState.userBanks = Array.isArray(parsed.banks) ? parsed.banks : [];
+            saasState.userTransactions = Array.isArray(parsed.transactions) ? parsed.transactions : [];
+            saasState.userSalary = parseFloat(parsed.salary) || 0;
+            saasState.userSalaryLocked = parsed.salary_locked === true;
+
+            saveUserDataLocally();
+            return;
+          }
+        }
+      } catch(err) {
+        console.warn("Supabase fetch user data:", err);
+      }
+
+      loadUserDataLocally();
+    }
+
+    async function pushUserDataToCloud() {
+      if (!saasState.currentUser || !supabaseClient) return;
+      const u = saasState.currentUser;
+      const emailClean = u.email ? u.email.trim().toLowerCase() : '';
+      if (!emailClean) return;
+
+      const payload = {
+        banks: saasState.userBanks || [],
+        transactions: saasState.userTransactions || [],
+        salary: saasState.userSalary || 0,
+        salary_locked: saasState.userSalaryLocked === true
+      };
+
+      try {
+        const { error } = await supabaseClient
+          .from('usuarios')
+          .upsert({
+            email: emailClean,
+            nome: u.name || emailClean.split('@')[0],
+            senha: u.password || '123456',
+            tipo_acesso: u.role || 'CLIENTE',
+            status: u.subscriptionStatus || 'SUBSCRIBED',
+            dados_financeiros: JSON.stringify(payload)
+          }, { onConflict: 'email' });
+
+        if (error) console.warn("Supabase push data error:", error);
+      } catch(err) {
+        console.warn("Supabase push user data:", err);
+      }
+    }
+
+    async function pushMasterUserToCloud(userObj, action = 'upsert') {
+      if (!supabaseClient || !userObj || !userObj.email) return;
+      const emailClean = userObj.email.trim().toLowerCase();
+
+      try {
+        if (action === 'delete') {
+          await supabaseClient.from('usuarios').delete().eq('email', emailClean);
+        } else {
+          const payload = userObj.cloudFinData || {
+            banks: [],
+            transactions: [],
+            salary: 0,
+            salary_locked: false
+          };
+
+          await supabaseClient.from('usuarios').upsert({
+            email: emailClean,
+            nome: userObj.name || emailClean.split('@')[0],
+            senha: userObj.password || '123456',
+            tipo_acesso: userObj.role || 'CLIENTE',
+            status: userObj.subscriptionStatus || 'SUBSCRIBED',
+            dados_financeiros: JSON.stringify(payload)
+          }, { onConflict: 'email' });
+        }
+      } catch(err) {
+        console.warn("Supabase master operation:", err);
+      }
     }
 
     // --- FUNÇÕES DE LOGIN & MASTER ---
@@ -2818,14 +2979,18 @@
       const u = saasState.users.find(x => String(x.id) === String(userId));
       if (!u) return;
       u.subscriptionStatus = newPlan;
-      saveUsers();
+      saveUsers(u);
       renderMasterPanel();
     }
 
     function masterDeleteUser(userId) {
       if (!confirm('Deseja realmente excluir este usuário?')) return;
+      const userToDelete = saasState.users.find(u => String(u.id) === String(userId));
       saasState.users = saasState.users.filter(u => String(u.id) !== String(userId));
       saveUsers();
+      if (userToDelete) {
+        pushMasterUserToCloud(userToDelete, 'delete');
+      }
       renderMasterPanel();
     }
 
@@ -2880,60 +3045,40 @@
       if (modal) modal.classList.add('active');
     }
 
-    async function cadastrarClientePeloSite(emailCliente, senhaCliente) {
+    async function cadastrarClientePeloSite(emailCliente, senhaCliente, nomeCliente = '') {
       if (!emailCliente || !senhaCliente) return;
       const emailLimpo = emailCliente.trim().toLowerCase();
 
-      if (supabaseClient) {
-        try {
-          await supabaseClient.from('usuarios').insert([{ email: emailLimpo, senha: senhaCliente, tipo_acesso: 'CLIENTE' }]);
-        } catch(e) {}
-      }
-
-      loadSaaSStore();
       const newUser = {
         id: `usr-${Date.now()}`,
-        name: emailLimpo.split('@')[0],
+        name: nomeCliente.trim() || emailLimpo.split('@')[0],
         email: emailLimpo,
-        password: senhaCliente,
+        password: senhaCliente.trim(),
         role: 'CLIENTE',
         registeredAt: new Date().toISOString(),
         subscriptionStatus: 'SUBSCRIBED',
         trialEndTimestamp: Date.now() + (365 * 86400000)
       };
-      saasState.users.push(newUser);
-      saveUsers();
 
-      alert(`Cliente "${emailLimpo}" cadastrado com sucesso!`);
+      const existingIdx = saasState.users.findIndex(u => u && u.email && u.email.trim().toLowerCase() === emailLimpo);
+      if (existingIdx === -1) {
+        saasState.users.push(newUser);
+      } else {
+        saasState.users[existingIdx] = { ...saasState.users[existingIdx], ...newUser };
+      }
+
+      saveUsers(newUser);
+
+      alert(`✅ Cliente "${emailLimpo}" cadastrado e sincronizado no Supabase com sucesso!`);
       renderMasterPanel();
     }
 
     async function carregarDadosSincronizados() {
-      if (!supabaseClient) return;
-      try {
-        const { data, error } = await supabaseClient.from('usuarios').select('*');
-        if (!error && data && Array.isArray(data)) {
-          loadSaaSStore();
-          data.forEach(dbUser => {
-            if (!dbUser || !dbUser.email) return;
-            const emailClean = dbUser.email.toLowerCase();
-            const exists = saasState.users.find(u => u && u.email && u.email.toLowerCase() === emailClean);
-            if (!exists) {
-              saasState.users.push({
-                id: dbUser.id || `usr-${Date.now()}`,
-                name: emailClean.split('@')[0],
-                email: emailClean,
-                password: dbUser.senha || dbUser.password || '123456',
-                role: dbUser.tipo_acesso || dbUser.role || 'CLIENTE',
-                registeredAt: dbUser.created_at || new Date().toISOString(),
-                subscriptionStatus: 'SUBSCRIBED',
-                trialEndTimestamp: Date.now() + (365 * 86400000)
-              });
-            }
-          });
-          saveUsers();
-        }
-      } catch (err) {}
+      await fetchCloudUsers();
+      if (saasState.currentUser) {
+        await fetchCloudUserData();
+        renderAll();
+      }
     }
 
     function formatCurrency(val) { return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val || 0); }
@@ -2950,6 +3095,9 @@
       setupAuthListeners();
       setupAppListeners();
 
+      // Busca inicial na nuvem (Supabase) para carregar informacoes atualizadas
+      await carregarDadosSincronizados();
+
       if (saasState.currentUser) {
         showAppScreen();
       } else {
@@ -2964,8 +3112,6 @@
           document.querySelectorAll('.modal-overlay.active').forEach(m => m.classList.remove('active'));
         }
       });
-
-      await carregarDadosSincronizados();
     });
   </script>
 </body>
