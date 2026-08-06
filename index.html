@@ -1050,15 +1050,16 @@
     </div>
   </div>
 
-  <!-- MODAL: ADD BANK -->
+  <!-- MODAL: ADD / EDIT BANK -->
   <div class="modal-overlay" id="bank-modal">
-    <div class="modal-card" style="max-width: 480px;">
+    <div class="modal-card" style="max-width: 500px;">
       <div class="modal-header">
-        <h3 style="display: flex; align-items: center; gap: 8px;"><i data-lucide="credit-card"></i> Gerenciar Cartões de Crédito</h3>
+        <h3 style="display: flex; align-items: center; gap: 8px;"><i data-lucide="credit-card" style="color: var(--accent-primary);"></i> Gerenciar Cartões de Crédito</h3>
         <button class="btn-close-modal" id="btn-close-bank-modal">&times;</button>
       </div>
 
       <form id="add-bank-form" style="margin-bottom: 20px;">
+        <input type="hidden" id="bank-edit-id" value="">
         <div class="form-group">
           <label for="bank-name">Nome do Cartão / Banco *</label>
           <input type="text" id="bank-name" placeholder="Ex: Nubank, Itaú Click, Bradesco..." required class="input-control">
@@ -1066,18 +1067,24 @@
         <div class="form-row">
           <div class="form-group flex-2">
             <label for="bank-limit">Limite Total de Crédito (R$) *</label>
-            <input type="number" id="bank-limit" placeholder="Ex: 5000,00" step="0.01" required class="input-control font-mono">
+            <input type="text" id="bank-limit" placeholder="0,00" inputmode="numeric" required class="input-control font-mono">
           </div>
           <div class="form-group flex-1">
             <label for="bank-color">Cor da Tarja *</label>
-            <input type="color" id="bank-color" value="#6366f1" class="input-control" style="height: 42px; padding: 2px;">
+            <input type="color" id="bank-color" value="#6366f1" class="input-control" style="height: 42px; padding: 2px; cursor: pointer;">
           </div>
         </div>
-        <button type="submit" class="btn btn-primary btn-full"><i data-lucide="plus-circle"></i> Adicionar Cartão</button>
+        <div style="display: flex; gap: 10px;">
+          <button type="submit" id="btn-save-bank-submit" class="btn btn-primary" style="flex: 1;"><i data-lucide="plus-circle"></i> Adicionar Cartão</button>
+          <button type="button" id="btn-cancel-edit-bank" class="btn btn-ghost" style="display: none;" onclick="cancelEditBank()"><i data-lucide="x"></i> Cancelar</button>
+        </div>
       </form>
 
-      <h4 style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 10px;">Cartões Cadastrados</h4>
-      <div id="bank-list-container" class="bank-list"></div>
+      <h4 style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;">
+        <span>Cartões Cadastrados</span>
+        <span id="bank-count-badge" class="badge-installment" style="font-size: 0.72rem;">0 Cartões</span>
+      </h4>
+      <div id="bank-list-container" class="bank-list" style="max-height: 240px; overflow-y: auto; padding-right: 4px;"></div>
     </div>
   </div>
 
@@ -1771,6 +1778,23 @@
       const bankForm = document.getElementById('add-bank-form');
       if (bankForm) bankForm.addEventListener('submit', handleAddBankSubmit);
 
+      // Auto-máscara decimal BRL para o Limite do Cartão (Ex: 5.000,00)
+      const bankLimitInput = document.getElementById('bank-limit');
+      if (bankLimitInput) {
+        bankLimitInput.addEventListener('input', (e) => {
+          let value = e.target.value.replace(/\D/g, ''); // Apenas dígitos
+          if (!value) {
+            e.target.value = '';
+            return;
+          }
+          const num = parseFloat(value) / 100;
+          e.target.value = num.toLocaleString('pt-BR', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          });
+        });
+      }
+
       // Troca de Tipo de Lançamento (Cartão, Conta, Veículo)
       document.querySelectorAll('input[name="txType"]').forEach(radio => {
         radio.addEventListener('change', (e) => {
@@ -2399,38 +2423,122 @@
       });
     }
 
+    function formatCurrencyInputValue(num) {
+      if (isNaN(num) || num === null || num === undefined) return '';
+      return Number(num).toLocaleString('pt-BR', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+    }
+
+    function parseCurrencyInputValue(valStr) {
+      if (!valStr) return 0;
+      const clean = String(valStr).replace(/\./g, '').replace(',', '.');
+      return parseFloat(clean) || 0;
+    }
+
+    function editBank(bankId) {
+      const bank = saasState.userBanks.find(b => b.id === bankId);
+      if (!bank) return;
+
+      document.getElementById('bank-edit-id').value = bank.id;
+      document.getElementById('bank-name').value = bank.name;
+      document.getElementById('bank-limit').value = formatCurrencyInputValue(bank.limit);
+      document.getElementById('bank-color').value = bank.color || '#6366f1';
+
+      const btnSubmit = document.getElementById('btn-save-bank-submit');
+      if (btnSubmit) {
+        btnSubmit.innerHTML = '<i data-lucide="check-circle"></i> Salvar Alterações';
+        btnSubmit.className = 'btn btn-primary';
+      }
+
+      const btnCancel = document.getElementById('btn-cancel-edit-bank');
+      if (btnCancel) btnCancel.style.display = 'inline-flex';
+
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function cancelEditBank() {
+      const form = document.getElementById('add-bank-form');
+      if (form) form.reset();
+      document.getElementById('bank-edit-id').value = '';
+
+      const btnSubmit = document.getElementById('btn-save-bank-submit');
+      if (btnSubmit) {
+        btnSubmit.innerHTML = '<i data-lucide="plus-circle"></i> Adicionar Cartão';
+        btnSubmit.className = 'btn btn-primary';
+      }
+
+      const btnCancel = document.getElementById('btn-cancel-edit-bank');
+      if (btnCancel) btnCancel.style.display = 'none';
+
+      if (window.lucide) lucide.createIcons();
+    }
+
     function handleAddBankSubmit(e) {
       e.preventDefault();
+      const editId = document.getElementById('bank-edit-id').value;
       const name = document.getElementById('bank-name').value.trim();
-      const limit = parseFloat(document.getElementById('bank-limit').value) || 0;
+      const limitRaw = document.getElementById('bank-limit').value;
+      const limit = parseCurrencyInputValue(limitRaw);
       const color = document.getElementById('bank-color').value || '#6366f1';
 
       if (!name) return;
 
-      const newBank = { id: `bank-${Date.now()}`, name, limit, color };
-      saasState.userBanks.push(newBank);
-      saveUserData();
+      if (editId) {
+        // Editar cartão existente
+        const bankIdx = saasState.userBanks.findIndex(b => b.id === editId);
+        if (bankIdx !== -1) {
+          saasState.userBanks[bankIdx].name = name;
+          saasState.userBanks[bankIdx].limit = limit;
+          saasState.userBanks[bankIdx].color = color;
+        }
+      } else {
+        // Criar novo cartão
+        const newBank = { id: `bank-${Date.now()}`, name, limit, color };
+        saasState.userBanks.push(newBank);
+      }
 
-      document.getElementById('add-bank-form').reset();
+      saveUserData();
+      cancelEditBank();
       renderBankListModal();
       renderAll();
     }
 
     function renderBankListModal() {
       const container = document.getElementById('bank-list-container');
+      const badge = document.getElementById('bank-count-badge');
       if (!container) return;
+
       container.innerHTML = '';
+      if (badge) badge.textContent = `${saasState.userBanks.length} Cartõe${saasState.userBanks.length === 1 ? 'o' : 's'}`;
+
+      if (saasState.userBanks.length === 0) {
+        container.innerHTML = '<div style="text-align: center; color: var(--text-dim); padding: 16px; font-size: 0.84rem;">Nenhum cartão de crédito cadastrado.</div>';
+        return;
+      }
 
       saasState.userBanks.forEach(b => {
         const item = document.createElement('div');
-        item.className = 'bank-list-item';
+        item.style.cssText = 'display: flex; justify-content: space-between; align-items: center; background: rgba(30, 41, 59, 0.6); padding: 10px 14px; border-radius: var(--radius-md); border: 1px solid var(--border-color); margin-bottom: 8px; transition: all 0.2s ease;';
         item.innerHTML = `
-          <div style="display: flex; align-items: center; gap: 8px;">
-            <span style="width: 12px; height: 12px; border-radius: 50%; background: ${b.color}; display: inline-block;"></span>
-            <strong>${escapeHtml(b.name)}</strong>
-            <span style="font-size: 0.78rem; color: var(--text-muted); font-family: var(--font-mono);">(R$ ${Number(b.limit).toLocaleString('pt-BR')})</span>
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span style="width: 14px; height: 14px; border-radius: 50%; background: ${b.color}; display: inline-block; box-shadow: 0 0 8px ${b.color};"></span>
+            <div>
+              <strong style="color: var(--text-main); font-size: 0.9rem; display: block;">${escapeHtml(b.name)}</strong>
+              <div style="font-size: 0.76rem; color: var(--text-muted); font-family: var(--font-mono);">
+                Limite: <span style="color: var(--accent-cyan); font-weight: 700;">${formatCurrency(b.limit)}</span>
+              </div>
+            </div>
           </div>
-          <button class="btn-table-action" onclick="deleteBank('${b.id}')"><i data-lucide="trash-2"></i></button>
+          <div style="display: flex; gap: 6px;">
+            <button type="button" class="btn-table-action" onclick="editBank('${b.id}')" title="Editar dados do cartão" style="color: var(--accent-gold);">
+              <i data-lucide="edit-2"></i>
+            </button>
+            <button type="button" class="btn-table-action" onclick="deleteBank('${b.id}')" title="Excluir cartão" style="color: #f43f5e;">
+              <i data-lucide="trash-2"></i>
+            </button>
+          </div>
         `;
         container.appendChild(item);
       });
